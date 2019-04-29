@@ -1,7 +1,7 @@
 # zmesh
 [![PyPI version](https://badge.fury.io/py/zmesh.svg)](https://badge.fury.io/py/zmesh)
 
-Multi-Label Marching Cubes &amp; Simplification
+Multi-Label Marching Cubes &amp; Mesh Simplification
 
 ```python
 from zmesh import Mesher
@@ -53,7 +53,7 @@ of the 32-bit format. It might be possible to get x to 1023 as well.
 
 ## Related Projects 
 
-- [zi_lib](https://github.com/zlateski/zi_lib) - zmesh makes heavy use of Alek's C++ library.
+- [zi_lib](https://github.com/zlateski/zi_lib) - zmesh makes heavy use of Aleks' C++ library.
 - [Igneous](https://github.com/seung-lab/igneous) - Visualization of connectomics data using cloud computing.
 
 ## Credits
