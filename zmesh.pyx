@@ -23,6 +23,7 @@ cdef extern from "cMesher.hpp":
 
 class Mesher:
   def __init__(self, voxel_res):
+    voxel_res = np.array(voxel_res, dtype=np.uint32)
     self._mesher = Mesher6464(voxel_res)
     self.voxel_res = voxel_res
 
