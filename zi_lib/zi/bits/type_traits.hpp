@@ -83,24 +83,24 @@ using ZI_TYPE_TRAITS_NAMESPACE::remove_pointer;
 using ZI_TYPE_TRAITS_NAMESPACE::add_pointer;
 using ZI_TYPE_TRAITS_NAMESPACE::aligned_storage;
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
+// #ifdef __GXX_EXPERIMENTAL_CXX0X__
 
-template< typename T >
-struct has_trivial_constructor: boost::has_trivial_default_constructor< T > {};
+// template< typename T >
+// struct has_trivial_constructor: boost::has_trivial_default_constructor< T > {};
 
-template< typename T >
-struct has_trivial_copy: boost::has_trivial_copy_constructor< T > {};
+// template< typename T >
+// struct has_trivial_copy: boost::has_trivial_copy_constructor< T > {};
 
-template< typename T >
-struct has_nothrow_constructor: std::is_nothrow_default_constructible< T > {};
+// template< typename T >
+// struct has_nothrow_constructor: std::is_nothrow_default_constructible< T > {};
 
-template< typename T >
-struct has_nothrow_copy: std::is_nothrow_default_constructible< T > {};
+// template< typename T >
+// struct has_nothrow_copy: std::is_nothrow_default_constructible< T > {};
 
-template< typename T >
-struct add_reference: std::add_lvalue_reference< T > {};
+// template< typename T >
+// struct add_reference: std::add_lvalue_reference< T > {};
 
-#else
+// #else
 
 using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_constructor;
 using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_copy;
@@ -108,7 +108,7 @@ using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_constructor;
 using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_copy;
 using ZI_TYPE_TRAITS_NAMESPACE::add_reference;
 
-#endif
+// #endif
 
 } // namespace zi
 
