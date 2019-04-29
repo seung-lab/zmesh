@@ -45,6 +45,10 @@ pip install zmesh
 object exceeds <511, 1023, 511> on the x, y, or z axes. This is due to a limitation 
 of the 32-bit format. It might be possible to get x to 1023 as well.
 
+## Related Projects 
+
+- [zi_lib](https://github.com/zlateski/zi_lib) - zmesh makes heavy use of Alek's C++ library.
+- [Igneous](https://github.com/seung-lab/igneous) - Visualization of connectomics data using cloud computing.
 
 ## Credits
 
