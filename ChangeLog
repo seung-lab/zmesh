@@ -1,0 +1,17 @@
+CHANGES
+=======
+
+0.1.0
+-----
+
+* release: version 0.1.0
+* test: added extremely basic test
+* fix: prevent C++11 in CentOS docker from freaking out
+* docs: add Related Projects section
+* docs: PyPI badge
+* docs: added Boost to docs
+* fix: zmesh needs boost in the Docker
+* fix: accept non-numpy arrays for anisotropy
+* chore: add manylinux Dockerfile
+* nova: initial commit
+* Initial commit

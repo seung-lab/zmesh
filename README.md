@@ -32,11 +32,17 @@ mesher.clear() # clear memory retained by mesher
 
 ## Installation 
 
+If binaries are available for your system:
+
+```bash
+pip install zmesh
+```
+
 *Requires a C++ compiler*
 
 ```bash
 sudo apt-get install python3-dev libboost-all-dev
-pip install zmesh
+pip install zmesh --no-binary :all:
 ```
 
 ## Performance Tuning
