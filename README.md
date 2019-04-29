@@ -30,7 +30,10 @@ mesher.clear() # clear memory retained by mesher
 
 ## Installation 
 
+*Requires a C++ compiler*
+
 ```bash
+sudo apt-get install python3-dev libboost-all-dev
 pip install zmesh
 ```
 
