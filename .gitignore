@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# Python 
+*.pyc
+*.egg-info
+build
+dist
+__pycache__
+.eggs
+.cache
+.pytest_cache
+
+# VS Code
+.vscode
