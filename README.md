@@ -1,4 +1,6 @@
 # zmesh
+[![PyPI version](https://badge.fury.io/py/zmesh.svg)](https://badge.fury.io/py/zmesh)
+
 Multi-Label Marching Cubes &amp; Simplification
 
 ```python
