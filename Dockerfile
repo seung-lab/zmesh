@@ -9,6 +9,11 @@ ENV CC "g++"
 
 RUN rm -rf *.so build __pycache__ dist 
 
+RUN yum update && yum install -y \
+    wget \
+    boost-devel.x86_64
+
+
 RUN /opt/python/cp27-cp27m/bin/pip2.7 install pip --upgrade
 RUN /opt/python/cp35-cp35m/bin/pip3.5 install pip --upgrade
 RUN /opt/python/cp36-cp36m/bin/pip3.6 install pip --upgrade
