@@ -7,6 +7,8 @@ from libcpp cimport bool
 
 import numpy as np
 
+__version__ = '0.1.0'
+
 cdef extern from "cMesher.hpp":
   cdef struct MeshObject:
     vector[float] points
