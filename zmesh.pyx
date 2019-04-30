@@ -80,7 +80,8 @@ class Mesher:
       mesh_id, normals, simplification_factor, max_simplification_error
     )
 
-    points = np.array(mesh['points'], dtype=np.float32) / 2.0
+    points = np.array(mesh['points'], dtype=np.float32)
+    points /= 2.0
     N = points.size // 3
 
     points = points.reshape(N, 3)
