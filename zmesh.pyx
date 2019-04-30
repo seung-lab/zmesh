@@ -23,6 +23,25 @@ cdef extern from "cMesher.hpp":
     bool erase(L segid)
     void clear()
 
+class Mesh:
+  """
+  Represents the vertices, faces, and normals of a mesh
+  as numpy arrays.
+
+  class Mesh:
+    ndarray[float32, ndim=2] self.vertices: [ [x,y,z], ... ]
+    ndarray[uint32,  ndim=2] self.faces:    [ [v1,v2,v3], ... ]
+    ndarray[float32, ndim=2] self.normals:  [ [nx,ny,nz], ... ]
+
+  """
+  def __init__(self, vertices, faces, normals):
+    self.vertices = vertices
+    self.faces = faces
+    self.normals = normals
+
+  def __len__(self):
+    return self.vertices.shape[0]
+
 class Mesher:
   def __init__(self, voxel_res):
     voxel_res = np.array(voxel_res, dtype=np.uint32)
@@ -57,9 +76,21 @@ class Mesher:
 
     Returns: MeshObject
     """
-    return self._mesher.get_mesh(
+    mesh = self._mesher.get_mesh(
       mesh_id, normals, simplification_factor, max_simplification_error
     )
+
+    points = np.array(mesh['points'], dtype=np.float32) / 2.0
+    N = points.size // 3
+
+    points = points.reshape(N, 3)
+    faces = np.array(mesh['faces'], dtype=np.uint32).reshape(N, 3)
+
+    normals = None
+    if mesh['normals']:
+      normals = np.array(mesh['normals'], dtype=np.float32).reshape(N, 3)
+
+    return Mesh(points, faces, normals)
   
   def clear(self):
     self._mesher.clear()
