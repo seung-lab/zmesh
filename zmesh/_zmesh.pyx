@@ -6,8 +6,7 @@ from libcpp.vector cimport vector
 from libcpp cimport bool
 
 import numpy as np
-
-__version__ = '0.1.0'
+from zmesh.mesh import Mesh
 
 cdef extern from "cMesher.hpp":
   cdef struct MeshObject:
@@ -51,15 +50,29 @@ class Mesher:
   def ids(self):
     return self._mesher.ids()
 
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     """
-    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)
+    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
 
     Returns: MeshObject
     """
-    return self._mesher.get_mesh(
+    mesh = self._mesher.get_mesh(
       mesh_id, normals, simplification_factor, max_simplification_error
     )
+
+    points = np.array(mesh['points'], dtype=np.float32)
+    points /= 2.0
+    Nv = points.size // 3
+    Nf = len(mesh['faces']) // 3
+
+    points = points.reshape(Nv, 3)
+    faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
+
+    normals = None
+    if mesh['normals']:
+      normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
+
+    return Mesh(points, faces, normals)
   
   def clear(self):
     self._mesher.clear()
@@ -99,7 +112,7 @@ cdef class Mesher6464:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
@@ -126,7 +139,7 @@ cdef class Mesher6432:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
@@ -153,7 +166,7 @@ cdef class Mesher3264:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
@@ -180,7 +193,7 @@ cdef class Mesher3232:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):

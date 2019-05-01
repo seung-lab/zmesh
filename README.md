@@ -28,6 +28,24 @@ for obj_id in mesher.ids():
   mesher.erase(obj_id) # delete high res mesh
 
 mesher.clear() # clear memory retained by mesher
+
+mesh = meshes[0]
+
+mesh.vertices
+mesh.faces 
+mesh.normals
+
+# Extremely common obj format
+with open('iconic_doge.obj', 'wb') as f:
+  f,write(mesh.to_obj())
+
+# Common binary format
+with open('iconic_doge.ply', 'wb') as f:
+  f,write(mesh.to_ply())
+
+# Neuroglancer Precomputed format
+with open('10001001:0', 'wb') as f:
+  f.write(mesh.to_precomputed())
 ```
 
 ## Installation 
