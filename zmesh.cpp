@@ -1756,8 +1756,8 @@ static PyObject *__pyx_float_2_0;
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_3;
 static PyObject *__pyx_int_4;
-static PyObject *__pyx_int_8;
 static PyObject *__pyx_int_12;
+static PyObject *__pyx_int_40;
 static PyObject *__pyx_int_511;
 static PyObject *__pyx_int_1023;
 static PyObject *__pyx_int_neg_1;
@@ -4028,7 +4028,7 @@ static PyObject *__pyx_pf_5zmesh_6Mesher_4ids(CYTHON_UNUSED PyObject *__pyx_self
  *   def ids(self):
  *     return self._mesher.ids()             # <<<<<<<<<<<<<<
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
@@ -4079,14 +4079,14 @@ static PyObject *__pyx_pf_5zmesh_6Mesher_4ids(CYTHON_UNUSED PyObject *__pyx_self
 /* "zmesh.pyx":139
  *     return self._mesher.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     """
- *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)
+ *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_5zmesh_6Mesher_7get_mesh(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_5zmesh_6Mesher_6get_mesh[] = "\n    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)\n\n    Returns: MeshObject\n    ";
+static char __pyx_doc_5zmesh_6Mesher_6get_mesh[] = "\n    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)\n\n    Returns: MeshObject\n    ";
 static PyMethodDef __pyx_mdef_5zmesh_6Mesher_7get_mesh = {"get_mesh", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_5zmesh_6Mesher_7get_mesh, METH_VARARGS|METH_KEYWORDS, __pyx_doc_5zmesh_6Mesher_6get_mesh};
 static PyObject *__pyx_pw_5zmesh_6Mesher_7get_mesh(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_self = 0;
@@ -4102,7 +4102,7 @@ static PyObject *__pyx_pw_5zmesh_6Mesher_7get_mesh(PyObject *__pyx_self, PyObjec
     PyObject* values[5] = {0,0,0,0,0};
     values[2] = ((PyObject *)((PyObject *)Py_False));
     values[3] = ((PyObject *)((PyObject *)__pyx_int_0));
-    values[4] = ((PyObject *)((PyObject *)__pyx_int_8));
+    values[4] = ((PyObject *)((PyObject *)__pyx_int_40));
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -4684,9 +4684,9 @@ static PyObject *__pyx_pf_5zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObject *__pyx
   /* "zmesh.pyx":139
  *     return self._mesher.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     """
- *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)
+ *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
  */
 
   /* function exit code */
@@ -5280,7 +5280,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6464_6ids(struct __pyx_obj_5zmesh_Meshe
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = __pyx_convert_vector_to_py_uint64_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
@@ -5311,7 +5311,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6464_6ids(struct __pyx_obj_5zmesh_Meshe
 /* "zmesh.pyx":201
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -5331,7 +5331,7 @@ static PyObject *__pyx_pw_5zmesh_10Mesher6464_9get_mesh(PyObject *__pyx_v_self, 
     PyObject* values[4] = {0,0,0,0};
     values[1] = ((PyObject *)Py_False);
     values[2] = ((PyObject *)__pyx_int_0);
-    values[3] = ((PyObject *)__pyx_int_8);
+    values[3] = ((PyObject *)__pyx_int_40);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -5419,7 +5419,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6464_8get_mesh(struct __pyx_obj_5zmesh_
 
   /* "zmesh.pyx":202
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
  * 
  *   def clear(self):
@@ -5438,7 +5438,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6464_8get_mesh(struct __pyx_obj_5zmesh_
   /* "zmesh.pyx":201
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -6030,7 +6030,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6432_6ids(struct __pyx_obj_5zmesh_Meshe
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = __pyx_convert_vector_to_py_uint32_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 226, __pyx_L1_error)
@@ -6061,7 +6061,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6432_6ids(struct __pyx_obj_5zmesh_Meshe
 /* "zmesh.pyx":228
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -6081,7 +6081,7 @@ static PyObject *__pyx_pw_5zmesh_10Mesher6432_9get_mesh(PyObject *__pyx_v_self, 
     PyObject* values[4] = {0,0,0,0};
     values[1] = ((PyObject *)Py_False);
     values[2] = ((PyObject *)__pyx_int_0);
-    values[3] = ((PyObject *)__pyx_int_8);
+    values[3] = ((PyObject *)__pyx_int_40);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -6169,7 +6169,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6432_8get_mesh(struct __pyx_obj_5zmesh_
 
   /* "zmesh.pyx":229
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
  * 
  *   def clear(self):
@@ -6188,7 +6188,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher6432_8get_mesh(struct __pyx_obj_5zmesh_
   /* "zmesh.pyx":228
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -6780,7 +6780,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3264_6ids(struct __pyx_obj_5zmesh_Meshe
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = __pyx_convert_vector_to_py_uint64_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
@@ -6811,7 +6811,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3264_6ids(struct __pyx_obj_5zmesh_Meshe
 /* "zmesh.pyx":255
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -6831,7 +6831,7 @@ static PyObject *__pyx_pw_5zmesh_10Mesher3264_9get_mesh(PyObject *__pyx_v_self, 
     PyObject* values[4] = {0,0,0,0};
     values[1] = ((PyObject *)Py_False);
     values[2] = ((PyObject *)__pyx_int_0);
-    values[3] = ((PyObject *)__pyx_int_8);
+    values[3] = ((PyObject *)__pyx_int_40);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -6919,7 +6919,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3264_8get_mesh(struct __pyx_obj_5zmesh_
 
   /* "zmesh.pyx":256
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
  * 
  *   def clear(self):
@@ -6938,7 +6938,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3264_8get_mesh(struct __pyx_obj_5zmesh_
   /* "zmesh.pyx":255
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -7530,7 +7530,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3232_6ids(struct __pyx_obj_5zmesh_Meshe
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = __pyx_convert_vector_to_py_uint32_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
@@ -7561,7 +7561,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3232_6ids(struct __pyx_obj_5zmesh_Meshe
 /* "zmesh.pyx":282
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -7581,7 +7581,7 @@ static PyObject *__pyx_pw_5zmesh_10Mesher3232_9get_mesh(PyObject *__pyx_v_self, 
     PyObject* values[4] = {0,0,0,0};
     values[1] = ((PyObject *)Py_False);
     values[2] = ((PyObject *)__pyx_int_0);
-    values[3] = ((PyObject *)__pyx_int_8);
+    values[3] = ((PyObject *)__pyx_int_40);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -7669,7 +7669,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3232_8get_mesh(struct __pyx_obj_5zmesh_
 
   /* "zmesh.pyx":283
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
  * 
  *   def clear(self):
@@ -7688,7 +7688,7 @@ static PyObject *__pyx_pf_5zmesh_10Mesher3232_8get_mesh(struct __pyx_obj_5zmesh_
   /* "zmesh.pyx":282
  *     return self.ptr.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  */
@@ -9130,15 +9130,15 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "zmesh.pyx":139
  *     return self._mesher.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     """
- *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)
+ *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
  */
   __pyx_tuple__28 = PyTuple_Pack(10, __pyx_n_s_self, __pyx_n_s_mesh_id, __pyx_n_s_normals, __pyx_n_s_simplification_factor, __pyx_n_s_max_simplification_error, __pyx_n_s_mesh, __pyx_n_s_points, __pyx_n_s_Nv, __pyx_n_s_Nf, __pyx_n_s_faces); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(0, 139, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__28);
   __Pyx_GIVEREF(__pyx_tuple__28);
   __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(5, 0, 10, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh_pyx, __pyx_n_s_get_mesh, 139, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) __PYX_ERR(0, 139, __pyx_L1_error)
-  __pyx_tuple__30 = PyTuple_Pack(3, ((PyObject *)Py_False), ((PyObject *)__pyx_int_0), ((PyObject *)__pyx_int_8)); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_tuple__30 = PyTuple_Pack(3, ((PyObject *)Py_False), ((PyObject *)__pyx_int_0), ((PyObject *)__pyx_int_40)); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(0, 139, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__30);
   __Pyx_GIVEREF(__pyx_tuple__30);
 
@@ -9178,8 +9178,8 @@ static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_3 = PyInt_FromLong(3); if (unlikely(!__pyx_int_3)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_4 = PyInt_FromLong(4); if (unlikely(!__pyx_int_4)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_8 = PyInt_FromLong(8); if (unlikely(!__pyx_int_8)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_12 = PyInt_FromLong(12); if (unlikely(!__pyx_int_12)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_40 = PyInt_FromLong(40); if (unlikely(!__pyx_int_40)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_511 = PyInt_FromLong(511); if (unlikely(!__pyx_int_511)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_1023 = PyInt_FromLong(1023); if (unlikely(!__pyx_int_1023)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_neg_1 = PyInt_FromLong(-1); if (unlikely(!__pyx_int_neg_1)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -9674,9 +9674,9 @@ if (!__Pyx_RefNanny) {
   /* "zmesh.pyx":139
  *     return self._mesher.ids()
  * 
- *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):             # <<<<<<<<<<<<<<
+ *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     """
- *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)
+ *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
  */
   __pyx_t_3 = __Pyx_CyFunction_NewEx(&__pyx_mdef_5zmesh_6Mesher_7get_mesh, 0, __pyx_n_s_Mesher_get_mesh, NULL, __pyx_n_s_zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__29)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 139, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);

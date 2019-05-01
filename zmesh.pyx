@@ -136,9 +136,9 @@ class Mesher:
   def ids(self):
     return self._mesher.ids()
 
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     """
-    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8)
+    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
 
     Returns: MeshObject
     """
@@ -198,7 +198,7 @@ cdef class Mesher6464:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
@@ -225,7 +225,7 @@ cdef class Mesher6432:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
@@ -252,7 +252,7 @@ cdef class Mesher3264:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
@@ -279,7 +279,7 @@ cdef class Mesher3232:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=8):
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
   
   def clear(self):
