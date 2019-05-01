@@ -15,11 +15,11 @@ setuptools.setup(
   pbr=True,
   ext_modules=[
     setuptools.Extension(
-      'zmesh',
-      sources=[ 'zmesh.cpp' ],
+      'zmesh._zmesh',
+      sources=[ 'zmesh/_zmesh.cpp' ],
       depends=[ 'cMesher.hpp' ],
       language='c++',
-      include_dirs=[ 'zi_lib/' ],
+      include_dirs=[ 'zi_lib/', './' ],
       extra_compile_args=[
         '-std=c++11','-O3', '-ffast-math'
       ]),
