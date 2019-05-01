@@ -17,6 +17,9 @@ class Mesh:
     self.faces = faces
     self.normals = normals
 
+  def __len__(self):
+    return self.vertices.shape[0]
+
   def __eq__(self, other):
     """Tests strict equality between two meshes."""
 
@@ -82,5 +85,36 @@ class Mesh:
     ]
     return b''.join([ array.tobytes('C') for array in vertex_index_format ])
 
-  def __len__(self):
-    return self.vertices.shape[0]
+  def to_obj(self):
+    """Return a string representing a .obj file."""
+    objdata = []
+    objdata += [ 'v {} {} {}'.format(*vertex) for vertex in self.vertices ]
+    objdata += [ 'f {} {} {}'.format(*face) for face in self.faces ]
+    objdata = '\n'.join(objdata) + '\n'
+    return objdata.encode('utf8')
+
+  def to_ply(self):
+    """Return a binary string in PLY format; .ply is essentially a binary .obj"""
+
+    vertexct = len(self)
+    trianglect = self.faces.shape[0]
+
+    # Header
+    plydata = bytearray("""ply
+format binary_little_endian 1.0
+element vertex {}
+property float x
+property float y
+property float z
+element face {}
+property list int int vertex_indices
+end_header
+  """.format(vertexct, trianglect).encode('utf8'))
+
+    # Vertex data (x y z)
+    plydata.extend(self.vertices.tobytes('C'))
+
+    # Faces (3 f1 f2 f3)
+    plydata.extend(self.faces.tobytes('C'))
+
+    return plydata
