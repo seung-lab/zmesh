@@ -36,6 +36,12 @@ class Mesh:
 
     return (equality and np.all(self.normals == other.normals))
 
+  def __repr__(self):
+    return "Mesh(vertices<{}>, faces<{}>, normals<{}>)".format(
+      self.vertices.shape[0], self.faces.shape[0], 
+      (None if self.normals is None else self.normals.shape[0])
+    )
+
   def clone(self):
     if self.normals is None:
       return Mesh(np.copy(self.vertices), np.copy(self.faces), None)
@@ -88,15 +94,17 @@ class Mesh:
   def to_obj(self):
     """Return a string representing a .obj file."""
     objdata = []
-    objdata += [ 'v {} {} {}'.format(*vertex) for vertex in self.vertices ]
-    objdata += [ 'f {} {} {}'.format(*face) for face in self.faces ]
+    objdata += [ 'v {:.1f} {:.1f} {:.1f}'.format(*vertex) for vertex in self.vertices ]
+    objdata += [ 'f {} {} {}'.format(*face) for face in (self.faces+1) ] # obj is 1 indexed
     objdata = '\n'.join(objdata) + '\n'
     return objdata.encode('utf8')
 
   def to_ply(self):
-    """Return a binary string in PLY format; .ply is essentially a binary .obj"""
-
-    vertexct = len(self)
+    """
+    Return a bytearray in .ply format, 
+    a more compact format than .obj that's still widely readable.
+    """
+    vertexct = self.vertices.shape[0]
     trianglect = self.faces.shape[0]
 
     # Header
@@ -109,12 +117,15 @@ property float z
 element face {}
 property list int int vertex_indices
 end_header
-  """.format(vertexct, trianglect).encode('utf8'))
+""".format(vertexct, trianglect).encode('utf8'))
 
     # Vertex data (x y z)
     plydata.extend(self.vertices.tobytes('C'))
 
     # Faces (3 f1 f2 f3)
-    plydata.extend(self.faces.tobytes('C'))
+    faces = self.faces.flatten()
+    plydata.extend(
+      np.insert(faces.reshape(-1, 3), 0, 3, axis=1).tobytes()
+    )
 
     return plydata
