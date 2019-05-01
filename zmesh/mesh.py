@@ -119,13 +119,12 @@ property list int int vertex_indices
 end_header
 """.format(vertexct, trianglect).encode('utf8'))
 
-    # Vertex data (x y z)
+    # Vertex data (x y z): "fff" 
     plydata.extend(self.vertices.tobytes('C'))
 
-    # Faces (3 f1 f2 f3)
-    faces = self.faces.flatten()
+    # Faces (3 f1 f2 f3): "3iii" 
     plydata.extend(
-      np.insert(faces.reshape(-1, 3), 0, 3, axis=1).tobytes()
+      np.insert(self.faces, 0, 3, axis=1).tobytes('C')
     )
 
     return plydata
