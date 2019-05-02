@@ -1,6 +1,26 @@
 CHANGES
 =======
 
+0.2.0
+-----
+
+* release: 0.2.0
+* docs: added mesh format shifting functions to examples
+* test: add pytest to travis
+* test: add boost to testing dependencies
+* test: add .travis.yml
+* feat: add simple manual cube generation test for obj and ply
+* refactor: simplified ply generation code
+* fix: fixed issues in obj and ply formats
+* feat: add to\_obj and to\_ply functions
+* refactor: make modifying Mesh class easier
+* fix: bump max\_simplification\_error default to 40 from 8
+* feat: add Precomputed format conversion operators
+* perf: make sure division doesn't create rvalue array
+* feat: return Mesh object
+* Update README.md
+* docs: added binary installation method
+
 0.1.0
 -----
 
