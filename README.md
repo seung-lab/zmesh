@@ -1,4 +1,4 @@
-# zmesh: Multi-Label Marching Cubes &amp; Mesh Simplification
+## zmesh: Multi-Label Marching Cubes &amp; Mesh Simplification
 [![Build Status](https://travis-ci.org/seung-lab/zmesh.svg?branch=master)](https://travis-ci.org/seung-lab/zmesh) [![PyPI version](https://badge.fury.io/py/zmesh.svg)](https://badge.fury.io/py/zmesh)  
 
 
