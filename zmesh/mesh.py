@@ -94,6 +94,8 @@ class Mesh:
 
   @classmethod
   def from_obj(self, text):
+    """Given a string representing a Wavefront OBJ file, decode to a zmesh.Mesh."""
+
     vertices = []
     faces = []
     normals = []
@@ -110,7 +112,7 @@ class Mesh:
           (v1, vt1, vn1, v2, vt2, vn2, v3, vt3, vn3) = re.match(r'f\s+(\d+)/(\d*)/(\d+)\s+(\d+)/(\d*)/(\d+)\s+(\d+)/(\d*)/(\d+)', line).groups()
         else:
           (v1, v2, v3) = re.match(r'f\s+(\d+)\s+(\d+)\s+(\d+)', line).groups()
-        faces.append( (v1, v2, v3) )
+        faces.append( (int(v1), int(v2), int(v3)) )
       elif line[0] == 'v':
         if line[1] == 't': # vertex textures not supported
           # e.g. vt 0.351192 0.337058
@@ -122,7 +124,6 @@ class Mesh:
         else:
           # e.g. v -0.317868 -0.000526 -0.251834
           (v1, v2, v3) = re.match(r'v\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)', line).groups()
-          print(v1, v2, v3)
           vertices.append( (float(v1), float(v2), float(v3)) )
 
     vertices = np.array(vertices, dtype=np.float32)
