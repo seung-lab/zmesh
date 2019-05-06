@@ -21,6 +21,8 @@ class CMesher {
   std::vector<uint32_t> voxelresolution_;
 
  public:
+  typedef vl::vec<PositionType, 3> triangle_t;
+
   CMesher(const std::vector<uint32_t> &voxelresolution) {
     voxelresolution_ = voxelresolution;
   }
@@ -53,15 +55,31 @@ class CMesher {
       int max_simplification_error
     ) {
 
-    MeshObject obj;
-
-    if (marchingcubes_.count(segid) == 0) {  // MC produces no triangles if either
-                                          // none or all voxels were labeled!
-      return obj;
+    // MC produces no triangles if either
+    // none or all voxels were labeled.
+    if (marchingcubes_.count(segid) == 0) { 
+      return MeshObject();
     }
 
+    return simplify(
+      marchingcubes_.get_triangles(segid),
+      generate_normals,
+      simplification_factor,
+      max_simplification_error
+    )
+  }
+
+  MeshObject simplify(      
+      triangle_t& triangles,
+      bool generate_normals,
+      int simplification_factor,
+      int max_simplification_error
+    ) {
+
+    MeshObject obj;
+
     zi::mesh::int_mesh<PositionType, LabelType> im;
-    im.add(marchingcubes_.get_triangles(segid));
+    im.add(triangles);
     im.template fill_simplifier<SimplifierType>(
       simplifier_, 
       0, 0, 0, 

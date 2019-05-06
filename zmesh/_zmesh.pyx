@@ -19,8 +19,11 @@ cdef extern from "cMesher.hpp":
     void mesh(vector[L], unsigned int, unsigned int, unsigned int)
     vector[L] ids()
     MeshObject get_mesh(L segid, bool normals, int simplification_factor, int max_simplification_error)
+    # NOTE: need to define triangle_t
+    MeshObject simplify(triangle_t ...., bool normals, int simplification_factor, int max_simplification_error)
     bool erase(L segid)
     void clear()
+    P pack_coords(P x, P y, P z)
 
 class Mesher:
   def __init__(self, voxel_res):
@@ -74,6 +77,20 @@ class Mesher:
 
     return Mesh(points, faces, normals)
   
+  def simplify(self, Mesh mesh, int reduction_factor=0, float max_error=40):
+    triangles = mesh.triangles()
+    cdef CMesher[uint64_t, uint64_t, double] mesher = CMesher[uint64_t, uint64_t, double](self.voxel_res)
+
+    cdef size_t ti = 0
+    cdef size_t vi = 0
+    cdef uint64_t vert = 0
+
+    for ti in range(triangles.shape[0]):
+      for vi in range(3):
+        vert = mesher.pack_coords(triangles[ti, vi, 0], triangles[ti, vi, 1], triangles[ti, vi, 2])
+          
+
+
   def clear(self):
     self._mesher.clear()
    

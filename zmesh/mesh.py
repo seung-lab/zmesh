@@ -48,6 +48,16 @@ class Mesh:
     else:
       return Mesh(np.copy(self.vertices), np.copy(self.faces), np.copy(self.normals))
 
+  def triangles(self):
+    Nf = self.faces.shape[0]
+    tris = np.zeros( (Nf, 3, 3), dtype=np.float32 ) # triangle, vertices, (x,y,z)
+
+    for i in range(Nf):
+      for j in range(3):
+        tris[i,j,:] = self.vertices[ self.faces[i,j] ]
+
+    return tris
+
   @classmethod
   def from_precomputed(self, binary):
     """
