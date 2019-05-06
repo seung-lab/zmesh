@@ -134,7 +134,7 @@ class Mesh:
   def to_obj(self):
     """Return a string representing a .obj file."""
     objdata = []
-    objdata += [ 'v {:.1f} {:.1f} {:.1f}'.format(*vertex) for vertex in self.vertices ]
+    objdata += [ 'v {:.5f} {:.5f} {:.5f}'.format(*vertex) for vertex in self.vertices ]
     objdata += [ 'f {} {} {}'.format(*face) for face in (self.faces+1) ] # obj is 1 indexed
     objdata = '\n'.join(objdata) + '\n'
     return objdata.encode('utf8')
