@@ -1,4 +1,5 @@
 import numpy as np
+import re
 import struct
 
 class Mesh:
@@ -90,6 +91,45 @@ class Mesh:
       self.faces
     ]
     return b''.join([ array.tobytes('C') for array in vertex_index_format ])
+
+  @classmethod
+  def from_obj(self, text):
+    vertices = []
+    faces = []
+    normals = []
+
+    for line in text.split('\n'):
+      line = line.strip()
+      if len(line) == 0:
+        continue
+      elif line[0] == '#':
+        continue
+      elif line[0] == 'f':
+        if line.find('/') != -1:
+          # e.g. f 6092/2095/6079 6087/2092/6075 6088/2097/6081
+          (v1, vt1, vn1, v2, vt2, vn2, v3, vt3, vn3) = re.match(r'f\s+(\d+)/(\d*)/(\d+)\s+(\d+)/(\d*)/(\d+)\s+(\d+)/(\d*)/(\d+)', line).groups()
+        else:
+          (v1, v2, v3) = re.match(r'f\s+(\d+)\s+(\d+)\s+(\d+)', line).groups()
+        faces.append( (v1, v2, v3) )
+      elif line[0] == 'v':
+        if line[1] == 't': # vertex textures not supported
+          # e.g. vt 0.351192 0.337058
+          continue 
+        elif line[1] == 'n': # vertex normals
+          # e.g. vn 0.992266 -0.033290 -0.119585
+          (n1, n2, n3) = re.match(r'vn\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)', line).groups()
+          normals.append( (float(n1), float(n2), float(n3)) )
+        else:
+          # e.g. v -0.317868 -0.000526 -0.251834
+          (v1, v2, v3) = re.match(r'v\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)', line).groups()
+          print(v1, v2, v3)
+          vertices.append( (float(v1), float(v2), float(v3)) )
+
+    vertices = np.array(vertices, dtype=np.float32)
+    faces = np.array(faces, dtype=np.uint32)
+    normals = np.array(faces, dtype=np.float32)
+
+    return Mesh(vertices, faces, normals)
 
   def to_obj(self):
     """Return a string representing a .obj file."""
