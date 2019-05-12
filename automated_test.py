@@ -39,3 +39,15 @@ def test_precomputed():
     reconstituted = zmesh.Mesh.from_precomputed(precomputed_mesh)
     assert reconstituted != mesh # Precomputed doesn't preserve normals
 
+def test_obj_import():
+    labels = np.zeros( (11,17,19), dtype=np.uint32)
+    labels[1:-1, 1:-1, 1:-1] = 1
+
+    mesher = zmesh.Mesher( (4,4,40) )
+    mesher.mesh(labels)
+    mesh = mesher.get_mesh(1, normals=False)
+
+    obj_str = mesh.to_obj()
+    mesh2 = zmesh.Mesh.from_obj(obj_str)
+    
+    assert mesh == mesh2

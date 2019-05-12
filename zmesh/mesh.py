@@ -24,15 +24,16 @@ class Mesh:
   def __eq__(self, other):
     """Tests strict equality between two meshes."""
 
-    if self.normals is None and other.normals is not None:
-      return False
-    elif self.normals is not None and other.normals is None:
-      return False
+    no_self_normals = self.normals is None or self.normals.size == 0
+    no_other_normals = other.normals is None or other.normals.size == 0
 
+    if no_self_normals != no_other_normals:
+      return False
+       
     equality = np.all(self.vertices == other.vertices) \
       and np.all(self.faces == other.faces)
 
-    if self.normals is None:
+    if no_self_normals:
       return equality
 
     return (equality and np.all(self.normals == other.normals))
@@ -100,6 +101,9 @@ class Mesh:
     faces = []
     normals = []
 
+    if type(text) is bytes:
+      text = text.decode('utf8')
+
     for line in text.split('\n'):
       line = line.strip()
       if len(line) == 0:
@@ -128,9 +132,9 @@ class Mesh:
 
     vertices = np.array(vertices, dtype=np.float32)
     faces = np.array(faces, dtype=np.uint32)
-    normals = np.array(faces, dtype=np.float32)
+    normals = np.array(normals, dtype=np.float32)
 
-    return Mesh(vertices, faces, normals)
+    return Mesh(vertices, faces - 1, normals)
 
   def to_obj(self):
     """Return a string representing a .obj file."""
