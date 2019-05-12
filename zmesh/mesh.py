@@ -1,4 +1,5 @@
 import numpy as np
+import re
 import struct
 
 class Mesh:
@@ -23,15 +24,16 @@ class Mesh:
   def __eq__(self, other):
     """Tests strict equality between two meshes."""
 
-    if self.normals is None and other.normals is not None:
-      return False
-    elif self.normals is not None and other.normals is None:
-      return False
+    no_self_normals = self.normals is None or self.normals.size == 0
+    no_other_normals = other.normals is None or other.normals.size == 0
 
+    if no_self_normals != no_other_normals:
+      return False
+       
     equality = np.all(self.vertices == other.vertices) \
       and np.all(self.faces == other.faces)
 
-    if self.normals is None:
+    if no_self_normals:
       return equality
 
     return (equality and np.all(self.normals == other.normals))
@@ -91,10 +93,53 @@ class Mesh:
     ]
     return b''.join([ array.tobytes('C') for array in vertex_index_format ])
 
+  @classmethod
+  def from_obj(self, text):
+    """Given a string representing a Wavefront OBJ file, decode to a zmesh.Mesh."""
+
+    vertices = []
+    faces = []
+    normals = []
+
+    if type(text) is bytes:
+      text = text.decode('utf8')
+
+    for line in text.split('\n'):
+      line = line.strip()
+      if len(line) == 0:
+        continue
+      elif line[0] == '#':
+        continue
+      elif line[0] == 'f':
+        if line.find('/') != -1:
+          # e.g. f 6092/2095/6079 6087/2092/6075 6088/2097/6081
+          (v1, vt1, vn1, v2, vt2, vn2, v3, vt3, vn3) = re.match(r'f\s+(\d+)/(\d*)/(\d+)\s+(\d+)/(\d*)/(\d+)\s+(\d+)/(\d*)/(\d+)', line).groups()
+        else:
+          (v1, v2, v3) = re.match(r'f\s+(\d+)\s+(\d+)\s+(\d+)', line).groups()
+        faces.append( (int(v1), int(v2), int(v3)) )
+      elif line[0] == 'v':
+        if line[1] == 't': # vertex textures not supported
+          # e.g. vt 0.351192 0.337058
+          continue 
+        elif line[1] == 'n': # vertex normals
+          # e.g. vn 0.992266 -0.033290 -0.119585
+          (n1, n2, n3) = re.match(r'vn\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)', line).groups()
+          normals.append( (float(n1), float(n2), float(n3)) )
+        else:
+          # e.g. v -0.317868 -0.000526 -0.251834
+          (v1, v2, v3) = re.match(r'v\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)', line).groups()
+          vertices.append( (float(v1), float(v2), float(v3)) )
+
+    vertices = np.array(vertices, dtype=np.float32)
+    faces = np.array(faces, dtype=np.uint32)
+    normals = np.array(normals, dtype=np.float32)
+
+    return Mesh(vertices, faces - 1, normals)
+
   def to_obj(self):
     """Return a string representing a .obj file."""
     objdata = []
-    objdata += [ 'v {:.1f} {:.1f} {:.1f}'.format(*vertex) for vertex in self.vertices ]
+    objdata += [ 'v {:.5f} {:.5f} {:.5f}'.format(*vertex) for vertex in self.vertices ]
     objdata += [ 'f {} {} {}'.format(*face) for face in (self.faces+1) ] # obj is 1 indexed
     objdata = '\n'.join(objdata) + '\n'
     return objdata.encode('utf8')
