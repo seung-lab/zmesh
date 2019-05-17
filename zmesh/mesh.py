@@ -144,6 +144,25 @@ class Mesh:
     objdata = '\n'.join(objdata) + '\n'
     return objdata.encode('utf8')
 
+  @classmethod
+  def from_ply(self, plydata):
+    """
+    Read from a binary representation formated as ply
+    Note that this code is limited to parse the ply file saved by to_ply function
+    It do not support ply file written by other softwares.
+    """
+    header, _, data = plydata.partition(b'end_header\n')
+    lines = header.splitlines()
+    assert lines[0] == b'ply'
+    assert lines[1] == b'format binary_little_endian 1.0'
+    vertexct = int(lines[2].decode('utf-8').split()[-1])
+    trianglect = int(lines[6].decode('utf-8').split()[-1])
+
+    # interpreate the data
+    vertices = np.frombuffer(data, dtype=np.float32, count=3*vertexct, offset=0).reshape(vertexct, 3)
+    faces = np.frombuffer(data, dtype=np.uint32, offset=vertexct*3*4).reshape(trianglect, 4)[:, 1:]
+    return Mesh(vertices, faces, normals=None) 
+
   def to_ply(self):
     """
     Return a bytearray in .ply format, 
