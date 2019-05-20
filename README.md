@@ -80,7 +80,7 @@ of the 32-bit format. It might be possible to get x to 1023 as well.
 
 Thanks to Aleks Zlateski for creating and sharing this beautiful mesher.  
 
-Later changes by Will Silversmith and Nico Kemnitz.  
+Later changes by Will Silversmith, Nico Kemnitz, and Jingpeng Wu. 
 
 ## References  
 
