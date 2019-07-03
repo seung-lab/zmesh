@@ -19,7 +19,7 @@ setuptools.setup(
       sources=[ 'zmesh/_zmesh.cpp' ],
       depends=[ 'cMesher.hpp' ],
       language='c++',
-      include_dirs=[ 'zi_lib/', './' ],
+      include_dirs=[ np.get_include(), 'zi_lib/', './' ],
       extra_compile_args=[
         '-std=c++11','-O3', '-ffast-math'
       ]),

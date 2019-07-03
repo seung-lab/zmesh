@@ -21,8 +21,6 @@ class CMesher {
   std::vector<uint32_t> voxelresolution_;
 
  public:
-  typedef vl::vec<PositionType, 3> triangle_t;
-
   CMesher(const std::vector<uint32_t> &voxelresolution) {
     voxelresolution_ = voxelresolution;
   }
@@ -49,6 +47,10 @@ class CMesher {
     return keys;
   }
 
+  PositionType pack_coords(PositionType x, PositionType y, PositionType z) {
+    return marchingcubes_.pack_coords(x,y,z);
+  }
+
   MeshObject get_mesh(
       LabelType segid, bool generate_normals,
       int simplification_factor,
@@ -61,16 +63,18 @@ class CMesher {
       return MeshObject();
     }
 
+    std::vector< zi::vl::vec< PositionType, 3> > triangles = marchingcubes_.get_triangles(segid);
+
     return simplify(
-      marchingcubes_.get_triangles(segid),
+      triangles,
       generate_normals,
       simplification_factor,
       max_simplification_error
-    )
+    );
   }
 
   MeshObject simplify(      
-      triangle_t& triangles,
+      const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
       bool generate_normals,
       int simplification_factor,
       int max_simplification_error
@@ -128,6 +132,31 @@ class CMesher {
     }
 
     return obj;
+  }
+
+  MeshObject simplify_points(
+    const uint64_t* points,
+    const size_t Nv,
+    bool generate_normals,
+    int simplification_factor,
+    int max_simplification_error
+  ) {
+
+    std::vector< zi::vl::vec< PositionType, 3> > triangles;
+    triangles.reserve(Nv);
+
+    for (size_t i = 0; i < Nv; i++) {
+      triangles[i][0] = points[3 * i + 0];
+      triangles[i][1] = points[3 * i + 1];
+      triangles[i][2] = points[3 * i + 2];
+    }
+
+    return simplify(
+      triangles, 
+      generate_normals, 
+      simplification_factor, 
+      max_simplification_error
+    );
   }
 
   void clear() {
