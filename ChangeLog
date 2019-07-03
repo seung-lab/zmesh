@@ -1,9 +1,15 @@
 CHANGES
 =======
 
-0.2.0
+0.3.0
 -----
 
+* release: 0.3.0
+* add support to read binary ply file (#10)
+* Update README.md
+* feat: obj decoder (#7)
+* Update README.md
+* docs: added travis badge
 * release: 0.2.0
 * docs: added mesh format shifting functions to examples
 * test: add pytest to travis

@@ -43,3 +43,6 @@ __pycache__
 
 # VS Code
 .vscode
+
+# mesh files
+*.ply

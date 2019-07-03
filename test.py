@@ -11,7 +11,7 @@ mesh = mesher.get_mesh(1, normals=False, simplification_factor=0, max_simplifica
 print(mesh)
 
 with open('wow.obj', 'bw') as f:
-  f.write(mesh.to_ply())
+  f.write(mesh.to_obj())
 
 with open('wow.ply', 'bw') as f:
   f.write(mesh.to_ply())

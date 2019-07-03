@@ -51,3 +51,16 @@ def test_obj_import():
     mesh2 = zmesh.Mesh.from_obj(obj_str)
     
     assert mesh == mesh2
+
+def test_ply_import():
+    labels = np.zeros( (11,17,19), dtype=np.uint32)
+    labels[1:-1, 1:-1, 1:-1] = 1
+
+    mesher = zmesh.Mesher( (4,4,40) )
+    mesher.mesh(labels)
+    mesh = mesher.get_mesh(1, normals=False)
+
+    plydata = mesh.to_ply()
+    mesh2 = zmesh.Mesh.from_ply(plydata)
+    
+    assert mesh == mesh2
