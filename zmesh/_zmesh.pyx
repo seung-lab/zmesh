@@ -98,7 +98,7 @@ class Mesher:
 
     cdef size_t Nv = triangles.shape[0]
 
-    for ti in range():
+    for ti in range(Nv):
       for vi in range(3):
         packed_triangles[ti, vi] = mesher.pack_coords(
           <uint64_t>triangles[ti, vi, 0], <uint64_t>triangles[ti, vi, 1], <uint64_t>triangles[ti, vi, 2]
@@ -110,7 +110,7 @@ class Mesher:
       False, reduction_factor, max_error
     )
     del mesher
-    return result
+    return self._normalize_simplified_mesh(result)
 
   def clear(self):
     self._mesher.clear()
