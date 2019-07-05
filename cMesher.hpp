@@ -59,8 +59,9 @@ class CMesher {
 
     // MC produces no triangles if either
     // none or all voxels were labeled.
+    MeshObject empty_obj;
     if (marchingcubes_.count(segid) == 0) { 
-      return MeshObject();
+      return empty_obj;
     }
 
     std::vector< zi::vl::vec< PositionType, 3> > triangles = marchingcubes_.get_triangles(segid);
