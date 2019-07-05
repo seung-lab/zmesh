@@ -50,7 +50,7 @@ class Mesh:
 
   def triangles(self):
     Nf = self.faces.shape[0]
-    tris = np.zeros( (Nf, 3, 3), dtype=np.float32 ) # triangle, vertices, (x,y,z)
+    tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
 
     for i in range(Nf):
       for j in range(3):

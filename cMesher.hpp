@@ -146,9 +146,13 @@ class CMesher {
     triangles.reserve(Nv);
 
     for (size_t i = 0; i < Nv; i++) {
-      triangles[i][0] = points[3 * i + 0];
-      triangles[i][1] = points[3 * i + 1];
-      triangles[i][2] = points[3 * i + 2];
+      triangles.push_back(
+        zi::vl::vec<PositionType, 3>(
+          points[3 * i + 0], 
+          points[3 * i + 1], 
+          points[3 * i + 2]
+        )
+      );
     }
 
     return simplify(

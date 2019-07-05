@@ -84,6 +84,19 @@ class Mesher:
 
     return Mesh(points, faces, normals)
 
+  cdef cnp.ndarray[float, ndim=3] _triangles(self, mesh):
+    cdef size_t Nf = mesh.faces.shape[0]
+    cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
+
+    cdef size_t i = 0
+    cdef short int j = 0
+
+    for i in range(Nf):
+      for j in range(3):
+        tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]
+
+    return tris
+
   def simplify(self, mesh, int reduction_factor=0, int max_error=40):
     mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)
 
@@ -91,10 +104,12 @@ class Mesher:
     cdef size_t vi = 0
     cdef uint64_t vert = 0
 
-    cdef cnp.ndarray[float, ndim=3] triangles = mesh.triangles()
+    cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros( 
       (triangles.shape[0], 3), dtype=np.uint64, order='C'
     ) 
+
+    triangles *= 2.0
 
     cdef size_t Nv = triangles.shape[0]
 
