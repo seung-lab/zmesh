@@ -39,6 +39,9 @@ mesh = mesher.simplify(
   compute_normals=False, # whether to also compute face normals
 ) # apply simplifier to a pre-existing mesh
 
+# compute normals without simplifying
+mesh = mesher.compute_normals(mesh) 
+
 mesh.vertices
 mesh.faces 
 mesh.normals
