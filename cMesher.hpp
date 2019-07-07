@@ -47,21 +47,44 @@ class CMesher {
     return keys;
   }
 
+  PositionType pack_coords(PositionType x, PositionType y, PositionType z) {
+    return marchingcubes_.pack_coords(x,y,z);
+  }
+
   MeshObject get_mesh(
       LabelType segid, bool generate_normals,
       int simplification_factor,
       int max_simplification_error
     ) {
 
-    MeshObject obj;
-
-    if (marchingcubes_.count(segid) == 0) {  // MC produces no triangles if either
-                                          // none or all voxels were labeled!
-      return obj;
+    // MC produces no triangles if either
+    // none or all voxels were labeled.
+    MeshObject empty_obj;
+    if (marchingcubes_.count(segid) == 0) { 
+      return empty_obj;
     }
 
+    std::vector< zi::vl::vec< PositionType, 3> > triangles = marchingcubes_.get_triangles(segid);
+
+    return simplify(
+      triangles,
+      generate_normals,
+      simplification_factor,
+      max_simplification_error
+    );
+  }
+
+  MeshObject simplify(      
+      const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
+      bool generate_normals,
+      int simplification_factor,
+      int max_simplification_error
+    ) {
+
+    MeshObject obj;
+
     zi::mesh::int_mesh<PositionType, LabelType> im;
-    im.add(marchingcubes_.get_triangles(segid));
+    im.add(triangles);
     im.template fill_simplifier<SimplifierType>(
       simplifier_, 
       0, 0, 0, 
@@ -110,6 +133,35 @@ class CMesher {
     }
 
     return obj;
+  }
+
+  MeshObject simplify_points(
+    const uint64_t* points,
+    const size_t Nv,
+    bool generate_normals,
+    int simplification_factor,
+    int max_simplification_error
+  ) {
+
+    std::vector< zi::vl::vec< PositionType, 3> > triangles;
+    triangles.reserve(Nv);
+
+    for (size_t i = 0; i < Nv; i++) {
+      triangles.push_back(
+        zi::vl::vec<PositionType, 3>(
+          points[3 * i + 0], 
+          points[3 * i + 1], 
+          points[3 * i + 2]
+        )
+      );
+    }
+
+    return simplify(
+      triangles, 
+      generate_normals, 
+      simplification_factor, 
+      max_simplification_error
+    );
   }
 
   void clear() {

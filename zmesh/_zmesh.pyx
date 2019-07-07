@@ -5,6 +5,7 @@ from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 from libcpp.vector cimport vector
 from libcpp cimport bool
 
+cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
 
@@ -19,8 +20,14 @@ cdef extern from "cMesher.hpp":
     void mesh(vector[L], unsigned int, unsigned int, unsigned int)
     vector[L] ids()
     MeshObject get_mesh(L segid, bool normals, int simplification_factor, int max_simplification_error)
+    # NOTE: need to define triangle_t
+    MeshObject simplify_points(
+      uint64_t* points, size_t Nv, 
+      bool normals, int simplification_factor, int max_simplification_error
+    )
     bool erase(L segid)
     void clear()
+    P pack_coords(P x, P y, P z)
 
 class Mesher:
   def __init__(self, voxel_res):
@@ -60,6 +67,9 @@ class Mesher:
       mesh_id, normals, simplification_factor, max_simplification_error
     )
 
+    return self._normalize_simplified_mesh(mesh)
+  
+  def _normalize_simplified_mesh(self, mesh):
     points = np.array(mesh['points'], dtype=np.float32)
     points /= 2.0
     Nv = points.size // 3
@@ -73,7 +83,75 @@ class Mesher:
       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
 
     return Mesh(points, faces, normals)
-  
+
+  def _triangles(self, mesh):
+    cdef size_t Nf = mesh.faces.shape[0]
+    cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
+
+    cdef size_t i = 0
+    cdef short int j = 0
+
+    for i in range(Nf):
+      for j in range(3):
+        tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]
+
+    return tris
+
+  def compute_normals(self, mesh):
+    """
+    Mesh compute_normals(mesh)
+
+    Returns: Mesh with normals computed
+    """
+    return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
+
+  def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):
+    """
+    Mesh simplify(mesh, reduction_factor=0, max_error=40)
+
+    Given a mesh object (either zmesh.Mesh or another object that has
+    mesh.vertices and mesh.faces implemented as numpy arrays), apply
+    the quadratic edge collapse algorithm. 
+
+    Optional:
+      reduction_factor: Triangle reduction factor target. If all vertices
+        are maxxed out in terms of their error tolerance the algorithm will
+        stop short of this target.
+      max_error: The maximum allowed displacement of a vertex in physical
+        distance.
+      compute_normals: whether or not to also compute the vertex normals
+
+    Returns: Mesh
+    """
+    mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)
+
+    cdef size_t ti = 0
+    cdef size_t vi = 0
+    cdef uint64_t vert = 0
+
+    cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
+    cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros( 
+      (triangles.shape[0], 3), dtype=np.uint64, order='C'
+    ) 
+
+    triangles *= 2.0
+
+    cdef size_t Nv = triangles.shape[0]
+
+    for ti in range(Nv):
+      for vi in range(3):
+        packed_triangles[ti, vi] = mesher.pack_coords(
+          <uint64_t>triangles[ti, vi, 0], <uint64_t>triangles[ti, vi, 1], <uint64_t>triangles[ti, vi, 2]
+        )
+    del triangles
+
+    cdef MeshObject result = mesher.simplify_points(
+      <uint64_t*>&packed_triangles[0,0], Nv, 
+      <bool>compute_normals, reduction_factor, max_error
+    )
+    del mesher
+    return self._normalize_simplified_mesh(result)
+
   def clear(self):
     self._mesher.clear()
    

@@ -20,6 +20,30 @@ def test_executes():
     assert len(mesh.faces) > 0
     assert len(mesh.normals) > 0
 
+def test_simplify():
+  for dtype in (np.uint32, np.uint64):
+    labels = np.zeros( (11,17,19), dtype=dtype)
+    labels[1:-1, 1:-1, 1:-1] = 1
+
+    mesher = zmesh.Mesher( (4,4,40) )
+    mesher.mesh(labels)
+
+    mesh = mesher.get_mesh(1, normals=False)
+    Nv = len(mesh.vertices)
+    Nf = len(mesh.faces)
+    
+    mesh = mesher.simplify(mesh, reduction_factor=10, max_error=40)
+    assert len(mesh) > 0
+    assert len(mesh) < Nv 
+    assert mesh.faces.shape[0] < Nf
+    assert mesh.normals is None or mesh.normals.size == 0
+
+    mesh = mesher.simplify(mesh, reduction_factor=10, max_error=40, compute_normals=True)
+    assert len(mesh) > 0
+    assert len(mesh) < Nv 
+    assert mesh.faces.shape[0] < Nf
+    assert mesh.normals.size > 0
+
 def test_precomputed():
   for dtype in (np.uint32, np.uint64):
     labels = np.zeros( (11,17,19), dtype=dtype)
