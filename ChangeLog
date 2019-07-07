@@ -1,11 +1,21 @@
 CHANGES
 =======
 
+0.4.0
+-----
+
+* release(0.4.0): add simplify method
+* docs: add simplify example
+* feat: breaking simplification routine out from get\_mesh (#8)
+* docs: update credits
+
 0.3.0
 -----
 
 * release: 0.3.0
 * add support to read binary ply file (#10)
+* release: 0.3.0
+* chore: set description type to markdown
 * Update README.md
 * feat: obj decoder (#7)
 * Update README.md
