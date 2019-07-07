@@ -30,10 +30,19 @@ for obj_id in mesher.ids():
 mesher.clear() # clear memory retained by mesher
 
 mesh = meshes[0]
+mesh = mesher.simplify(
+  mesh, 
+  # same as simplification_factor in get_mesh
+  reduction_factor=100, 
+  # same as max_simplification_error in get_mesh
+  max_error=40, 
+  compute_normals=False, # whether to also compute face normals
+) # apply simplifier to a pre-existing mesh
 
 mesh.vertices
 mesh.faces 
 mesh.normals
+mesh.triangles() # compute triangles from vertices and faces
 
 # Extremely common obj format
 with open('iconic_doge.obj', 'wb') as f:
