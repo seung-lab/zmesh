@@ -96,5 +96,6 @@ Later changes by Will Silversmith, Nico Kemnitz, and Jingpeng Wu.
 
 ## References  
 
-1. W. Lorensen and H. Cline. "Marching Cubes: A High Resolution 3D Surface Construction Algorithm". pp 163-169. Computer Graphics, Volume 21, Number 4, July 1987.
-2. TK Quadratic Edge Collapse Paper
+1. W. Lorensen and H. Cline. "Marching Cubes: A High Resolution 3D Surface Construction Algorithm". pp 163-169. Computer Graphics, Volume 21, Number 4, July 1987. ([link](https://people.eecs.berkeley.edu/~jrs/meshpapers/LorensenCline.pdf))  
+2. M. Garland and P. Heckbert. "Surface simplification using quadric error metrics". SIGGRAPH '97: Proceedings of the 24th annual conference on Computer graphics and interactive techniques. Pages 209–216. August 1997. doi: 10.1145/258734.258849 ([link](https://mgarland.org/files/papers/quadrics.pdf))  
+3. H. Hoppe. "New Quadric Metric for Simplifying Meshes with Appearance Attributes". IEEE Visualization 1999 Conference. pp. 59-66. doi: 10.1109/VISUAL.1999.809869 ([link](http://hhoppe.com/newqem.pdf))  
