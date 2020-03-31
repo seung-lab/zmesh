@@ -172,6 +172,17 @@ class CMesher {
   bool erase(LabelType segid) {
     return marchingcubes_.erase(segid);
   }
+
+  void limit_simplification(
+    SimplifierType x_min,
+    SimplifierType y_min,
+    SimplifierType z_min,
+    SimplifierType x_max,
+    SimplifierType y_max,
+    SimplifierType z_max
+  ) {
+    simplifier_.set_simplification_bounds(x_min, y_min, z_min, x_max, y_max, z_max);
+  }
 };
 
 

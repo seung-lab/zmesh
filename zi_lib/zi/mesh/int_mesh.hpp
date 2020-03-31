@@ -110,7 +110,14 @@ public:
                      const T& ztrans = T( 0 ),
                      const T& xscale = T( 1 ),
                      const T& yscale = T( 1 ),
-                     const T& zscale = T( 1 ) ) const
+                     const T& zscale = T( 1 ),
+                     bool limit_simplification = false,
+                     const T& x_min_simplification_limit = T(0),
+                     const T& y_min_simplification_limit = T(0),
+                     const T& z_min_simplification_limit = T(0),
+                     const T& x_max_simplification_limit = T(0),
+                     const T& y_max_simplification_limit = T(0),
+                     const T& z_max_simplification_limit = T(0)) const
     {
         uint32_t idx = 0;
         unordered_map< PositionType, uint32_t > pts;

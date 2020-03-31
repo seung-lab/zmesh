@@ -58,6 +58,11 @@ private:
     std::vector< quadratic_t >  quadratic_;
     unordered_set< uint64_t >   invalid_  ;
 
+    coord_t min_simplification_vertex_bound_;
+    coord_t max_simplification_vertex_bound_;
+
+    bool limit_simplification_ = false;
+
     struct heap_entry
     {
         uint64_t                  edge_   ;
@@ -130,6 +135,26 @@ private:
     bool check_valid_edge( const uint64_t e ) const
     {
         return e && mesh_.valid_edge( e );
+    }
+
+    bool check_within_preset_bounds (const vl::vec< Float, 3 >& p) const
+    {
+        if (!limit_simplification_)
+        {
+            return true;
+        }
+        for (int i = 0; i < 3; ++i)
+        {
+            if (p[i] < min_simplification_vertex_bound_[i])
+            {
+                return false;
+            }
+            if (p[i] > max_simplification_vertex_bound_[i])
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     bool check_compactness( const uint64_t e, const vl::vec< Float, 3 >& p ) const
@@ -275,7 +300,9 @@ public:
           normals_(),
           quadratic_( 0 ),
           invalid_(),
-          heap_()
+          heap_(),
+          min_simplification_vertex_bound_(),
+          max_simplification_vertex_bound_()
     {
     }
 
@@ -286,7 +313,9 @@ public:
           normals_( s ),
           quadratic_( s ),
           invalid_(),
-          heap_()
+          heap_(),
+          min_simplification_vertex_bound_(),
+          max_simplification_vertex_bound_()
     {
     }
 
@@ -375,6 +404,28 @@ public:
     {
         ZI_ASSERT( idx < size_ );
         return normals_[ idx ];
+    }
+
+    void limit_simplification()
+    {
+        limit_simplification_ = true;
+    }
+
+    void liberate_simplification()
+    {
+        limit_simplification_ = false;
+    }
+
+    void set_simplification_bounds(Float x_min, Float y_min, Float z_min, 
+                                   Float x_max, Float y_max, Float z_max)
+    {
+        limit_simplification_ = true;
+        min_simplification_vertex_bound_[0] = x_min;
+        min_simplification_vertex_bound_[1] = y_min;
+        min_simplification_vertex_bound_[2] = z_min;
+        max_simplification_vertex_bound_[0] = x_max;
+        max_simplification_vertex_bound_[1] = y_max;
+        max_simplification_vertex_bound_[2] = y_max;
     }
 
     void resize( std::size_t s )
@@ -600,6 +651,11 @@ private:
             return false;
         }
 
+        if ( !check_within_preset_bounds( e.optimal_ ))
+        {
+            return false;
+        }
+
         if ( !check_topology( e.edge_ ) )
         {
             //std::cout << "topology\n";
@@ -803,6 +859,10 @@ private:
         {
             return;
         }
+        // if ( on_preset_bounds( e.edge_ ))
+        // {
+        //     return;
+        // }
 
         //if ( invalid_.count( e ) )
         //{
