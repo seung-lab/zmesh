@@ -18,10 +18,10 @@ class CMesher {
  private:
   zi::mesh::marching_cubes<PositionType, LabelType> marchingcubes_;
   zi::mesh::simplifier<SimplifierType> simplifier_;
-  std::vector<uint32_t> voxelresolution_;
+  std::vector<float> voxelresolution_;
 
  public:
-  CMesher(const std::vector<uint32_t> &voxelresolution) {
+  CMesher(const std::vector<float> &voxelresolution) {
     voxelresolution_ = voxelresolution;
   }
   ~CMesher() {};
