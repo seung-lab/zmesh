@@ -16,7 +16,7 @@ cdef extern from "cMesher.hpp":
     vector[unsigned int] faces
 
   cdef cppclass CMesher[P,L,S]:
-    CMesher(vector[uint32_t] voxel_res) except +
+    CMesher(vector[double] voxel_res) except +
     void mesh(vector[L], unsigned int, unsigned int, unsigned int)
     vector[L] ids()
     MeshObject get_mesh(L segid, bool normals, int simplification_factor, int max_simplification_error)
@@ -31,7 +31,7 @@ cdef extern from "cMesher.hpp":
 
 class Mesher:
   def __init__(self, voxel_res):
-    voxel_res = np.array(voxel_res, dtype=np.uint32)
+    voxel_res = np.array(voxel_res, dtype=np.float64)
     self._mesher = Mesher6464(voxel_res)
     self.voxel_res = voxel_res
 
@@ -176,7 +176,7 @@ cdef class Mesher6464:
   cdef CMesher[uint64_t, uint64_t, double] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint64_t, double](voxel_res.astype(np.uint32))
+    self.ptr = new CMesher[uint64_t, uint64_t, double](voxel_res.astype(np.float64))
 
   def __dealloc__(self):
     del self.ptr
@@ -203,7 +203,7 @@ cdef class Mesher6432:
   cdef CMesher[uint64_t, uint32_t, double] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint32_t, double](voxel_res.astype(np.uint32))
+    self.ptr = new CMesher[uint64_t, uint32_t, double](voxel_res.astype(np.float64))
 
   def __dealloc__(self):
     del self.ptr
@@ -230,7 +230,7 @@ cdef class Mesher3264:
   cdef CMesher[uint32_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.uint32))
+    self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float64))
 
   def __dealloc__(self):
     del self.ptr
@@ -257,7 +257,7 @@ cdef class Mesher3232:
   cdef CMesher[uint32_t, uint32_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res.astype(np.uint32))
+    self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res.astype(np.float64))
 
   def __dealloc__(self):
     del self.ptr
