@@ -49,11 +49,11 @@ mesh.triangles() # compute triangles from vertices and faces
 
 # Extremely common obj format
 with open('iconic_doge.obj', 'wb') as f:
-  f,write(mesh.to_obj())
+  f.write(mesh.to_obj())
 
 # Common binary format
 with open('iconic_doge.ply', 'wb') as f:
-  f,write(mesh.to_ply())
+  f.write(mesh.to_ply())
 
 # Neuroglancer Precomputed format
 with open('10001001:0', 'wb') as f:
