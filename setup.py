@@ -19,6 +19,8 @@ setuptools.setup(
       sources=[ 'zmesh/_zmesh.cpp' ],
       depends=[ 'cMesher.hpp' ],
       language='c++',
+      # Note: On MacOS add before zi_lib:
+      # '/opt/homebrew/Cellar/boost/1.75.0_2/include',
       include_dirs=[ np.get_include(), 'zi_lib/', './' ],
       extra_compile_args=[
         '-std=c++11','-O3', '-ffast-math'
