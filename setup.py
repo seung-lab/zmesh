@@ -9,9 +9,7 @@ import numpy as np
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy'],
-  extras_require={
-     ':python_version == "2.7"': ['futures'],
-  },
+  python_require="~=3.6", # >= 3.6 < 4.0
   pbr=True,
   ext_modules=[
     setuptools.Extension(
