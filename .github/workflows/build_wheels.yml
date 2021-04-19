@@ -17,11 +17,6 @@ jobs:
         os: [ubuntu-20.04, windows-2019]
 
     steps:
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - uses: actions/checkout@v2
 
       - name: Install boost
