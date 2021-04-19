@@ -68,7 +68,9 @@ If binaries are available for your system:
 pip install zmesh
 ```
 
-*Requires a C++ compiler*
+*Requires a C++ compiler and boost*
+
+Note that you may need to set the environment variable `BOOST_ROOT`.
 
 ```bash
 sudo apt-get install python3-dev libboost-all-dev
