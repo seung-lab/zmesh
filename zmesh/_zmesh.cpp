@@ -1165,7 +1165,7 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
 
-/* "zmesh/_zmesh.pyx":174
+/* "zmesh/_zmesh.pyx":173
  * # more.
  * 
  * cdef class Mesher6464:             # <<<<<<<<<<<<<<
@@ -1178,7 +1178,7 @@ struct __pyx_obj_5zmesh_6_zmesh_Mesher6464 {
 };
 
 
-/* "zmesh/_zmesh.pyx":201
+/* "zmesh/_zmesh.pyx":200
  *     return self.ptr.erase(mesh_id)
  * 
  * cdef class Mesher6432:             # <<<<<<<<<<<<<<
@@ -1191,7 +1191,7 @@ struct __pyx_obj_5zmesh_6_zmesh_Mesher6432 {
 };
 
 
-/* "zmesh/_zmesh.pyx":228
+/* "zmesh/_zmesh.pyx":227
  *     return self.ptr.erase(mesh_id)
  * 
  * cdef class Mesher3264:             # <<<<<<<<<<<<<<
@@ -1204,7 +1204,7 @@ struct __pyx_obj_5zmesh_6_zmesh_Mesher3264 {
 };
 
 
-/* "zmesh/_zmesh.pyx":255
+/* "zmesh/_zmesh.pyx":254
  *     return self.ptr.erase(mesh_id)
  * 
  * cdef class Mesher3232:             # <<<<<<<<<<<<<<
@@ -2625,7 +2625,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
  *     shape = np.array(data.shape)
  *     nbytes = np.dtype(data.dtype).itemsize             # <<<<<<<<<<<<<<
  * 
- *     # z is allocated position 10 bits, y 11, and x 11 bits.
+ *     # z is allocated 10 position bits, y 11, and x 11 bits.
  */
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
@@ -2656,54 +2656,54 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
   __pyx_v_nbytes = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "zmesh/_zmesh.pyx":47
- *     # try to use the last bit, so we play it safe and
- *     # restrict it to 10 bits.
- *     if shape[0] > 511 or shape[1] > 1023 or shape[2] > 511:             # <<<<<<<<<<<<<<
+  /* "zmesh/_zmesh.pyx":46
+ *     # The last bit is 2^-1 (fixed point) so divide by two to
+ *     # get the maximum supported shape.
+ *     if shape[0] > 1023 or shape[1] > 1023 or shape[2] > 511:             # <<<<<<<<<<<<<<
  *       MesherClass = Mesher6432 if nbytes <= 4 else Mesher6464
  *     else:
  */
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_shape, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_shape, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_int_511, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_int_1023, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (!__pyx_t_6) {
   } else {
     __pyx_t_5 = __pyx_t_6;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_shape, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_shape, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_1023, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_1023, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (!__pyx_t_6) {
   } else {
     __pyx_t_5 = __pyx_t_6;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_shape, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_shape, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_int_511, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_int_511, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_5 = __pyx_t_6;
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_5) {
 
-    /* "zmesh/_zmesh.pyx":48
- *     # restrict it to 10 bits.
- *     if shape[0] > 511 or shape[1] > 1023 or shape[2] > 511:
+    /* "zmesh/_zmesh.pyx":47
+ *     # get the maximum supported shape.
+ *     if shape[0] > 1023 or shape[1] > 1023 or shape[2] > 511:
  *       MesherClass = Mesher6432 if nbytes <= 4 else Mesher6464             # <<<<<<<<<<<<<<
  *     else:
  *       MesherClass = Mesher3232 if nbytes <= 4 else Mesher3264
  */
-    __pyx_t_2 = PyObject_RichCompare(__pyx_v_nbytes, __pyx_int_4, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
-    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __pyx_t_2 = PyObject_RichCompare(__pyx_v_nbytes, __pyx_int_4, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_5) {
       __Pyx_INCREF(((PyObject *)__pyx_ptype_5zmesh_6_zmesh_Mesher6432));
@@ -2715,17 +2715,17 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
     __pyx_v_MesherClass = ((PyTypeObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "zmesh/_zmesh.pyx":47
- *     # try to use the last bit, so we play it safe and
- *     # restrict it to 10 bits.
- *     if shape[0] > 511 or shape[1] > 1023 or shape[2] > 511:             # <<<<<<<<<<<<<<
+    /* "zmesh/_zmesh.pyx":46
+ *     # The last bit is 2^-1 (fixed point) so divide by two to
+ *     # get the maximum supported shape.
+ *     if shape[0] > 1023 or shape[1] > 1023 or shape[2] > 511:             # <<<<<<<<<<<<<<
  *       MesherClass = Mesher6432 if nbytes <= 4 else Mesher6464
  *     else:
  */
     goto __pyx_L3;
   }
 
-  /* "zmesh/_zmesh.pyx":50
+  /* "zmesh/_zmesh.pyx":49
  *       MesherClass = Mesher6432 if nbytes <= 4 else Mesher6464
  *     else:
  *       MesherClass = Mesher3232 if nbytes <= 4 else Mesher3264             # <<<<<<<<<<<<<<
@@ -2733,8 +2733,8 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
  *     self._mesher = MesherClass(self.voxel_res)
  */
   /*else*/ {
-    __pyx_t_2 = PyObject_RichCompare(__pyx_v_nbytes, __pyx_int_4, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 50, __pyx_L1_error)
-    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_t_2 = PyObject_RichCompare(__pyx_v_nbytes, __pyx_int_4, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_5) {
       __Pyx_INCREF(((PyObject *)__pyx_ptype_5zmesh_6_zmesh_Mesher3232));
@@ -2748,22 +2748,22 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
   }
   __pyx_L3:;
 
-  /* "zmesh/_zmesh.pyx":52
+  /* "zmesh/_zmesh.pyx":51
  *       MesherClass = Mesher3232 if nbytes <= 4 else Mesher3264
  * 
  *     self._mesher = MesherClass(self.voxel_res)             # <<<<<<<<<<<<<<
  * 
  *     return self._mesher.mesh(data)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_voxel_res); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_voxel_res); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_v_MesherClass), __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_v_MesherClass), __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_mesher, __pyx_t_2) < 0) __PYX_ERR(0, 52, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_mesher, __pyx_t_2) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "zmesh/_zmesh.pyx":54
+  /* "zmesh/_zmesh.pyx":53
  *     self._mesher = MesherClass(self.voxel_res)
  * 
  *     return self._mesher.mesh(data)             # <<<<<<<<<<<<<<
@@ -2771,9 +2771,9 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
  *   def ids(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_mesh); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_mesh); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -2788,7 +2788,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
   }
   __pyx_t_2 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_1, __pyx_v_data) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_data);
   __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 54, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_2;
@@ -2820,7 +2820,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_2mesh(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":56
+/* "zmesh/_zmesh.pyx":55
  *     return self._mesher.mesh(data)
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -2853,7 +2853,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_4ids(CYTHON_UNUSED PyObject *__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ids", 0);
 
-  /* "zmesh/_zmesh.pyx":57
+  /* "zmesh/_zmesh.pyx":56
  * 
  *   def ids(self):
  *     return self._mesher.ids()             # <<<<<<<<<<<<<<
@@ -2861,9 +2861,9 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_4ids(CYTHON_UNUSED PyObject *__
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ids); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ids); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -2878,14 +2878,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_4ids(CYTHON_UNUSED PyObject *__
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":56
+  /* "zmesh/_zmesh.pyx":55
  *     return self._mesher.mesh(data)
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -2906,7 +2906,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_4ids(CYTHON_UNUSED PyObject *__
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":59
+/* "zmesh/_zmesh.pyx":58
  *     return self._mesher.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -2962,7 +2962,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_7get_mesh(PyObject *__pyx_self,
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mesh_id)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 2, 5, 1); __PYX_ERR(0, 59, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 2, 5, 1); __PYX_ERR(0, 58, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -2984,7 +2984,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_7get_mesh(PyObject *__pyx_self,
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 59, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 58, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3008,7 +3008,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_7get_mesh(PyObject *__pyx_self,
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 2, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 59, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 2, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 58, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher.get_mesh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3035,20 +3035,20 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":65
+  /* "zmesh/_zmesh.pyx":64
  *     Returns: MeshObject
  *     """
  *     mesh = self._mesher.get_mesh(             # <<<<<<<<<<<<<<
  *       mesh_id, normals, simplification_factor, max_simplification_error
  *     )
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_get_mesh); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_get_mesh); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "zmesh/_zmesh.pyx":66
+  /* "zmesh/_zmesh.pyx":65
  *     """
  *     mesh = self._mesher.get_mesh(
  *       mesh_id, normals, simplification_factor, max_simplification_error             # <<<<<<<<<<<<<<
@@ -3070,7 +3070,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[5] = {__pyx_t_2, __pyx_v_mesh_id, __pyx_v_normals, __pyx_v_simplification_factor, __pyx_v_max_simplification_error};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
@@ -3078,13 +3078,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[5] = {__pyx_t_2, __pyx_v_mesh_id, __pyx_v_normals, __pyx_v_simplification_factor, __pyx_v_max_simplification_error};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_5 = PyTuple_New(4+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(4+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     if (__pyx_t_2) {
       __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_2); __pyx_t_2 = NULL;
@@ -3101,7 +3101,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
     __Pyx_INCREF(__pyx_v_max_simplification_error);
     __Pyx_GIVEREF(__pyx_v_max_simplification_error);
     PyTuple_SET_ITEM(__pyx_t_5, 3+__pyx_t_4, __pyx_v_max_simplification_error);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
@@ -3109,7 +3109,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
   __pyx_v_mesh = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":69
+  /* "zmesh/_zmesh.pyx":68
  *     )
  * 
  *     return self._normalize_simplified_mesh(mesh)             # <<<<<<<<<<<<<<
@@ -3117,7 +3117,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
  *   def _normalize_simplified_mesh(self, mesh):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_normalize_simplified_mesh); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_normalize_simplified_mesh); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -3131,14 +3131,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
   }
   __pyx_t_1 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_5, __pyx_v_mesh) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_mesh);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":59
+  /* "zmesh/_zmesh.pyx":58
  *     return self._mesher.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -3161,7 +3161,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_6get_mesh(CYTHON_UNUSED PyObjec
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":71
+/* "zmesh/_zmesh.pyx":70
  *     return self._normalize_simplified_mesh(mesh)
  * 
  *   def _normalize_simplified_mesh(self, mesh):             # <<<<<<<<<<<<<<
@@ -3204,11 +3204,11 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_9_normalize_simplified_mesh(PyO
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mesh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("_normalize_simplified_mesh", 1, 2, 2, 1); __PYX_ERR(0, 71, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("_normalize_simplified_mesh", 1, 2, 2, 1); __PYX_ERR(0, 70, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_normalize_simplified_mesh") < 0)) __PYX_ERR(0, 71, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_normalize_simplified_mesh") < 0)) __PYX_ERR(0, 70, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -3221,7 +3221,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_9_normalize_simplified_mesh(PyO
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_normalize_simplified_mesh", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 71, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_normalize_simplified_mesh", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 70, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher._normalize_simplified_mesh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3256,35 +3256,35 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_normalize_simplified_mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":72
+  /* "zmesh/_zmesh.pyx":71
  * 
  *   def _normalize_simplified_mesh(self, mesh):
  *     points = np.array(mesh['points'], dtype=np.float32)             # <<<<<<<<<<<<<<
  *     points /= 2.0
  *     Nv = points.size // 3
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 72, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3292,54 +3292,54 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   __pyx_v_points = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "zmesh/_zmesh.pyx":73
+  /* "zmesh/_zmesh.pyx":72
  *   def _normalize_simplified_mesh(self, mesh):
  *     points = np.array(mesh['points'], dtype=np.float32)
  *     points /= 2.0             # <<<<<<<<<<<<<<
  *     Nv = points.size // 3
  *     Nf = len(mesh['faces']) // 3
  */
-  __pyx_t_5 = __Pyx_PyFloat_TrueDivideObjC(__pyx_v_points, __pyx_float_2_0, 2.0, 1, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyFloat_TrueDivideObjC(__pyx_v_points, __pyx_float_2_0, 2.0, 1, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF_SET(__pyx_v_points, __pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "zmesh/_zmesh.pyx":74
+  /* "zmesh/_zmesh.pyx":73
  *     points = np.array(mesh['points'], dtype=np.float32)
  *     points /= 2.0
  *     Nv = points.size // 3             # <<<<<<<<<<<<<<
  *     Nf = len(mesh['faces']) // 3
  * 
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_points, __pyx_n_s_size); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_points, __pyx_n_s_size); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_PyInt_FloorDivideObjC(__pyx_t_5, __pyx_int_3, 3, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FloorDivideObjC(__pyx_t_5, __pyx_int_3, 3, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_Nv = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":75
+  /* "zmesh/_zmesh.pyx":74
  *     points /= 2.0
  *     Nv = points.size // 3
  *     Nf = len(mesh['faces']) // 3             # <<<<<<<<<<<<<<
  * 
  *     points = points.reshape(Nv, 3)
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_faces); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_faces); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 75, __pyx_L1_error)
+  __pyx_t_6 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_Nf = __Pyx_div_Py_ssize_t(__pyx_t_6, 3);
 
-  /* "zmesh/_zmesh.pyx":77
+  /* "zmesh/_zmesh.pyx":76
  *     Nf = len(mesh['faces']) // 3
  * 
  *     points = points.reshape(Nv, 3)             # <<<<<<<<<<<<<<
  *     faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
  * 
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_points, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_points, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 76, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_3 = NULL;
   __pyx_t_7 = 0;
@@ -3356,7 +3356,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_v_Nv, __pyx_int_3};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
@@ -3364,13 +3364,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_v_Nv, __pyx_int_3};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_2 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -3381,7 +3381,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
     __Pyx_INCREF(__pyx_int_3);
     __Pyx_GIVEREF(__pyx_int_3);
     PyTuple_SET_ITEM(__pyx_t_2, 1+__pyx_t_7, __pyx_int_3);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -3389,43 +3389,43 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   __Pyx_DECREF_SET(__pyx_v_points, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":78
+  /* "zmesh/_zmesh.pyx":77
  * 
  *     points = points.reshape(Nv, 3)
  *     faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)             # <<<<<<<<<<<<<<
  * 
  *     normals = None
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_faces); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_faces); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 78, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = PyInt_FromSsize_t(__pyx_v_Nf); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __pyx_t_8 = PyInt_FromSsize_t(__pyx_v_Nf); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_3 = NULL;
   __pyx_t_7 = 0;
@@ -3442,7 +3442,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_t_8, __pyx_int_3};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -3451,14 +3451,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_t_8, __pyx_int_3};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   } else
   #endif
   {
-    __pyx_t_2 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -3469,7 +3469,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
     __Pyx_GIVEREF(__pyx_int_3);
     PyTuple_SET_ITEM(__pyx_t_2, 1+__pyx_t_7, __pyx_int_3);
     __pyx_t_8 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -3477,7 +3477,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   __pyx_v_faces = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":80
+  /* "zmesh/_zmesh.pyx":79
  *     faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
  * 
  *     normals = None             # <<<<<<<<<<<<<<
@@ -3487,53 +3487,53 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   __Pyx_INCREF(Py_None);
   __pyx_v_normals = Py_None;
 
-  /* "zmesh/_zmesh.pyx":81
+  /* "zmesh/_zmesh.pyx":80
  * 
  *     normals = None
  *     if mesh['normals']:             # <<<<<<<<<<<<<<
  *       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_normals); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_normals); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_9) {
 
-    /* "zmesh/_zmesh.pyx":82
+    /* "zmesh/_zmesh.pyx":81
  *     normals = None
  *     if mesh['normals']:
  *       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)             # <<<<<<<<<<<<<<
  * 
  *     return Mesh(points, faces, normals)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_normals); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_mesh, __pyx_n_u_normals); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 82, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -3551,7 +3551,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_5)) {
       PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_Nv, __pyx_int_3};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else
@@ -3559,13 +3559,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
       PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_Nv, __pyx_int_3};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else
     #endif
     {
-      __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 82, __pyx_L1_error)
+      __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 81, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       if (__pyx_t_4) {
         __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -3576,7 +3576,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
       __Pyx_INCREF(__pyx_int_3);
       __Pyx_GIVEREF(__pyx_int_3);
       PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_7, __pyx_int_3);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     }
@@ -3584,7 +3584,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
     __Pyx_DECREF_SET(__pyx_v_normals, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "zmesh/_zmesh.pyx":81
+    /* "zmesh/_zmesh.pyx":80
  * 
  *     normals = None
  *     if mesh['normals']:             # <<<<<<<<<<<<<<
@@ -3593,7 +3593,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
  */
   }
 
-  /* "zmesh/_zmesh.pyx":84
+  /* "zmesh/_zmesh.pyx":83
  *       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
  * 
  *     return Mesh(points, faces, normals)             # <<<<<<<<<<<<<<
@@ -3601,7 +3601,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
  *   def _triangles(self, mesh):
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_Mesh); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 84, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_Mesh); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_8 = NULL;
   __pyx_t_7 = 0;
@@ -3618,7 +3618,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[4] = {__pyx_t_8, __pyx_v_points, __pyx_v_faces, __pyx_v_normals};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
@@ -3626,13 +3626,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
     PyObject *__pyx_temp[4] = {__pyx_t_8, __pyx_v_points, __pyx_v_faces, __pyx_v_normals};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_4 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 84, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 83, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     if (__pyx_t_8) {
       __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_8); __pyx_t_8 = NULL;
@@ -3646,7 +3646,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
     __Pyx_INCREF(__pyx_v_normals);
     __Pyx_GIVEREF(__pyx_v_normals);
     PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_7, __pyx_v_normals);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
@@ -3655,7 +3655,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":71
+  /* "zmesh/_zmesh.pyx":70
  *     return self._normalize_simplified_mesh(mesh)
  * 
  *   def _normalize_simplified_mesh(self, mesh):             # <<<<<<<<<<<<<<
@@ -3683,7 +3683,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_8_normalize_simplified_mesh(CYT
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":86
+/* "zmesh/_zmesh.pyx":85
  *     return Mesh(points, faces, normals)
  * 
  *   def _triangles(self, mesh):             # <<<<<<<<<<<<<<
@@ -3726,11 +3726,11 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_11_triangles(PyObject *__pyx_se
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mesh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("_triangles", 1, 2, 2, 1); __PYX_ERR(0, 86, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("_triangles", 1, 2, 2, 1); __PYX_ERR(0, 85, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_triangles") < 0)) __PYX_ERR(0, 86, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_triangles") < 0)) __PYX_ERR(0, 85, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -3743,7 +3743,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_11_triangles(PyObject *__pyx_se
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_triangles", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 86, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_triangles", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 85, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher._triangles", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3784,40 +3784,40 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
   __pyx_pybuffernd_tris.data = NULL;
   __pyx_pybuffernd_tris.rcbuffer = &__pyx_pybuffer_tris;
 
-  /* "zmesh/_zmesh.pyx":87
+  /* "zmesh/_zmesh.pyx":86
  * 
  *   def _triangles(self, mesh):
  *     cdef size_t Nf = mesh.faces.shape[0]             # <<<<<<<<<<<<<<
  *     cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_mesh, __pyx_n_s_faces); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_mesh, __pyx_n_s_faces); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_3 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_3 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_3 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_Nf = __pyx_t_3;
 
-  /* "zmesh/_zmesh.pyx":88
+  /* "zmesh/_zmesh.pyx":87
  *   def _triangles(self, mesh):
  *     cdef size_t Nf = mesh.faces.shape[0]
  *     cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)             # <<<<<<<<<<<<<<
  * 
  *     cdef size_t i = 0
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_Nf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_Nf); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -3828,33 +3828,33 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
   __Pyx_GIVEREF(__pyx_int_3);
   PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_int_3);
   __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float32); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float32); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 88, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_order, __pyx_n_u_C) < 0) __PYX_ERR(0, 88, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 88, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_order, __pyx_n_u_C) < 0) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 88, __pyx_L1_error)
+  if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 87, __pyx_L1_error)
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_6);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_tris.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_float, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack) == -1)) {
       __pyx_v_tris = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_tris.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 88, __pyx_L1_error)
+      __PYX_ERR(0, 87, __pyx_L1_error)
     } else {__pyx_pybuffernd_tris.diminfo[0].strides = __pyx_pybuffernd_tris.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_tris.diminfo[0].shape = __pyx_pybuffernd_tris.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_tris.diminfo[1].strides = __pyx_pybuffernd_tris.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_tris.diminfo[1].shape = __pyx_pybuffernd_tris.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_tris.diminfo[2].strides = __pyx_pybuffernd_tris.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_tris.diminfo[2].shape = __pyx_pybuffernd_tris.rcbuffer->pybuffer.shape[2];
     }
   }
@@ -3862,7 +3862,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
   __pyx_v_tris = ((PyArrayObject *)__pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "zmesh/_zmesh.pyx":90
+  /* "zmesh/_zmesh.pyx":89
  *     cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
  * 
  *     cdef size_t i = 0             # <<<<<<<<<<<<<<
@@ -3871,7 +3871,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
  */
   __pyx_v_i = 0;
 
-  /* "zmesh/_zmesh.pyx":91
+  /* "zmesh/_zmesh.pyx":90
  * 
  *     cdef size_t i = 0
  *     cdef short int j = 0             # <<<<<<<<<<<<<<
@@ -3880,7 +3880,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
  */
   __pyx_v_j = 0;
 
-  /* "zmesh/_zmesh.pyx":93
+  /* "zmesh/_zmesh.pyx":92
  *     cdef short int j = 0
  * 
  *     for i in range(Nf):             # <<<<<<<<<<<<<<
@@ -3892,7 +3892,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "zmesh/_zmesh.pyx":94
+    /* "zmesh/_zmesh.pyx":93
  * 
  *     for i in range(Nf):
  *       for j in range(3):             # <<<<<<<<<<<<<<
@@ -3902,22 +3902,22 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
     for (__pyx_t_10 = 0; __pyx_t_10 < 3; __pyx_t_10+=1) {
       __pyx_v_j = __pyx_t_10;
 
-      /* "zmesh/_zmesh.pyx":95
+      /* "zmesh/_zmesh.pyx":94
  *     for i in range(Nf):
  *       for j in range(3):
  *         tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]             # <<<<<<<<<<<<<<
  * 
  *     return tris
  */
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_mesh, __pyx_n_s_vertices); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_mesh, __pyx_n_s_vertices); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_mesh, __pyx_n_s_faces); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_mesh, __pyx_n_s_faces); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_From_short(__pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_From_short(__pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GIVEREF(__pyx_t_1);
       PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
@@ -3925,19 +3925,19 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
       PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_2);
       __pyx_t_1 = 0;
       __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyInt_From_short(__pyx_v_j); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyInt_From_short(__pyx_v_j); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_2);
       PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
@@ -3948,13 +3948,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
       PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_slice_);
       __pyx_t_2 = 0;
       __pyx_t_6 = 0;
-      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_tris), __pyx_t_4, __pyx_t_5) < 0)) __PYX_ERR(0, 95, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_tris), __pyx_t_4, __pyx_t_5) < 0)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
   }
 
-  /* "zmesh/_zmesh.pyx":97
+  /* "zmesh/_zmesh.pyx":96
  *         tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]
  * 
  *     return tris             # <<<<<<<<<<<<<<
@@ -3966,7 +3966,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
   __pyx_r = ((PyObject *)__pyx_v_tris);
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":86
+  /* "zmesh/_zmesh.pyx":85
  *     return Mesh(points, faces, normals)
  * 
  *   def _triangles(self, mesh):             # <<<<<<<<<<<<<<
@@ -3999,7 +3999,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_10_triangles(CYTHON_UNUSED PyOb
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":99
+/* "zmesh/_zmesh.pyx":98
  *     return tris
  * 
  *   def compute_normals(self, mesh):             # <<<<<<<<<<<<<<
@@ -4043,11 +4043,11 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_13compute_normals(PyObject *__p
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mesh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("compute_normals", 1, 2, 2, 1); __PYX_ERR(0, 99, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("compute_normals", 1, 2, 2, 1); __PYX_ERR(0, 98, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "compute_normals") < 0)) __PYX_ERR(0, 99, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "compute_normals") < 0)) __PYX_ERR(0, 98, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -4060,7 +4060,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_13compute_normals(PyObject *__p
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("compute_normals", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 99, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("compute_normals", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 98, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher.compute_normals", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4085,7 +4085,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_12compute_normals(CYTHON_UNUSED
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compute_normals", 0);
 
-  /* "zmesh/_zmesh.pyx":105
+  /* "zmesh/_zmesh.pyx":104
  *     Returns: Mesh with normals computed
  *     """
  *     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)             # <<<<<<<<<<<<<<
@@ -4093,19 +4093,19 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_12compute_normals(CYTHON_UNUSED
  *   def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_simplify); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_simplify); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_mesh);
   __Pyx_GIVEREF(__pyx_v_mesh);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_mesh);
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_reduction_factor, __pyx_int_0) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_max_error, __pyx_int_0) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_compute_normals, Py_True) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_reduction_factor, __pyx_int_0) < 0) __PYX_ERR(0, 104, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_max_error, __pyx_int_0) < 0) __PYX_ERR(0, 104, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_compute_normals, Py_True) < 0) __PYX_ERR(0, 104, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4114,7 +4114,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_12compute_normals(CYTHON_UNUSED
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":99
+  /* "zmesh/_zmesh.pyx":98
  *     return tris
  * 
  *   def compute_normals(self, mesh):             # <<<<<<<<<<<<<<
@@ -4136,7 +4136,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_12compute_normals(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":107
+/* "zmesh/_zmesh.pyx":106
  *     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
  * 
  *   def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):             # <<<<<<<<<<<<<<
@@ -4190,7 +4190,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_15simplify(PyObject *__pyx_self
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mesh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simplify", 0, 2, 5, 1); __PYX_ERR(0, 107, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simplify", 0, 2, 5, 1); __PYX_ERR(0, 106, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -4212,7 +4212,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_15simplify(PyObject *__pyx_self
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simplify") < 0)) __PYX_ERR(0, 107, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simplify") < 0)) __PYX_ERR(0, 106, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -4231,12 +4231,12 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_15simplify(PyObject *__pyx_self
     __pyx_v_self = values[0];
     __pyx_v_mesh = values[1];
     if (values[2]) {
-      __pyx_v_reduction_factor = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_reduction_factor == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 107, __pyx_L3_error)
+      __pyx_v_reduction_factor = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_reduction_factor == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 106, __pyx_L3_error)
     } else {
       __pyx_v_reduction_factor = ((int)((int)0));
     }
     if (values[3]) {
-      __pyx_v_max_error = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_max_error == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 107, __pyx_L3_error)
+      __pyx_v_max_error = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_max_error == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 106, __pyx_L3_error)
     } else {
       __pyx_v_max_error = ((int)((int)40));
     }
@@ -4244,7 +4244,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_15simplify(PyObject *__pyx_self
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("simplify", 0, 2, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 107, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("simplify", 0, 2, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 106, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher.simplify", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4314,26 +4314,26 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   __pyx_pybuffernd_packed_triangles.data = NULL;
   __pyx_pybuffernd_packed_triangles.rcbuffer = &__pyx_pybuffer_packed_triangles;
 
-  /* "zmesh/_zmesh.pyx":125
+  /* "zmesh/_zmesh.pyx":124
  *     Returns: Mesh
  *     """
  *     mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)             # <<<<<<<<<<<<<<
  * 
  *     cdef size_t ti = 0
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_voxel_res); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_voxel_res); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 124, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 124, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_3 = new CMesher<uint64_t,uint64_t,double> (__pyx_t_2);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 125, __pyx_L1_error)
+    __PYX_ERR(0, 124, __pyx_L1_error)
   }
   __pyx_v_mesher = __pyx_t_3;
 
-  /* "zmesh/_zmesh.pyx":127
+  /* "zmesh/_zmesh.pyx":126
  *     mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)
  * 
  *     cdef size_t ti = 0             # <<<<<<<<<<<<<<
@@ -4342,7 +4342,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  */
   __pyx_v_ti = 0;
 
-  /* "zmesh/_zmesh.pyx":128
+  /* "zmesh/_zmesh.pyx":127
  * 
  *     cdef size_t ti = 0
  *     cdef size_t vi = 0             # <<<<<<<<<<<<<<
@@ -4351,7 +4351,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  */
   __pyx_v_vi = 0;
 
-  /* "zmesh/_zmesh.pyx":129
+  /* "zmesh/_zmesh.pyx":128
  *     cdef size_t ti = 0
  *     cdef size_t vi = 0
  *     cdef uint64_t vert = 0             # <<<<<<<<<<<<<<
@@ -4360,14 +4360,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  */
   __pyx_v_vert = 0;
 
-  /* "zmesh/_zmesh.pyx":131
+  /* "zmesh/_zmesh.pyx":130
  *     cdef uint64_t vert = 0
  * 
  *     cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)             # <<<<<<<<<<<<<<
  *     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros(
  *       (triangles.shape[0], 3), dtype=np.uint64, order='C'
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_triangles); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_triangles); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 130, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -4381,16 +4381,16 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   }
   __pyx_t_1 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_v_mesh) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_mesh);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 131, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 130, __pyx_L1_error)
   __pyx_t_6 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_triangles.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_float, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack) == -1)) {
       __pyx_v_triangles = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_triangles.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 131, __pyx_L1_error)
+      __PYX_ERR(0, 130, __pyx_L1_error)
     } else {__pyx_pybuffernd_triangles.diminfo[0].strides = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_triangles.diminfo[0].shape = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_triangles.diminfo[1].strides = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_triangles.diminfo[1].shape = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_triangles.diminfo[2].strides = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_triangles.diminfo[2].shape = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.shape[2];
     }
   }
@@ -4398,29 +4398,29 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   __pyx_v_triangles = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":132
+  /* "zmesh/_zmesh.pyx":131
  * 
  *     cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
  *     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros(             # <<<<<<<<<<<<<<
  *       (triangles.shape[0], 3), dtype=np.uint64, order='C'
  *     )
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":133
+  /* "zmesh/_zmesh.pyx":132
  *     cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
  *     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros(
  *       (triangles.shape[0], 3), dtype=np.uint64, order='C'             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_1 = __Pyx_PyInt_From_Py_intptr_t((__pyx_v_triangles->dimensions[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_Py_intptr_t((__pyx_v_triangles->dimensions[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
@@ -4429,56 +4429,56 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_int_3);
   __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":132
+  /* "zmesh/_zmesh.pyx":131
  * 
  *     cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
  *     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros(             # <<<<<<<<<<<<<<
  *       (triangles.shape[0], 3), dtype=np.uint64, order='C'
  *     )
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "zmesh/_zmesh.pyx":133
+  /* "zmesh/_zmesh.pyx":132
  *     cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
  *     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros(
  *       (triangles.shape[0], 3), dtype=np.uint64, order='C'             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_uint64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_uint64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_order, __pyx_n_u_C) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_order, __pyx_n_u_C) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":132
+  /* "zmesh/_zmesh.pyx":131
  * 
  *     cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
  *     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros(             # <<<<<<<<<<<<<<
  *       (triangles.shape[0], 3), dtype=np.uint64, order='C'
  *     )
  */
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 132, __pyx_L1_error)
+  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 131, __pyx_L1_error)
   __pyx_t_9 = ((PyArrayObject *)__pyx_t_8);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn_uint64_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_packed_triangles = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 132, __pyx_L1_error)
+      __PYX_ERR(0, 131, __pyx_L1_error)
     } else {__pyx_pybuffernd_packed_triangles.diminfo[0].strides = __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_packed_triangles.diminfo[0].shape = __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_packed_triangles.diminfo[1].strides = __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_packed_triangles.diminfo[1].shape = __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -4486,16 +4486,16 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   __pyx_v_packed_triangles = ((PyArrayObject *)__pyx_t_8);
   __pyx_t_8 = 0;
 
-  /* "zmesh/_zmesh.pyx":136
+  /* "zmesh/_zmesh.pyx":135
  *     )
  * 
  *     triangles *= 2.0             # <<<<<<<<<<<<<<
  * 
  *     cdef size_t Nv = triangles.shape[0]
  */
-  __pyx_t_8 = PyNumber_InPlaceMultiply(((PyObject *)__pyx_v_triangles), __pyx_float_2_0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __pyx_t_8 = PyNumber_InPlaceMultiply(((PyObject *)__pyx_v_triangles), __pyx_float_2_0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 136, __pyx_L1_error)
+  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 135, __pyx_L1_error)
   __pyx_t_6 = ((PyArrayObject *)__pyx_t_8);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -4512,13 +4512,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
       __pyx_t_11 = __pyx_t_12 = __pyx_t_13 = 0;
     }
     __pyx_pybuffernd_triangles.diminfo[0].strides = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_triangles.diminfo[0].shape = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_triangles.diminfo[1].strides = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_triangles.diminfo[1].shape = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_triangles.diminfo[2].strides = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_triangles.diminfo[2].shape = __pyx_pybuffernd_triangles.rcbuffer->pybuffer.shape[2];
-    if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 136, __pyx_L1_error)
+    if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 135, __pyx_L1_error)
   }
   __pyx_t_6 = 0;
   __Pyx_DECREF_SET(__pyx_v_triangles, ((PyArrayObject *)__pyx_t_8));
   __pyx_t_8 = 0;
 
-  /* "zmesh/_zmesh.pyx":138
+  /* "zmesh/_zmesh.pyx":137
  *     triangles *= 2.0
  * 
  *     cdef size_t Nv = triangles.shape[0]             # <<<<<<<<<<<<<<
@@ -4527,7 +4527,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  */
   __pyx_v_Nv = (__pyx_v_triangles->dimensions[0]);
 
-  /* "zmesh/_zmesh.pyx":140
+  /* "zmesh/_zmesh.pyx":139
  *     cdef size_t Nv = triangles.shape[0]
  * 
  *     for ti in range(Nv):             # <<<<<<<<<<<<<<
@@ -4539,7 +4539,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
     __pyx_v_ti = __pyx_t_16;
 
-    /* "zmesh/_zmesh.pyx":141
+    /* "zmesh/_zmesh.pyx":140
  * 
  *     for ti in range(Nv):
  *       for vi in range(3):             # <<<<<<<<<<<<<<
@@ -4549,7 +4549,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
     for (__pyx_t_17 = 0; __pyx_t_17 < 3; __pyx_t_17+=1) {
       __pyx_v_vi = __pyx_t_17;
 
-      /* "zmesh/_zmesh.pyx":143
+      /* "zmesh/_zmesh.pyx":142
  *       for vi in range(3):
  *         packed_triangles[ti, vi] = mesher.pack_coords(
  *           <uint64_t>triangles[ti, vi, 0], <uint64_t>triangles[ti, vi, 1], <uint64_t>triangles[ti, vi, 2]             # <<<<<<<<<<<<<<
@@ -4568,7 +4568,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
       } else if (unlikely(__pyx_t_20 >= __pyx_pybuffernd_triangles.diminfo[2].shape)) __pyx_t_10 = 2;
       if (unlikely(__pyx_t_10 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_10);
-        __PYX_ERR(0, 143, __pyx_L1_error)
+        __PYX_ERR(0, 142, __pyx_L1_error)
       }
       __pyx_t_21 = __pyx_v_ti;
       __pyx_t_22 = __pyx_v_vi;
@@ -4582,7 +4582,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
       } else if (unlikely(__pyx_t_23 >= __pyx_pybuffernd_triangles.diminfo[2].shape)) __pyx_t_10 = 2;
       if (unlikely(__pyx_t_10 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_10);
-        __PYX_ERR(0, 143, __pyx_L1_error)
+        __PYX_ERR(0, 142, __pyx_L1_error)
       }
       __pyx_t_24 = __pyx_v_ti;
       __pyx_t_25 = __pyx_v_vi;
@@ -4596,10 +4596,10 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
       } else if (unlikely(__pyx_t_26 >= __pyx_pybuffernd_triangles.diminfo[2].shape)) __pyx_t_10 = 2;
       if (unlikely(__pyx_t_10 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_10);
-        __PYX_ERR(0, 143, __pyx_L1_error)
+        __PYX_ERR(0, 142, __pyx_L1_error)
       }
 
-      /* "zmesh/_zmesh.pyx":142
+      /* "zmesh/_zmesh.pyx":141
  *     for ti in range(Nv):
  *       for vi in range(3):
  *         packed_triangles[ti, vi] = mesher.pack_coords(             # <<<<<<<<<<<<<<
@@ -4613,13 +4613,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
       if (unlikely(__pyx_t_28 >= (size_t)__pyx_pybuffernd_packed_triangles.diminfo[1].shape)) __pyx_t_10 = 1;
       if (unlikely(__pyx_t_10 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_10);
-        __PYX_ERR(0, 142, __pyx_L1_error)
+        __PYX_ERR(0, 141, __pyx_L1_error)
       }
       *__Pyx_BufPtrStrided2d(uint64_t *, __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.buf, __pyx_t_27, __pyx_pybuffernd_packed_triangles.diminfo[0].strides, __pyx_t_28, __pyx_pybuffernd_packed_triangles.diminfo[1].strides) = __pyx_v_mesher->pack_coords(((uint64_t)(*__Pyx_BufPtrStrided3d(float *, __pyx_pybuffernd_triangles.rcbuffer->pybuffer.buf, __pyx_t_18, __pyx_pybuffernd_triangles.diminfo[0].strides, __pyx_t_19, __pyx_pybuffernd_triangles.diminfo[1].strides, __pyx_t_20, __pyx_pybuffernd_triangles.diminfo[2].strides))), ((uint64_t)(*__Pyx_BufPtrStrided3d(float *, __pyx_pybuffernd_triangles.rcbuffer->pybuffer.buf, __pyx_t_21, __pyx_pybuffernd_triangles.diminfo[0].strides, __pyx_t_22, __pyx_pybuffernd_triangles.diminfo[1].strides, __pyx_t_23, __pyx_pybuffernd_triangles.diminfo[2].strides))), ((uint64_t)(*__Pyx_BufPtrStrided3d(float *, __pyx_pybuffernd_triangles.rcbuffer->pybuffer.buf, __pyx_t_24, __pyx_pybuffernd_triangles.diminfo[0].strides, __pyx_t_25, __pyx_pybuffernd_triangles.diminfo[1].strides, __pyx_t_26, __pyx_pybuffernd_triangles.diminfo[2].strides))));
     }
   }
 
-  /* "zmesh/_zmesh.pyx":145
+  /* "zmesh/_zmesh.pyx":144
  *           <uint64_t>triangles[ti, vi, 0], <uint64_t>triangles[ti, vi, 1], <uint64_t>triangles[ti, vi, 2]
  *         )
  *     del triangles             # <<<<<<<<<<<<<<
@@ -4629,7 +4629,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   __Pyx_DECREF(((PyObject *)__pyx_v_triangles));
   __pyx_v_triangles = NULL;
 
-  /* "zmesh/_zmesh.pyx":148
+  /* "zmesh/_zmesh.pyx":147
  * 
  *     cdef MeshObject result = mesher.simplify_points(
  *       <uint64_t*>&packed_triangles[0,0], Nv,             # <<<<<<<<<<<<<<
@@ -4649,19 +4649,19 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   } else if (unlikely(__pyx_t_23 >= __pyx_pybuffernd_packed_triangles.diminfo[1].shape)) __pyx_t_10 = 1;
   if (unlikely(__pyx_t_10 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_10);
-    __PYX_ERR(0, 148, __pyx_L1_error)
+    __PYX_ERR(0, 147, __pyx_L1_error)
   }
 
-  /* "zmesh/_zmesh.pyx":149
+  /* "zmesh/_zmesh.pyx":148
  *     cdef MeshObject result = mesher.simplify_points(
  *       <uint64_t*>&packed_triangles[0,0], Nv,
  *       <bool>compute_normals, reduction_factor, max_error             # <<<<<<<<<<<<<<
  *     )
  *     del mesher
  */
-  __pyx_t_29 = __Pyx_PyObject_IsTrue(__pyx_v_compute_normals); if (unlikely((__pyx_t_29 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_29 = __Pyx_PyObject_IsTrue(__pyx_v_compute_normals); if (unlikely((__pyx_t_29 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 148, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":147
+  /* "zmesh/_zmesh.pyx":146
  *     del triangles
  * 
  *     cdef MeshObject result = mesher.simplify_points(             # <<<<<<<<<<<<<<
@@ -4670,7 +4670,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  */
   __pyx_v_result = __pyx_v_mesher->simplify_points(((uint64_t *)(&(*__Pyx_BufPtrStrided2d(uint64_t *, __pyx_pybuffernd_packed_triangles.rcbuffer->pybuffer.buf, __pyx_t_26, __pyx_pybuffernd_packed_triangles.diminfo[0].strides, __pyx_t_23, __pyx_pybuffernd_packed_triangles.diminfo[1].strides)))), __pyx_v_Nv, ((bool)__pyx_t_29), __pyx_v_reduction_factor, __pyx_v_max_error);
 
-  /* "zmesh/_zmesh.pyx":151
+  /* "zmesh/_zmesh.pyx":150
  *       <bool>compute_normals, reduction_factor, max_error
  *     )
  *     del mesher             # <<<<<<<<<<<<<<
@@ -4679,7 +4679,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  */
   delete __pyx_v_mesher;
 
-  /* "zmesh/_zmesh.pyx":152
+  /* "zmesh/_zmesh.pyx":151
  *     )
  *     del mesher
  *     return self._normalize_simplified_mesh(result)             # <<<<<<<<<<<<<<
@@ -4687,9 +4687,9 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
  *   def clear(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_normalize_simplified_mesh); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 152, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_normalize_simplified_mesh); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_result); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 152, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_result); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_5))) {
@@ -4704,14 +4704,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   __pyx_t_8 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_4, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_1);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 152, __pyx_L1_error)
+  if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_r = __pyx_t_8;
   __pyx_t_8 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":107
+  /* "zmesh/_zmesh.pyx":106
  *     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
  * 
  *   def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):             # <<<<<<<<<<<<<<
@@ -4747,7 +4747,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_14simplify(CYTHON_UNUSED PyObje
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":154
+/* "zmesh/_zmesh.pyx":153
  *     return self._normalize_simplified_mesh(result)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -4780,16 +4780,16 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16clear(CYTHON_UNUSED PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("clear", 0);
 
-  /* "zmesh/_zmesh.pyx":155
+  /* "zmesh/_zmesh.pyx":154
  * 
  *   def clear(self):
  *     self._mesher.clear()             # <<<<<<<<<<<<<<
  * 
  *   def erase(self, segid):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_clear); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_clear); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -4804,12 +4804,12 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16clear(CYTHON_UNUSED PyObject 
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":154
+  /* "zmesh/_zmesh.pyx":153
  *     return self._normalize_simplified_mesh(result)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -4832,7 +4832,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16clear(CYTHON_UNUSED PyObject 
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":157
+/* "zmesh/_zmesh.pyx":156
  *     self._mesher.clear()
  * 
  *   def erase(self, segid):             # <<<<<<<<<<<<<<
@@ -4875,11 +4875,11 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_19erase(PyObject *__pyx_self, P
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_segid)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("erase", 1, 2, 2, 1); __PYX_ERR(0, 157, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("erase", 1, 2, 2, 1); __PYX_ERR(0, 156, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "erase") < 0)) __PYX_ERR(0, 157, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "erase") < 0)) __PYX_ERR(0, 156, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -4892,7 +4892,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_19erase(PyObject *__pyx_self, P
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("erase", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 157, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("erase", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 156, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher.erase", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4916,7 +4916,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_18erase(CYTHON_UNUSED PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("erase", 0);
 
-  /* "zmesh/_zmesh.pyx":158
+  /* "zmesh/_zmesh.pyx":157
  * 
  *   def erase(self, segid):
  *     return self._mesher.erase(segid)             # <<<<<<<<<<<<<<
@@ -4924,9 +4924,9 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_18erase(CYTHON_UNUSED PyObject 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 158, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mesher); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_erase); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 158, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_erase); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -4941,14 +4941,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_18erase(CYTHON_UNUSED PyObject 
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_2, __pyx_v_segid) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_segid);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 158, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":157
+  /* "zmesh/_zmesh.pyx":156
  *     self._mesher.clear()
  * 
  *   def erase(self, segid):             # <<<<<<<<<<<<<<
@@ -4969,7 +4969,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_18erase(CYTHON_UNUSED PyObject 
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":177
+/* "zmesh/_zmesh.pyx":176
  *   cdef CMesher[uint64_t, uint64_t, double] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -5006,7 +5006,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher6464_1__cinit__(PyObject *__pyx_v_sel
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 177, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 176, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -5017,7 +5017,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher6464_1__cinit__(PyObject *__pyx_v_sel
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 177, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 176, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher6464.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5044,18 +5044,18 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher6464___cinit__(struct __pyx_obj_5zmes
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "zmesh/_zmesh.pyx":178
+  /* "zmesh/_zmesh.pyx":177
  * 
  *   def __cinit__(self, voxel_res):
  *     self.ptr = new CMesher[uint64_t, uint64_t, double](voxel_res.astype(np.float32))             # <<<<<<<<<<<<<<
  * 
  *   def __dealloc__(self):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -5071,20 +5071,20 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher6464___cinit__(struct __pyx_obj_5zmes
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_6 = new CMesher<uint64_t,uint64_t,double> (__pyx_t_5);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 178, __pyx_L1_error)
+    __PYX_ERR(0, 177, __pyx_L1_error)
   }
   __pyx_v_self->ptr = __pyx_t_6;
 
-  /* "zmesh/_zmesh.pyx":177
+  /* "zmesh/_zmesh.pyx":176
  *   cdef CMesher[uint64_t, uint64_t, double] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -5107,7 +5107,7 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher6464___cinit__(struct __pyx_obj_5zmes
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":180
+/* "zmesh/_zmesh.pyx":179
  *     self.ptr = new CMesher[uint64_t, uint64_t, double](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -5130,7 +5130,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher6464_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "zmesh/_zmesh.pyx":181
+  /* "zmesh/_zmesh.pyx":180
  * 
  *   def __dealloc__(self):
  *     del self.ptr             # <<<<<<<<<<<<<<
@@ -5139,7 +5139,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher6464_2__dealloc__(struct __pyx_obj_5
  */
   delete __pyx_v_self->ptr;
 
-  /* "zmesh/_zmesh.pyx":180
+  /* "zmesh/_zmesh.pyx":179
  *     self.ptr = new CMesher[uint64_t, uint64_t, double](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -5151,7 +5151,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher6464_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyFinishContext();
 }
 
-/* "zmesh/_zmesh.pyx":183
+/* "zmesh/_zmesh.pyx":182
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -5189,18 +5189,18 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_4mesh(struct __pyx_obj_5zm
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":185
+  /* "zmesh/_zmesh.pyx":184
  *   def mesh(self, data):
  *     self.ptr.mesh(
  *       data.astype(np.uint64).flatten(),             # <<<<<<<<<<<<<<
  *       data.shape[0], data.shape[1], data.shape[2]
  *     )
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -5216,10 +5216,10 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_4mesh(struct __pyx_obj_5zm
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 185, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -5234,42 +5234,42 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_4mesh(struct __pyx_obj_5zm
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __pyx_convert_vector_from_py_uint64_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_6 = __pyx_convert_vector_from_py_uint64_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":186
+  /* "zmesh/_zmesh.pyx":185
  *     self.ptr.mesh(
  *       data.astype(np.uint64).flatten(),
  *       data.shape[0], data.shape[1], data.shape[2]             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "zmesh/_zmesh.pyx":184
+  /* "zmesh/_zmesh.pyx":183
  * 
  *   def mesh(self, data):
  *     self.ptr.mesh(             # <<<<<<<<<<<<<<
@@ -5278,7 +5278,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_4mesh(struct __pyx_obj_5zm
  */
   __pyx_v_self->ptr->mesh(__pyx_t_6, __pyx_t_7, __pyx_t_8, __pyx_t_9);
 
-  /* "zmesh/_zmesh.pyx":183
+  /* "zmesh/_zmesh.pyx":182
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -5303,7 +5303,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_4mesh(struct __pyx_obj_5zm
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":189
+/* "zmesh/_zmesh.pyx":188
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -5333,7 +5333,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_6ids(struct __pyx_obj_5zme
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ids", 0);
 
-  /* "zmesh/_zmesh.pyx":190
+  /* "zmesh/_zmesh.pyx":189
  * 
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
@@ -5341,13 +5341,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_6ids(struct __pyx_obj_5zme
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_vector_to_py_uint64_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 190, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_to_py_uint64_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 189, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":189
+  /* "zmesh/_zmesh.pyx":188
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -5366,7 +5366,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_6ids(struct __pyx_obj_5zme
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":192
+/* "zmesh/_zmesh.pyx":191
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -5433,7 +5433,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher6464_9get_mesh(PyObject *__pyx_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 192, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 191, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -5455,7 +5455,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher6464_9get_mesh(PyObject *__pyx_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 192, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 191, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher6464.get_mesh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5481,7 +5481,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_8get_mesh(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":193
+  /* "zmesh/_zmesh.pyx":192
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
@@ -5489,17 +5489,17 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_8get_mesh(struct __pyx_obj
  *   def clear(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 193, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 193, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 193, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 193, __pyx_L1_error)
-  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 192, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":192
+  /* "zmesh/_zmesh.pyx":191
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -5518,7 +5518,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_8get_mesh(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":195
+/* "zmesh/_zmesh.pyx":194
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -5544,7 +5544,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_10clear(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("clear", 0);
 
-  /* "zmesh/_zmesh.pyx":196
+  /* "zmesh/_zmesh.pyx":195
  * 
  *   def clear(self):
  *     self.ptr.clear()             # <<<<<<<<<<<<<<
@@ -5553,7 +5553,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_10clear(struct __pyx_obj_5
  */
   __pyx_v_self->ptr->clear();
 
-  /* "zmesh/_zmesh.pyx":195
+  /* "zmesh/_zmesh.pyx":194
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -5568,7 +5568,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_10clear(struct __pyx_obj_5
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":198
+/* "zmesh/_zmesh.pyx":197
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -5599,7 +5599,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_12erase(struct __pyx_obj_5
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("erase", 0);
 
-  /* "zmesh/_zmesh.pyx":199
+  /* "zmesh/_zmesh.pyx":198
  * 
  *   def erase(self, mesh_id):
  *     return self.ptr.erase(mesh_id)             # <<<<<<<<<<<<<<
@@ -5607,14 +5607,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_12erase(struct __pyx_obj_5
  * cdef class Mesher6432:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 199, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 198, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 198, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":198
+  /* "zmesh/_zmesh.pyx":197
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -5746,7 +5746,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6464_16__setstate_cython__(CYTH
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":204
+/* "zmesh/_zmesh.pyx":203
  *   cdef CMesher[uint64_t, uint32_t, double] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -5783,7 +5783,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher6432_1__cinit__(PyObject *__pyx_v_sel
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 204, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 203, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -5794,7 +5794,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher6432_1__cinit__(PyObject *__pyx_v_sel
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 204, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 203, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher6432.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5821,18 +5821,18 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher6432___cinit__(struct __pyx_obj_5zmes
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "zmesh/_zmesh.pyx":205
+  /* "zmesh/_zmesh.pyx":204
  * 
  *   def __cinit__(self, voxel_res):
  *     self.ptr = new CMesher[uint64_t, uint32_t, double](voxel_res.astype(np.float32))             # <<<<<<<<<<<<<<
  * 
  *   def __dealloc__(self):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 205, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -5848,20 +5848,20 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher6432___cinit__(struct __pyx_obj_5zmes
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 205, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_6 = new CMesher<uint64_t,uint32_t,double> (__pyx_t_5);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 205, __pyx_L1_error)
+    __PYX_ERR(0, 204, __pyx_L1_error)
   }
   __pyx_v_self->ptr = __pyx_t_6;
 
-  /* "zmesh/_zmesh.pyx":204
+  /* "zmesh/_zmesh.pyx":203
  *   cdef CMesher[uint64_t, uint32_t, double] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -5884,7 +5884,7 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher6432___cinit__(struct __pyx_obj_5zmes
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":207
+/* "zmesh/_zmesh.pyx":206
  *     self.ptr = new CMesher[uint64_t, uint32_t, double](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -5907,7 +5907,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher6432_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "zmesh/_zmesh.pyx":208
+  /* "zmesh/_zmesh.pyx":207
  * 
  *   def __dealloc__(self):
  *     del self.ptr             # <<<<<<<<<<<<<<
@@ -5916,7 +5916,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher6432_2__dealloc__(struct __pyx_obj_5
  */
   delete __pyx_v_self->ptr;
 
-  /* "zmesh/_zmesh.pyx":207
+  /* "zmesh/_zmesh.pyx":206
  *     self.ptr = new CMesher[uint64_t, uint32_t, double](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -5928,7 +5928,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher6432_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyFinishContext();
 }
 
-/* "zmesh/_zmesh.pyx":210
+/* "zmesh/_zmesh.pyx":209
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -5966,18 +5966,18 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_4mesh(struct __pyx_obj_5zm
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":212
+  /* "zmesh/_zmesh.pyx":211
  *   def mesh(self, data):
  *     self.ptr.mesh(
  *       data.astype(np.uint64).flatten(),             # <<<<<<<<<<<<<<
  *       data.shape[0], data.shape[1], data.shape[2]
  *     )
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -5993,10 +5993,10 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_4mesh(struct __pyx_obj_5zm
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 212, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -6011,42 +6011,42 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_4mesh(struct __pyx_obj_5zm
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __pyx_convert_vector_from_py_uint32_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_t_6 = __pyx_convert_vector_from_py_uint32_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":213
+  /* "zmesh/_zmesh.pyx":212
  *     self.ptr.mesh(
  *       data.astype(np.uint64).flatten(),
  *       data.shape[0], data.shape[1], data.shape[2]             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 212, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "zmesh/_zmesh.pyx":211
+  /* "zmesh/_zmesh.pyx":210
  * 
  *   def mesh(self, data):
  *     self.ptr.mesh(             # <<<<<<<<<<<<<<
@@ -6055,7 +6055,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_4mesh(struct __pyx_obj_5zm
  */
   __pyx_v_self->ptr->mesh(__pyx_t_6, __pyx_t_7, __pyx_t_8, __pyx_t_9);
 
-  /* "zmesh/_zmesh.pyx":210
+  /* "zmesh/_zmesh.pyx":209
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -6080,7 +6080,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_4mesh(struct __pyx_obj_5zm
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":216
+/* "zmesh/_zmesh.pyx":215
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -6110,7 +6110,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_6ids(struct __pyx_obj_5zme
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ids", 0);
 
-  /* "zmesh/_zmesh.pyx":217
+  /* "zmesh/_zmesh.pyx":216
  * 
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
@@ -6118,13 +6118,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_6ids(struct __pyx_obj_5zme
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_vector_to_py_uint32_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 217, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_to_py_uint32_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":216
+  /* "zmesh/_zmesh.pyx":215
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -6143,7 +6143,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_6ids(struct __pyx_obj_5zme
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":219
+/* "zmesh/_zmesh.pyx":218
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -6210,7 +6210,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher6432_9get_mesh(PyObject *__pyx_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 219, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 218, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -6232,7 +6232,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher6432_9get_mesh(PyObject *__pyx_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 219, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 218, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher6432.get_mesh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6258,7 +6258,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_8get_mesh(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":220
+  /* "zmesh/_zmesh.pyx":219
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
@@ -6266,17 +6266,17 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_8get_mesh(struct __pyx_obj
  *   def clear(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
-  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":219
+  /* "zmesh/_zmesh.pyx":218
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -6295,7 +6295,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_8get_mesh(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":222
+/* "zmesh/_zmesh.pyx":221
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -6321,7 +6321,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_10clear(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("clear", 0);
 
-  /* "zmesh/_zmesh.pyx":223
+  /* "zmesh/_zmesh.pyx":222
  * 
  *   def clear(self):
  *     self.ptr.clear()             # <<<<<<<<<<<<<<
@@ -6330,7 +6330,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_10clear(struct __pyx_obj_5
  */
   __pyx_v_self->ptr->clear();
 
-  /* "zmesh/_zmesh.pyx":222
+  /* "zmesh/_zmesh.pyx":221
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -6345,7 +6345,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_10clear(struct __pyx_obj_5
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":225
+/* "zmesh/_zmesh.pyx":224
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -6376,7 +6376,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_12erase(struct __pyx_obj_5
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("erase", 0);
 
-  /* "zmesh/_zmesh.pyx":226
+  /* "zmesh/_zmesh.pyx":225
  * 
  *   def erase(self, mesh_id):
  *     return self.ptr.erase(mesh_id)             # <<<<<<<<<<<<<<
@@ -6384,14 +6384,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_12erase(struct __pyx_obj_5
  * cdef class Mesher3264:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 226, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 225, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":225
+  /* "zmesh/_zmesh.pyx":224
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -6523,7 +6523,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher6432_16__setstate_cython__(CYTH
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":231
+/* "zmesh/_zmesh.pyx":230
  *   cdef CMesher[uint32_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -6560,7 +6560,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher3264_1__cinit__(PyObject *__pyx_v_sel
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 231, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 230, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -6571,7 +6571,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher3264_1__cinit__(PyObject *__pyx_v_sel
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 231, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 230, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher3264.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6598,18 +6598,18 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher3264___cinit__(struct __pyx_obj_5zmes
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "zmesh/_zmesh.pyx":232
+  /* "zmesh/_zmesh.pyx":231
  * 
  *   def __cinit__(self, voxel_res):
  *     self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float32))             # <<<<<<<<<<<<<<
  * 
  *   def __dealloc__(self):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 232, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 232, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 232, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -6625,20 +6625,20 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher3264___cinit__(struct __pyx_obj_5zmes
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 232, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 231, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_6 = new CMesher<uint32_t,uint64_t,float> (__pyx_t_5);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 232, __pyx_L1_error)
+    __PYX_ERR(0, 231, __pyx_L1_error)
   }
   __pyx_v_self->ptr = __pyx_t_6;
 
-  /* "zmesh/_zmesh.pyx":231
+  /* "zmesh/_zmesh.pyx":230
  *   cdef CMesher[uint32_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -6661,7 +6661,7 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher3264___cinit__(struct __pyx_obj_5zmes
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":234
+/* "zmesh/_zmesh.pyx":233
  *     self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -6684,7 +6684,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher3264_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "zmesh/_zmesh.pyx":235
+  /* "zmesh/_zmesh.pyx":234
  * 
  *   def __dealloc__(self):
  *     del self.ptr             # <<<<<<<<<<<<<<
@@ -6693,7 +6693,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher3264_2__dealloc__(struct __pyx_obj_5
  */
   delete __pyx_v_self->ptr;
 
-  /* "zmesh/_zmesh.pyx":234
+  /* "zmesh/_zmesh.pyx":233
  *     self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -6705,7 +6705,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher3264_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyFinishContext();
 }
 
-/* "zmesh/_zmesh.pyx":237
+/* "zmesh/_zmesh.pyx":236
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -6743,18 +6743,18 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_4mesh(struct __pyx_obj_5zm
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":239
+  /* "zmesh/_zmesh.pyx":238
  *   def mesh(self, data):
  *     self.ptr.mesh(
  *       data.astype(np.uint64).flatten(),             # <<<<<<<<<<<<<<
  *       data.shape[0], data.shape[1], data.shape[2]
  *     )
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -6770,10 +6770,10 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_4mesh(struct __pyx_obj_5zm
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 239, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -6788,42 +6788,42 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_4mesh(struct __pyx_obj_5zm
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 239, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __pyx_convert_vector_from_py_uint64_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_6 = __pyx_convert_vector_from_py_uint64_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":240
+  /* "zmesh/_zmesh.pyx":239
  *     self.ptr.mesh(
  *       data.astype(np.uint64).flatten(),
  *       data.shape[0], data.shape[1], data.shape[2]             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 240, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "zmesh/_zmesh.pyx":238
+  /* "zmesh/_zmesh.pyx":237
  * 
  *   def mesh(self, data):
  *     self.ptr.mesh(             # <<<<<<<<<<<<<<
@@ -6832,7 +6832,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_4mesh(struct __pyx_obj_5zm
  */
   __pyx_v_self->ptr->mesh(__pyx_t_6, __pyx_t_7, __pyx_t_8, __pyx_t_9);
 
-  /* "zmesh/_zmesh.pyx":237
+  /* "zmesh/_zmesh.pyx":236
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -6857,7 +6857,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_4mesh(struct __pyx_obj_5zm
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":243
+/* "zmesh/_zmesh.pyx":242
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -6887,7 +6887,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_6ids(struct __pyx_obj_5zme
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ids", 0);
 
-  /* "zmesh/_zmesh.pyx":244
+  /* "zmesh/_zmesh.pyx":243
  * 
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
@@ -6895,13 +6895,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_6ids(struct __pyx_obj_5zme
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_vector_to_py_uint64_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_to_py_uint64_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":243
+  /* "zmesh/_zmesh.pyx":242
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -6920,7 +6920,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_6ids(struct __pyx_obj_5zme
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":246
+/* "zmesh/_zmesh.pyx":245
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -6987,7 +6987,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher3264_9get_mesh(PyObject *__pyx_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 246, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 245, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -7009,7 +7009,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher3264_9get_mesh(PyObject *__pyx_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 246, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 245, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher3264.get_mesh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -7035,7 +7035,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_8get_mesh(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":247
+  /* "zmesh/_zmesh.pyx":246
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
@@ -7043,17 +7043,17 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_8get_mesh(struct __pyx_obj
  *   def clear(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 247, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 247, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 247, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 247, __pyx_L1_error)
-  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":246
+  /* "zmesh/_zmesh.pyx":245
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -7072,7 +7072,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_8get_mesh(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":249
+/* "zmesh/_zmesh.pyx":248
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -7098,7 +7098,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_10clear(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("clear", 0);
 
-  /* "zmesh/_zmesh.pyx":250
+  /* "zmesh/_zmesh.pyx":249
  * 
  *   def clear(self):
  *     self.ptr.clear()             # <<<<<<<<<<<<<<
@@ -7107,7 +7107,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_10clear(struct __pyx_obj_5
  */
   __pyx_v_self->ptr->clear();
 
-  /* "zmesh/_zmesh.pyx":249
+  /* "zmesh/_zmesh.pyx":248
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -7122,7 +7122,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_10clear(struct __pyx_obj_5
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":252
+/* "zmesh/_zmesh.pyx":251
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -7153,7 +7153,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_12erase(struct __pyx_obj_5
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("erase", 0);
 
-  /* "zmesh/_zmesh.pyx":253
+  /* "zmesh/_zmesh.pyx":252
  * 
  *   def erase(self, mesh_id):
  *     return self.ptr.erase(mesh_id)             # <<<<<<<<<<<<<<
@@ -7161,14 +7161,14 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_12erase(struct __pyx_obj_5
  * cdef class Mesher3232:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 253, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint64_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 252, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":252
+  /* "zmesh/_zmesh.pyx":251
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -7300,7 +7300,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3264_16__setstate_cython__(CYTH
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":258
+/* "zmesh/_zmesh.pyx":257
  *   cdef CMesher[uint32_t, uint32_t, float] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -7337,7 +7337,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher3232_1__cinit__(PyObject *__pyx_v_sel
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 258, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 257, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -7348,7 +7348,7 @@ static int __pyx_pw_5zmesh_6_zmesh_10Mesher3232_1__cinit__(PyObject *__pyx_v_sel
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 258, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 257, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher3232.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -7375,18 +7375,18 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher3232___cinit__(struct __pyx_obj_5zmes
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "zmesh/_zmesh.pyx":259
+  /* "zmesh/_zmesh.pyx":258
  * 
  *   def __cinit__(self, voxel_res):
  *     self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res.astype(np.float32))             # <<<<<<<<<<<<<<
  * 
  *   def __dealloc__(self):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_voxel_res, __pyx_n_s_astype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 259, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -7402,20 +7402,20 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher3232___cinit__(struct __pyx_obj_5zmes
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_6 = new CMesher<uint32_t,uint32_t,float> (__pyx_t_5);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 259, __pyx_L1_error)
+    __PYX_ERR(0, 258, __pyx_L1_error)
   }
   __pyx_v_self->ptr = __pyx_t_6;
 
-  /* "zmesh/_zmesh.pyx":258
+  /* "zmesh/_zmesh.pyx":257
  *   cdef CMesher[uint32_t, uint32_t, float] *ptr      # hold a C++ instance which we're wrapping
  * 
  *   def __cinit__(self, voxel_res):             # <<<<<<<<<<<<<<
@@ -7438,7 +7438,7 @@ static int __pyx_pf_5zmesh_6_zmesh_10Mesher3232___cinit__(struct __pyx_obj_5zmes
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":261
+/* "zmesh/_zmesh.pyx":260
  *     self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -7461,7 +7461,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher3232_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "zmesh/_zmesh.pyx":262
+  /* "zmesh/_zmesh.pyx":261
  * 
  *   def __dealloc__(self):
  *     del self.ptr             # <<<<<<<<<<<<<<
@@ -7470,7 +7470,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher3232_2__dealloc__(struct __pyx_obj_5
  */
   delete __pyx_v_self->ptr;
 
-  /* "zmesh/_zmesh.pyx":261
+  /* "zmesh/_zmesh.pyx":260
  *     self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res.astype(np.float32))
  * 
  *   def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -7482,7 +7482,7 @@ static void __pyx_pf_5zmesh_6_zmesh_10Mesher3232_2__dealloc__(struct __pyx_obj_5
   __Pyx_RefNannyFinishContext();
 }
 
-/* "zmesh/_zmesh.pyx":264
+/* "zmesh/_zmesh.pyx":263
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -7520,18 +7520,18 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_4mesh(struct __pyx_obj_5zm
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":266
+  /* "zmesh/_zmesh.pyx":265
  *   def mesh(self, data):
  *     self.ptr.mesh(
  *       data.astype(np.uint32).flatten(),             # <<<<<<<<<<<<<<
  *       data.shape[0], data.shape[1], data.shape[2]
  *     )
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_astype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 266, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 266, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uint32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -7547,10 +7547,10 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_4mesh(struct __pyx_obj_5zm
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 266, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flatten); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -7565,42 +7565,42 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_4mesh(struct __pyx_obj_5zm
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __pyx_convert_vector_from_py_uint32_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 266, __pyx_L1_error)
+  __pyx_t_6 = __pyx_convert_vector_from_py_uint32_t(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":267
+  /* "zmesh/_zmesh.pyx":266
  *     self.ptr.mesh(
  *       data.astype(np.uint32).flatten(),
  *       data.shape[0], data.shape[1], data.shape[2]             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_7 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_data, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 267, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyInt_As_unsigned_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "zmesh/_zmesh.pyx":265
+  /* "zmesh/_zmesh.pyx":264
  * 
  *   def mesh(self, data):
  *     self.ptr.mesh(             # <<<<<<<<<<<<<<
@@ -7609,7 +7609,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_4mesh(struct __pyx_obj_5zm
  */
   __pyx_v_self->ptr->mesh(__pyx_t_6, __pyx_t_7, __pyx_t_8, __pyx_t_9);
 
-  /* "zmesh/_zmesh.pyx":264
+  /* "zmesh/_zmesh.pyx":263
  *     del self.ptr
  * 
  *   def mesh(self, data):             # <<<<<<<<<<<<<<
@@ -7634,7 +7634,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_4mesh(struct __pyx_obj_5zm
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":270
+/* "zmesh/_zmesh.pyx":269
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -7664,7 +7664,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_6ids(struct __pyx_obj_5zme
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ids", 0);
 
-  /* "zmesh/_zmesh.pyx":271
+  /* "zmesh/_zmesh.pyx":270
  * 
  *   def ids(self):
  *     return self.ptr.ids()             # <<<<<<<<<<<<<<
@@ -7672,13 +7672,13 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_6ids(struct __pyx_obj_5zme
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_vector_to_py_uint32_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_to_py_uint32_t(__pyx_v_self->ptr->ids()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":270
+  /* "zmesh/_zmesh.pyx":269
  *     )
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
@@ -7697,7 +7697,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_6ids(struct __pyx_obj_5zme
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":273
+/* "zmesh/_zmesh.pyx":272
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -7764,7 +7764,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher3232_9get_mesh(PyObject *__pyx_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 273, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_mesh") < 0)) __PYX_ERR(0, 272, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -7786,7 +7786,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_10Mesher3232_9get_mesh(PyObject *__pyx_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 273, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_mesh", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 272, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("zmesh._zmesh.Mesher3232.get_mesh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -7812,7 +7812,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_8get_mesh(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_mesh", 0);
 
-  /* "zmesh/_zmesh.pyx":274
+  /* "zmesh/_zmesh.pyx":273
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)             # <<<<<<<<<<<<<<
@@ -7820,17 +7820,17 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_8get_mesh(struct __pyx_obj
  *   def clear(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 274, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 274, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 274, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 274, __pyx_L1_error)
-  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 274, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_normals); if (unlikely((__pyx_t_2 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_simplification_factor); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_max_simplification_error); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert__to_py_struct__MeshObject(__pyx_v_self->ptr->get_mesh(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":273
+  /* "zmesh/_zmesh.pyx":272
  *     return self.ptr.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
@@ -7849,7 +7849,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_8get_mesh(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":276
+/* "zmesh/_zmesh.pyx":275
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -7875,7 +7875,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_10clear(struct __pyx_obj_5
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("clear", 0);
 
-  /* "zmesh/_zmesh.pyx":277
+  /* "zmesh/_zmesh.pyx":276
  * 
  *   def clear(self):
  *     self.ptr.clear()             # <<<<<<<<<<<<<<
@@ -7884,7 +7884,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_10clear(struct __pyx_obj_5
  */
   __pyx_v_self->ptr->clear();
 
-  /* "zmesh/_zmesh.pyx":276
+  /* "zmesh/_zmesh.pyx":275
  *     return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
@@ -7899,7 +7899,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_10clear(struct __pyx_obj_5
   return __pyx_r;
 }
 
-/* "zmesh/_zmesh.pyx":279
+/* "zmesh/_zmesh.pyx":278
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -7929,20 +7929,20 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_10Mesher3232_12erase(struct __pyx_obj_5
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("erase", 0);
 
-  /* "zmesh/_zmesh.pyx":280
+  /* "zmesh/_zmesh.pyx":279
  * 
  *   def erase(self, mesh_id):
  *     return self.ptr.erase(mesh_id)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 280, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_uint32_t(__pyx_v_mesh_id); if (unlikely((__pyx_t_1 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 279, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->ptr->erase(__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 279, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "zmesh/_zmesh.pyx":279
+  /* "zmesh/_zmesh.pyx":278
  *     self.ptr.clear()
  * 
  *   def erase(self, mesh_id):             # <<<<<<<<<<<<<<
@@ -10303,7 +10303,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 93, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 92, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(2, 947, __pyx_L1_error)
   return 0;
@@ -10315,14 +10315,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "zmesh/_zmesh.pyx":95
+  /* "zmesh/_zmesh.pyx":94
  *     for i in range(Nf):
  *       for j in range(3):
  *         tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]             # <<<<<<<<<<<<<<
  * 
  *     return tris
  */
-  __pyx_slice_ = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice_)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __pyx_slice_ = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice_)) __PYX_ERR(0, 94, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice_);
   __Pyx_GIVEREF(__pyx_slice_);
 
@@ -10448,104 +10448,104 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__14);
   __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(2, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_mesh, 37, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 37, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":56
+  /* "zmesh/_zmesh.pyx":55
  *     return self._mesher.mesh(data)
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
  *     return self._mesher.ids()
  * 
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__16);
   __Pyx_GIVEREF(__pyx_tuple__16);
-  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_ids, 56, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_ids, 55, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 55, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":59
+  /* "zmesh/_zmesh.pyx":58
  *     return self._mesher.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     """
  *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
  */
-  __pyx_tuple__18 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_mesh_id, __pyx_n_s_normals, __pyx_n_s_simplification_factor, __pyx_n_s_max_simplification_error, __pyx_n_s_mesh); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_tuple__18 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_mesh_id, __pyx_n_s_normals, __pyx_n_s_simplification_factor, __pyx_n_s_max_simplification_error, __pyx_n_s_mesh); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__18);
   __Pyx_GIVEREF(__pyx_tuple__18);
-  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(5, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_get_mesh, 59, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) __PYX_ERR(0, 59, __pyx_L1_error)
-  __pyx_tuple__20 = PyTuple_Pack(3, ((PyObject *)Py_False), ((PyObject *)__pyx_int_0), ((PyObject *)__pyx_int_40)); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(5, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_get_mesh, 58, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(3, ((PyObject *)Py_False), ((PyObject *)__pyx_int_0), ((PyObject *)__pyx_int_40)); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__20);
   __Pyx_GIVEREF(__pyx_tuple__20);
 
-  /* "zmesh/_zmesh.pyx":71
+  /* "zmesh/_zmesh.pyx":70
  *     return self._normalize_simplified_mesh(mesh)
  * 
  *   def _normalize_simplified_mesh(self, mesh):             # <<<<<<<<<<<<<<
  *     points = np.array(mesh['points'], dtype=np.float32)
  *     points /= 2.0
  */
-  __pyx_tuple__21 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_mesh, __pyx_n_s_points, __pyx_n_s_Nv, __pyx_n_s_Nf, __pyx_n_s_faces, __pyx_n_s_normals); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_tuple__21 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_mesh, __pyx_n_s_points, __pyx_n_s_Nv, __pyx_n_s_Nf, __pyx_n_s_faces, __pyx_n_s_normals); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(2, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_normalize_simplified_mesh, 71, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(2, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_normalize_simplified_mesh, 70, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 70, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":86
+  /* "zmesh/_zmesh.pyx":85
  *     return Mesh(points, faces, normals)
  * 
  *   def _triangles(self, mesh):             # <<<<<<<<<<<<<<
  *     cdef size_t Nf = mesh.faces.shape[0]
  *     cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
  */
-  __pyx_tuple__23 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_mesh, __pyx_n_s_Nf, __pyx_n_s_tris, __pyx_n_s_i, __pyx_n_s_j); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_tuple__23 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_mesh, __pyx_n_s_Nf, __pyx_n_s_tris, __pyx_n_s_i, __pyx_n_s_j); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__23);
   __Pyx_GIVEREF(__pyx_tuple__23);
-  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(2, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_triangles, 86, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(2, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_triangles, 85, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) __PYX_ERR(0, 85, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":99
+  /* "zmesh/_zmesh.pyx":98
  *     return tris
  * 
  *   def compute_normals(self, mesh):             # <<<<<<<<<<<<<<
  *     """
  *     Mesh compute_normals(mesh)
  */
-  __pyx_tuple__25 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_mesh); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_tuple__25 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_mesh); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__25);
   __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_compute_normals, 99, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_compute_normals, 98, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 98, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":107
+  /* "zmesh/_zmesh.pyx":106
  *     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
  * 
  *   def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):             # <<<<<<<<<<<<<<
  *     """
  *     Mesh simplify(mesh, reduction_factor=0, max_error=40)
  */
-  __pyx_tuple__27 = PyTuple_Pack(13, __pyx_n_s_self, __pyx_n_s_mesh, __pyx_n_s_reduction_factor, __pyx_n_s_max_error, __pyx_n_s_compute_normals, __pyx_n_s_mesher_2, __pyx_n_s_ti, __pyx_n_s_vi, __pyx_n_s_vert, __pyx_n_s_triangles_2, __pyx_n_s_packed_triangles, __pyx_n_s_Nv, __pyx_n_s_result); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_tuple__27 = PyTuple_Pack(13, __pyx_n_s_self, __pyx_n_s_mesh, __pyx_n_s_reduction_factor, __pyx_n_s_max_error, __pyx_n_s_compute_normals, __pyx_n_s_mesher_2, __pyx_n_s_ti, __pyx_n_s_vi, __pyx_n_s_vert, __pyx_n_s_triangles_2, __pyx_n_s_packed_triangles, __pyx_n_s_Nv, __pyx_n_s_result); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__27);
   __Pyx_GIVEREF(__pyx_tuple__27);
-  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(5, 0, 13, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_simplify, 107, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(5, 0, 13, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_simplify, 106, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) __PYX_ERR(0, 106, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":154
+  /* "zmesh/_zmesh.pyx":153
  *     return self._normalize_simplified_mesh(result)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
  *     self._mesher.clear()
  * 
  */
-  __pyx_tuple__29 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_tuple__29 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__29);
   __Pyx_GIVEREF(__pyx_tuple__29);
-  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_clear, 154, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_clear, 153, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 153, __pyx_L1_error)
 
-  /* "zmesh/_zmesh.pyx":157
+  /* "zmesh/_zmesh.pyx":156
  *     self._mesher.clear()
  * 
  *   def erase(self, segid):             # <<<<<<<<<<<<<<
  *     return self._mesher.erase(segid)
  * 
  */
-  __pyx_tuple__31 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_segid); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __pyx_tuple__31 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_segid); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__31);
   __Pyx_GIVEREF(__pyx_tuple__31);
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_erase, 157, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_zmesh__zmesh_pyx, __pyx_n_s_erase, 156, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -10606,45 +10606,45 @@ static int __Pyx_modinit_type_init_code(void) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher6464) < 0) __PYX_ERR(0, 174, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher6464) < 0) __PYX_ERR(0, 173, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_5zmesh_6_zmesh_Mesher6464.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_5zmesh_6_zmesh_Mesher6464.tp_dictoffset && __pyx_type_5zmesh_6_zmesh_Mesher6464.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_5zmesh_6_zmesh_Mesher6464.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher6464, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher6464) < 0) __PYX_ERR(0, 174, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher6464) < 0) __PYX_ERR(0, 174, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher6464, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher6464) < 0) __PYX_ERR(0, 173, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher6464) < 0) __PYX_ERR(0, 173, __pyx_L1_error)
   __pyx_ptype_5zmesh_6_zmesh_Mesher6464 = &__pyx_type_5zmesh_6_zmesh_Mesher6464;
-  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher6432) < 0) __PYX_ERR(0, 201, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher6432) < 0) __PYX_ERR(0, 200, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_5zmesh_6_zmesh_Mesher6432.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_5zmesh_6_zmesh_Mesher6432.tp_dictoffset && __pyx_type_5zmesh_6_zmesh_Mesher6432.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_5zmesh_6_zmesh_Mesher6432.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher6432, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher6432) < 0) __PYX_ERR(0, 201, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher6432) < 0) __PYX_ERR(0, 201, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher6432, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher6432) < 0) __PYX_ERR(0, 200, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher6432) < 0) __PYX_ERR(0, 200, __pyx_L1_error)
   __pyx_ptype_5zmesh_6_zmesh_Mesher6432 = &__pyx_type_5zmesh_6_zmesh_Mesher6432;
-  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher3264) < 0) __PYX_ERR(0, 228, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher3264) < 0) __PYX_ERR(0, 227, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_5zmesh_6_zmesh_Mesher3264.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_5zmesh_6_zmesh_Mesher3264.tp_dictoffset && __pyx_type_5zmesh_6_zmesh_Mesher3264.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_5zmesh_6_zmesh_Mesher3264.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher3264, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher3264) < 0) __PYX_ERR(0, 228, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher3264) < 0) __PYX_ERR(0, 228, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher3264, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher3264) < 0) __PYX_ERR(0, 227, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher3264) < 0) __PYX_ERR(0, 227, __pyx_L1_error)
   __pyx_ptype_5zmesh_6_zmesh_Mesher3264 = &__pyx_type_5zmesh_6_zmesh_Mesher3264;
-  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher3232) < 0) __PYX_ERR(0, 255, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5zmesh_6_zmesh_Mesher3232) < 0) __PYX_ERR(0, 254, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_5zmesh_6_zmesh_Mesher3232.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_5zmesh_6_zmesh_Mesher3232.tp_dictoffset && __pyx_type_5zmesh_6_zmesh_Mesher3232.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_5zmesh_6_zmesh_Mesher3232.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher3232, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher3232) < 0) __PYX_ERR(0, 255, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher3232) < 0) __PYX_ERR(0, 255, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Mesher3232, (PyObject *)&__pyx_type_5zmesh_6_zmesh_Mesher3232) < 0) __PYX_ERR(0, 254, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_5zmesh_6_zmesh_Mesher3232) < 0) __PYX_ERR(0, 254, __pyx_L1_error)
   __pyx_ptype_5zmesh_6_zmesh_Mesher3232 = &__pyx_type_5zmesh_6_zmesh_Mesher3232;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -11001,79 +11001,79 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_mesh, __pyx_t_1) < 0) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":56
+  /* "zmesh/_zmesh.pyx":55
  *     return self._mesher.mesh(data)
  * 
  *   def ids(self):             # <<<<<<<<<<<<<<
  *     return self._mesher.ids()
  * 
  */
-  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_5ids, 0, __pyx_n_s_Mesher_ids, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__17)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_5ids, 0, __pyx_n_s_Mesher_ids, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__17)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_ids, __pyx_t_1) < 0) __PYX_ERR(0, 56, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_ids, __pyx_t_1) < 0) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":59
+  /* "zmesh/_zmesh.pyx":58
  *     return self._mesher.ids()
  * 
  *   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):             # <<<<<<<<<<<<<<
  *     """
  *     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
  */
-  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_7get_mesh, 0, __pyx_n_s_Mesher_get_mesh, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__19)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_7get_mesh, 0, __pyx_n_s_Mesher_get_mesh, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__19)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_1, __pyx_tuple__20);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_get_mesh, __pyx_t_1) < 0) __PYX_ERR(0, 59, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_get_mesh, __pyx_t_1) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":71
+  /* "zmesh/_zmesh.pyx":70
  *     return self._normalize_simplified_mesh(mesh)
  * 
  *   def _normalize_simplified_mesh(self, mesh):             # <<<<<<<<<<<<<<
  *     points = np.array(mesh['points'], dtype=np.float32)
  *     points /= 2.0
  */
-  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_9_normalize_simplified_mesh, 0, __pyx_n_s_Mesher__normalize_simplified_mes, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__22)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_9_normalize_simplified_mesh, 0, __pyx_n_s_Mesher__normalize_simplified_mes, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__22)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_normalize_simplified_mesh, __pyx_t_1) < 0) __PYX_ERR(0, 71, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_normalize_simplified_mesh, __pyx_t_1) < 0) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":86
+  /* "zmesh/_zmesh.pyx":85
  *     return Mesh(points, faces, normals)
  * 
  *   def _triangles(self, mesh):             # <<<<<<<<<<<<<<
  *     cdef size_t Nf = mesh.faces.shape[0]
  *     cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
  */
-  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_11_triangles, 0, __pyx_n_s_Mesher__triangles, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__24)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_11_triangles, 0, __pyx_n_s_Mesher__triangles, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__24)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_triangles, __pyx_t_1) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_triangles, __pyx_t_1) < 0) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":99
+  /* "zmesh/_zmesh.pyx":98
  *     return tris
  * 
  *   def compute_normals(self, mesh):             # <<<<<<<<<<<<<<
  *     """
  *     Mesh compute_normals(mesh)
  */
-  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_13compute_normals, 0, __pyx_n_s_Mesher_compute_normals, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__26)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_13compute_normals, 0, __pyx_n_s_Mesher_compute_normals, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__26)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_compute_normals, __pyx_t_1) < 0) __PYX_ERR(0, 99, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_compute_normals, __pyx_t_1) < 0) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "zmesh/_zmesh.pyx":107
+  /* "zmesh/_zmesh.pyx":106
  *     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
  * 
  *   def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):             # <<<<<<<<<<<<<<
  *     """
  *     Mesh simplify(mesh, reduction_factor=0, max_error=40)
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(((int)0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(((int)0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyInt_From_int(((int)40)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(((int)40)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -11084,35 +11084,35 @@ if (!__Pyx_RefNanny) {
   PyTuple_SET_ITEM(__pyx_t_4, 2, ((PyObject *)Py_False));
   __pyx_t_1 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_15simplify, 0, __pyx_n_s_Mesher_simplify, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__28)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_15simplify, 0, __pyx_n_s_Mesher_simplify, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__28)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_3, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_simplify, __pyx_t_3) < 0) __PYX_ERR(0, 107, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_simplify, __pyx_t_3) < 0) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "zmesh/_zmesh.pyx":154
+  /* "zmesh/_zmesh.pyx":153
  *     return self._normalize_simplified_mesh(result)
  * 
  *   def clear(self):             # <<<<<<<<<<<<<<
  *     self._mesher.clear()
  * 
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_17clear, 0, __pyx_n_s_Mesher_clear, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__30)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_17clear, 0, __pyx_n_s_Mesher_clear, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__30)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_clear, __pyx_t_3) < 0) __PYX_ERR(0, 154, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_clear, __pyx_t_3) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "zmesh/_zmesh.pyx":157
+  /* "zmesh/_zmesh.pyx":156
  *     self._mesher.clear()
  * 
  *   def erase(self, segid):             # <<<<<<<<<<<<<<
  *     return self._mesher.erase(segid)
  * 
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_19erase, 0, __pyx_n_s_Mesher_erase, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__32)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_5zmesh_6_zmesh_6Mesher_19erase, 0, __pyx_n_s_Mesher_erase, NULL, __pyx_n_s_zmesh__zmesh, __pyx_d, ((PyObject *)__pyx_codeobj__32)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_erase, __pyx_t_3) < 0) __PYX_ERR(0, 157, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_erase, __pyx_t_3) < 0) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
   /* "zmesh/_zmesh.pyx":31

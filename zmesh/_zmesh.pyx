@@ -40,11 +40,10 @@ class Mesher:
     shape = np.array(data.shape)
     nbytes = np.dtype(data.dtype).itemsize
 
-    # z is allocated position 10 bits, y 11, and x 11 bits.
-    # For some reason, x has an overflow error if you 
-    # try to use the last bit, so we play it safe and 
-    # restrict it to 10 bits.
-    if shape[0] > 511 or shape[1] > 1023 or shape[2] > 511:
+    # z is allocated 10 position bits, y 11, and x 11 bits.
+    # The last bit is 2^-1 (fixed point) so divide by two to
+    # get the maximum supported shape. 
+    if shape[0] > 1023 or shape[1] > 1023 or shape[2] > 511:
       MesherClass = Mesher6432 if nbytes <= 4 else Mesher6464
     else:
       MesherClass = Mesher3232 if nbytes <= 4 else Mesher3264

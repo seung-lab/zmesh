@@ -220,7 +220,13 @@ public:
 
         unordered_set< LabelType > local;
 
-        PositionType ptrs_[ 12 ];
+        // If we don't use uint64_t, then uint32_t
+        // messes up in the final position due to some
+        // kind of truncation or overflow issue. We use
+        // all the bits in a uint32_t, but only 63 bits
+        // for the uint64_t, so we don't see the issue
+        // either way.
+        uint64_t ptrs_[ 12 ];
 
         PositionType vert[ 8 ] =
         {
