@@ -1,6 +1,29 @@
 CHANGES
 =======
 
+0.5.1
+-----
+
+* chore: replace hyphens with underscores in setup.cfg
+* docs: update capabilities of 32-bit mode
+* fix: 32-bit mode supports full x range to 1023 voxels
+* chore: fix tests and change badge to GHA from travis
+* chore: add tests to GHA
+
+0.5.0
+-----
+
+* release(0.5.0): support for floating point resolutions
+* chore: only build py36+
+* chore: try cibuildwheel with github actions
+* chore: update metadata to reflect py36+ support
+* fix: py39 requires new cython compilation
+* Fix comma→dot in readme documentation (#17)
+* fix: remove int restrictions from voxel\_resolution
+* docs: add references for mesh simplification
+* docs: update ChangeLog
+* docs: add compute\_normals example
+
 0.4.0
 -----
 
