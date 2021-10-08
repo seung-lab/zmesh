@@ -78,8 +78,8 @@ pip install zmesh --no-binary :all:
 ## Performance Tuning
 
 - The mesher will consume about double memory in 64 bit mode if the size of the 
-object exceeds <511, 1023, 511> on the x, y, or z axes. This is due to a limitation 
-of the 32-bit format. It might be possible to get x to 1023 as well.
+object exceeds <1023, 1023, 511> on the x, y, or z axes. This is due to a limitation 
+of the 32-bit format. 
 - Input labels are converted to uint32 or uint64. Use one of these data types to avoid a copy.
 - The mesher processes in C order.
 
