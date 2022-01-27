@@ -55,27 +55,41 @@ class Mesher:
   def ids(self):
     return self._mesher.ids()
 
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+  def get_mesh(
+    self, mesh_id, normals=False, 
+    simplification_factor=0, max_simplification_error=40,
+    voxel_centered=False
+  ):
     """
     get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
 
-    Returns: MeshObject
+    mesh_id: the integer id of the mesh
+    normals: whether to calculate vertex normals for the mesh
+    simplification_factor: Try to reduce the number of triangles by this factor.
+    max_simplification_error: maximum distance vertices are allowed to deviate from
+      their original position. Units are physical, not voxels.
+    voxel_centered: By default, the meshes produced will be centered at 0,0,0.
+      If enabled, the meshes will be centered in the voxel at 0.5,0.5,0.5.
+
+    Returns: Mesh
     """
     mesh = self._mesher.get_mesh(
       mesh_id, normals, simplification_factor, max_simplification_error
     )
 
-    return self._normalize_simplified_mesh(mesh)
+    return self._normalize_simplified_mesh(mesh, voxel_centered)
   
-  def _normalize_simplified_mesh(self, mesh):
+  def _normalize_simplified_mesh(self, mesh, voxel_centered):
     points = np.array(mesh['points'], dtype=np.float32)
-    points /= 2.0
     Nv = points.size // 3
     Nf = len(mesh['faces']) // 3
 
     points = points.reshape(Nv, 3)
+    if voxel_centered:
+      points += self.voxel_res
+    points /= 2.0
     faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
-
+    
     normals = None
     if mesh['normals']:
       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
@@ -103,7 +117,11 @@ class Mesher:
     """
     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
 
-  def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):
+  def simplify(
+    self, mesh, int reduction_factor=0, 
+    int max_error=40, compute_normals=False,
+    voxel_centered=False
+  ):
     """
     Mesh simplify(mesh, reduction_factor=0, max_error=40)
 
@@ -118,6 +136,9 @@ class Mesher:
       max_error: The maximum allowed displacement of a vertex in physical
         distance.
       compute_normals: whether or not to also compute the vertex normals
+      voxel_centered: By default, the meshes produced will be centered at 
+        0,0,0. If enabled, the meshes will be centered in the voxel at 
+        0.5,0.5,0.5.
 
     Returns: Mesh
     """
@@ -148,7 +169,7 @@ class Mesher:
       <bool>compute_normals, reduction_factor, max_error
     )
     del mesher
-    return self._normalize_simplified_mesh(result)
+    return self._normalize_simplified_mesh(result, voxel_centered)
 
   def clear(self):
     self._mesher.clear()
