@@ -117,7 +117,11 @@ class Mesher:
     """
     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
 
-  def simplify(self, mesh, int reduction_factor=0, int max_error=40, compute_normals=False):
+  def simplify(
+    self, mesh, int reduction_factor=0, 
+    int max_error=40, compute_normals=False,
+    voxel_centered=False
+  ):
     """
     Mesh simplify(mesh, reduction_factor=0, max_error=40)
 
@@ -132,6 +136,9 @@ class Mesher:
       max_error: The maximum allowed displacement of a vertex in physical
         distance.
       compute_normals: whether or not to also compute the vertex normals
+      voxel_centered: By default, the meshes produced will be centered at 
+        0,0,0. If enabled, the meshes will be centered in the voxel at 
+        0.5,0.5,0.5.
 
     Returns: Mesh
     """
@@ -162,7 +169,7 @@ class Mesher:
       <bool>compute_normals, reduction_factor, max_error
     )
     del mesher
-    return self._normalize_simplified_mesh(result)
+    return self._normalize_simplified_mesh(result, voxel_centered)
 
   def clear(self):
     self._mesher.clear()
