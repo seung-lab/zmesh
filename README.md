@@ -20,7 +20,10 @@ for obj_id in mesher.ids():
       simplification_factor=100, 
 
       # Max tolerable error in physical distance
-      max_simplification_error=8
+      max_simplification_error=8,
+      # whether meshes should be centered in the voxel
+      # on (0,0,0) [False] or (0.5,0.5,0.5) [True]
+      voxel_centered=False, 
     )
   )
   mesher.erase(obj_id) # delete high res mesh
