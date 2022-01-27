@@ -69,13 +69,13 @@ class Mesher:
   
   def _normalize_simplified_mesh(self, mesh):
     points = np.array(mesh['points'], dtype=np.float32)
-    points /= 2.0
     Nv = points.size // 3
     Nf = len(mesh['faces']) // 3
 
-    points = points.reshape(Nv, 3)
+    points = points.reshape(Nv, 3) + self.voxel_res
+    points /= 2.0
     faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
-
+    
     normals = None
     if mesh['normals']:
       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
