@@ -72,7 +72,8 @@ class Mesher:
     Nv = points.size // 3
     Nf = len(mesh['faces']) // 3
 
-    points = points.reshape(Nv, 3) + self.voxel_res
+    points = points.reshape(Nv, 3)
+    points += self.voxel_res
     points /= 2.0
     faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
     
