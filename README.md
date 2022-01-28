@@ -6,7 +6,11 @@ from zmesh import Mesher
 
 labels = ... # some dense volumetric labeled image
 mesher = Mesher( (4,4,40) ) # anisotropy of image
-mesher.mesh(labels) # initial marching cubes pass
+
+# initial marching cubes pass
+# close controls whether meshes touching
+# the image boundary are left open or closed
+mesher.mesh(labels, close=False) 
 
 meshes = []
 for obj_id in mesher.ids():
