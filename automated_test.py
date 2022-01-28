@@ -6,12 +6,13 @@ import zmesh
 DTYPE = [ np.uint8, np.uint16, np.uint32, np.uint64 ]
 
 @pytest.mark.parametrize("dtype", DTYPE)
-def test_executes(dtype):
+@pytest.mark.parametrize("close", [ False, True ])
+def test_executes(dtype, close):
   labels = np.zeros( (11,17,19), dtype=dtype)
   labels[1:-1, 1:-1, 1:-1] = 1
 
   mesher = zmesh.Mesher( (4,4,40) )
-  mesher.mesh(labels)
+  mesher.mesh(labels, close=close)
 
   mesh = mesher.get_mesh(1, normals=False)
   assert len(mesh.vertices) > 0

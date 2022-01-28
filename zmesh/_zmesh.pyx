@@ -37,10 +37,26 @@ class Mesher:
     self._mesher = Mesher6464(voxel_res)
     self.voxel_res = voxel_res
 
-  def mesh(self, data):
+  def mesh(self, data, close=False):
+    """
+    Triggers the multi-label meshing process.
+    After the mesher has run, you can call get_mesh.
+
+    data: 3d numpy array
+    close: By default, meshes flush against the edge of
+      the image will be left open on the sides that touch
+      the boundary. If True, this ensures that all meshes
+      produced will be closed.
+    """
     del self._mesher
 
     data = np.ascontiguousarray(data)
+
+    if close:
+      tmp = np.zeros(np.array(data.shape) + 2, dtype=data.dtype, order="C")
+      tmp[1:-1,1:-1,1:-1] = data
+      data = tmp
+      del tmp
 
     shape = np.array(data.shape)
     nbytes = np.dtype(data.dtype).itemsize
