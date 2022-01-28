@@ -6,8 +6,7 @@ on:
       - '*'
 
 env:
-  CIBW_SKIP: cp27-* cp33-* cp34-* cp35-* *-win32 *-manylinux_i686 pp37-* pp36-*
-
+  CIBW_SKIP: cp27-* cp33-* cp34-* cp35-* *-win32 *-manylinux_i686 *-musllinux* pp27* pp36* pp37* pp38* pp39* pp310* 
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -29,10 +28,10 @@ jobs:
           boost_version: 1.73.0
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v1.10.0
+        uses: joerick/cibuildwheel@v2.3.1
         # to supply options, put them in 'env', like:
         env:
-          CIBW_BEFORE_BUILD: pip install numpy
+          CIBW_BEFORE_BUILD: pip install oldest-supported-numpy
           CIBW_ENVIRONMENT: BOOST_ROOT="./boost/${{steps.install-boost.outputs.BOOST_VER}}"
 
       - uses: actions/upload-artifact@v2
