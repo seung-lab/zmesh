@@ -3,9 +3,21 @@
 import os
 import setuptools
 import numpy as np
+import sys
 
 # NOTE: If zmesh.cpp does not exist, you must run
 # cython --cplus -I./zi_lib/ zmesh.pyx
+
+
+extra_compile_args = []
+if sys.platform == 'win32':
+  extra_compile_args += [
+    '/std:c++11', '/O2'
+  ]
+else:
+  extra_compile_args += [
+    '-std=c++11', '-O3'
+  ]
 
 include_dirs = [ np.get_include(), 'zi_lib/', './' ]
 
@@ -27,9 +39,8 @@ setuptools.setup(
       depends=[ 'cMesher.hpp' ],
       language='c++',
       include_dirs=include_dirs,
-      extra_compile_args=[
-        '-std=c++11','-O3', '-ffast-math'
-      ]),
+      extra_compile_args=extra_compile_args
+    ),
   ],
 )
 
