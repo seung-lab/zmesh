@@ -4,6 +4,9 @@ from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 from libcpp.vector cimport vector
 from libcpp cimport bool
 
+import operator
+from functools import reduce
+
 cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
@@ -37,6 +40,8 @@ class Mesher:
   def mesh(self, data):
     del self._mesher
 
+    data = np.ascontiguousarray(data)
+
     shape = np.array(data.shape)
     nbytes = np.dtype(data.dtype).itemsize
 
@@ -44,9 +49,21 @@ class Mesher:
     # The last bit is 2^-1 (fixed point) so divide by two to
     # get the maximum supported shape. 
     if shape[0] > 1023 or shape[1] > 1023 or shape[2] > 511:
-      MesherClass = Mesher6432 if nbytes <= 4 else Mesher6464
+      MesherClass = Mesher6464
+      if nbytes == 4:
+        MesherClass = Mesher6432
+      elif nbytes == 2:
+        MesherClass = Mesher6416
+      elif nbytes == 1:
+        MesherClass = Mesher6408
     else:
-      MesherClass = Mesher3232 if nbytes <= 4 else Mesher3264
+      MesherClass = Mesher3264
+      if nbytes == 4:
+        MesherClass = Mesher3232
+      elif nbytes == 2:
+        MesherClass = Mesher3216
+      elif nbytes == 1:
+        MesherClass = Mesher3208
 
     self._mesher = MesherClass(self.voxel_res)
 
@@ -177,32 +194,60 @@ class Mesher:
   def erase(self, segid):
     return self._mesher.erase(segid)
 
+def reshape(arr, shape, order=None):
+  """
+  If the array is contiguous, attempt an in place reshape
+  rather than potentially making a copy.
+
+  Required:
+    arr: The input numpy array.
+    shape: The desired shape (must be the same size as arr)
+
+  Optional: 
+    order: 'C', 'F', or None (determine automatically)
+
+  Returns: reshaped array
+  """
+  if order is None:
+    if arr.flags['F_CONTIGUOUS']:
+      order = 'F'
+    elif arr.flags['C_CONTIGUOUS']:
+      order = 'C'
+    else:
+      return arr.reshape(shape)
+
+  cdef int nbytes = np.dtype(arr.dtype).itemsize
+
+  if order == 'C':
+    strides = [ reduce(operator.mul, shape[i:]) * nbytes for i in range(1, len(shape)) ]
+    strides += [ nbytes ]
+    return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
+  else:
+    strides = [ reduce(operator.mul, shape[:i]) * nbytes for i in range(1, len(shape)) ]
+    strides = [ nbytes ] + strides
+    return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
+
 
 # NOTE: THE USER INTERFACE CLASS IS "Mesher" ABOVE
 
-# The following wrapper classes are all similar
-# and could be generated from a template. 
+# The following wrapper classes are generated from a template!!
 
 # The pattern is: Mesher[PositionType bits][LabelType bits]
 # 64 bit position type can represent very large arrays
-# 32 bit can represent 511 x 1023 x 511 arrays
-#
-# Because the 64 bit version can handle very large arrays, it also
-# gets the double type simplifier since maybe precision will matter 
-# more.
-
-cdef class Mesher6464:
-  cdef CMesher[uint64_t, uint64_t, double] *ptr      # hold a C++ instance which we're wrapping
+# 32 bit can represent 1023 x 1023 x 511 arrays
+cdef class Mesher3208:
+  cdef CMesher[uint32_t, uint8_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint64_t, double](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint32_t, uint8_t, float](voxel_res.astype(np.float32))
 
   def __dealloc__(self):
     del self.ptr
 
   def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
     self.ptr.mesh(
-      data.astype(np.uint64).flatten(), 
+      flat_data.astype(np.uint8, copy=False), 
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -218,45 +263,19 @@ cdef class Mesher6464:
   def erase(self, mesh_id):
     return self.ptr.erase(mesh_id)
 
-cdef class Mesher6432:
-  cdef CMesher[uint64_t, uint32_t, double] *ptr      # hold a C++ instance which we're wrapping
+cdef class Mesher3216:
+  cdef CMesher[uint32_t, uint16_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint32_t, double](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint32_t, uint16_t, float](voxel_res.astype(np.float32))
 
   def __dealloc__(self):
     del self.ptr
 
   def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
     self.ptr.mesh(
-      data.astype(np.uint64).flatten(), 
-      data.shape[0], data.shape[1], data.shape[2]
-    )
-
-  def ids(self):
-    return self.ptr.ids()
-  
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
-  
-  def clear(self):
-    self.ptr.clear()
-
-  def erase(self, mesh_id):
-    return self.ptr.erase(mesh_id)
-
-cdef class Mesher3264:
-  cdef CMesher[uint32_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
-
-  def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float32))
-
-  def __dealloc__(self):
-    del self.ptr
-
-  def mesh(self, data):
-    self.ptr.mesh(
-      data.astype(np.uint64).flatten(), 
+      flat_data.astype(np.uint16, copy=False), 
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -282,8 +301,9 @@ cdef class Mesher3232:
     del self.ptr
 
   def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
     self.ptr.mesh(
-      data.astype(np.uint32).flatten(), 
+      flat_data.astype(np.uint32, copy=False), 
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -298,3 +318,144 @@ cdef class Mesher3232:
 
   def erase(self, mesh_id):
     return self.ptr.erase(mesh_id)
+
+cdef class Mesher3264:
+  cdef CMesher[uint32_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
+
+  def __cinit__(self, voxel_res):
+    self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float32))
+
+  def __dealloc__(self):
+    del self.ptr
+
+  def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
+    self.ptr.mesh(
+      flat_data.astype(np.uint64, copy=False), 
+      data.shape[0], data.shape[1], data.shape[2]
+    )
+
+  def ids(self):
+    return self.ptr.ids()
+  
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  
+  def clear(self):
+    self.ptr.clear()
+
+  def erase(self, mesh_id):
+    return self.ptr.erase(mesh_id)
+
+cdef class Mesher6408:
+  cdef CMesher[uint64_t, uint8_t, float] *ptr      # hold a C++ instance which we're wrapping
+
+  def __cinit__(self, voxel_res):
+    self.ptr = new CMesher[uint64_t, uint8_t, float](voxel_res.astype(np.float32))
+
+  def __dealloc__(self):
+    del self.ptr
+
+  def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
+    self.ptr.mesh(
+      flat_data.astype(np.uint8, copy=False), 
+      data.shape[0], data.shape[1], data.shape[2]
+    )
+
+  def ids(self):
+    return self.ptr.ids()
+  
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  
+  def clear(self):
+    self.ptr.clear()
+
+  def erase(self, mesh_id):
+    return self.ptr.erase(mesh_id)
+
+cdef class Mesher6416:
+  cdef CMesher[uint64_t, uint16_t, float] *ptr      # hold a C++ instance which we're wrapping
+
+  def __cinit__(self, voxel_res):
+    self.ptr = new CMesher[uint64_t, uint16_t, float](voxel_res.astype(np.float32))
+
+  def __dealloc__(self):
+    del self.ptr
+
+  def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
+    self.ptr.mesh(
+      flat_data.astype(np.uint16, copy=False), 
+      data.shape[0], data.shape[1], data.shape[2]
+    )
+
+  def ids(self):
+    return self.ptr.ids()
+  
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  
+  def clear(self):
+    self.ptr.clear()
+
+  def erase(self, mesh_id):
+    return self.ptr.erase(mesh_id)
+
+cdef class Mesher6432:
+  cdef CMesher[uint64_t, uint32_t, float] *ptr      # hold a C++ instance which we're wrapping
+
+  def __cinit__(self, voxel_res):
+    self.ptr = new CMesher[uint64_t, uint32_t, float](voxel_res.astype(np.float32))
+
+  def __dealloc__(self):
+    del self.ptr
+
+  def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
+    self.ptr.mesh(
+      flat_data.astype(np.uint32, copy=False), 
+      data.shape[0], data.shape[1], data.shape[2]
+    )
+
+  def ids(self):
+    return self.ptr.ids()
+  
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  
+  def clear(self):
+    self.ptr.clear()
+
+  def erase(self, mesh_id):
+    return self.ptr.erase(mesh_id)
+
+cdef class Mesher6464:
+  cdef CMesher[uint64_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
+
+  def __cinit__(self, voxel_res):
+    self.ptr = new CMesher[uint64_t, uint64_t, float](voxel_res.astype(np.float32))
+
+  def __dealloc__(self):
+    del self.ptr
+
+  def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
+    self.ptr.mesh(
+      flat_data.astype(np.uint64, copy=False), 
+      data.shape[0], data.shape[1], data.shape[2]
+    )
+
+  def ids(self):
+    return self.ptr.ids()
+  
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  
+  def clear(self):
+    self.ptr.clear()
+
+  def erase(self, mesh_id):
+    return self.ptr.erase(mesh_id)
+

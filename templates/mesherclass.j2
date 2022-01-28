@@ -1,0 +1,28 @@
+cdef class Mesher{{ position_type }}{{ '%02d' % label_type }}:
+  cdef CMesher[uint{{ position_type }}_t, uint{{ label_type }}_t, float] *ptr      # hold a C++ instance which we're wrapping
+
+  def __cinit__(self, voxel_res):
+    self.ptr = new CMesher[uint{{ position_type }}_t, uint{{ label_type }}_t, float](voxel_res.astype(np.float32))
+
+  def __dealloc__(self):
+    del self.ptr
+
+  def mesh(self, data):
+    flat_data = reshape(data, (data.size,))
+    self.ptr.mesh(
+      flat_data.astype(np.uint{{ label_type }}, copy=False), 
+      data.shape[0], data.shape[1], data.shape[2]
+    )
+
+  def ids(self):
+    return self.ptr.ids()
+  
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  
+  def clear(self):
+    self.ptr.clear()
+
+  def erase(self, mesh_id):
+    return self.ptr.erase(mesh_id)
+
