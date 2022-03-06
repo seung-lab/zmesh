@@ -116,6 +116,7 @@ public:
         unordered_map< PositionType, uint32_t > pts;
 
         const std::vector< triangle_t >& data = v_;
+        pts.reserve(3 * data.size());
 
         FOR_EACH( it, data )
         {
