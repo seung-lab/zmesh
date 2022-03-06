@@ -90,9 +90,9 @@ class CMesher {
       0, 0, 0, 
       voxelresolution_[2], voxelresolution_[1], voxelresolution_[0]
     );
-    simplifier_.prepare(generate_normals);
 
     if (simplification_factor > 0) {
+      simplifier_.prepare(generate_normals);
       // This is the most cpu intensive line
       simplifier_.optimize(
           simplifier_.face_count() / simplification_factor,
