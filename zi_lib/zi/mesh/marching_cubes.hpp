@@ -21,6 +21,7 @@
 #ifndef ZI_MESH_MARCHING_CUBES_HPP
 #define ZI_MESH_MARCHING_CUBES_HPP 1
 
+#include <zi/mesh/network_sort.hpp>
 #include <zi/mesh/tri_mesh.hpp>
 #include <zi/mesh/quadratic_simplifier.hpp>
 
@@ -33,6 +34,7 @@
 
 #include <zi/vl/vec.hpp>
 
+#include <array>
 #include <cstddef>
 #include <vector>
 #include <ostream>
@@ -257,7 +259,7 @@ public:
         std::size_t x_off = 0;
         std::size_t y_off = 0;
 
-        LabelType label = 0;
+        StaticSortUnique<8> unique8;
 
         for ( std::size_t x = 0; x < x_max; ++x )
         {
@@ -267,35 +269,49 @@ public:
                 {
                     const std::size_t ind = x_off + y_off + z;
 
-                    const LabelType vals[ 8 ] =
-                        {
-                            data[ ind ],
-                            data[ ind + off1 ],
-                            data[ ind + off2 ],
-                            data[ ind + off3 ],
-                            data[ ind + off4 ],
-                            data[ ind + off5 ],
-                            data[ ind + off6 ],
-                            data[ ind + off7 ]
-                        };
+                    std::array<LabelType, 8> vals = {
+                        data[ ind ],
+                        data[ ind + off1 ],
+                        data[ ind + off2 ],
+                        data[ ind + off3 ],
+                        data[ ind + off4 ],
+                        data[ ind + off5 ],
+                        data[ ind + off6 ],
+                        data[ ind + off7 ]
+                    };
+                    std::array<LabelType, 8> uvals = vals;
+                    unique8(uvals);
+                    // std::sort(&vals[0], &vals[8]);
+                    // for (int i = 0; i < 8; i++) {
+                    //     printf("%d, ", vals[i]);
+                    // }
+                    // printf("\n");
 
-                    local.clear();
 
-                    for ( std::size_t i = 0; i < 8; ++i )
-                    {
-                        if ( vals[ i ] )
-                        {
-                            local.insert( vals[ i ] );
+                    // local.clear();
+
+                    // for ( std::size_t i = 0; i < 8; ++i )
+                    // {
+                    //     if ( vals[ i ] )
+                    //     {
+                    //         local.insert( vals[ i ] );
+                    //     }
+                    // }
+
+                    // FOR_EACH( it, local ) 
+                    // {
+                    for (int i = 7; i >= 0; i--) {
+                        const LabelType label = uvals[i];
+                        // const LabelType label = *it;
+                        if (label == 0) { 
+                            break;
                         }
-                    }
 
-                    FOR_EACH( it, local )
-                    {
                         std::size_t c = 0;
 
                         for ( std::size_t n = 0; n < 8; ++n )
                         {
-                            if ( vals[ n ] != *it )
+                            if ( vals[ n ] != label )
                             {
                                 c |= ( 1 << n );
                             }
@@ -303,8 +319,6 @@ public:
 
                         if ( edge_table[ c ] )
                         {
-                            label = *it;
-
                             if ( edge_table[ c ] & 1   ) ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label );
                             if ( edge_table[ c ] & 2   ) ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label );
                             if ( edge_table[ c ] & 4   ) ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label );
@@ -321,7 +335,7 @@ public:
                             for ( std::size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3)
                             {
                                 ++num_faces_;
-                                meshes_[ *it ].push_back
+                                meshes_[ label ].push_back
                                     ( triangle( ptrs_[ tri_table[ c ][ n + 2 ] ],
                                                 ptrs_[ tri_table[ c ][ n + 1 ] ],
                                                 ptrs_[ tri_table[ c ][ n ] ] ) );
