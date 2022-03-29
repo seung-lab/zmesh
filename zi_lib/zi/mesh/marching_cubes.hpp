@@ -257,12 +257,9 @@ public:
 
         StaticSort<8> sorter;
 
-        for ( std::size_t x = 0; x < x_max; ++x )
-        {
-            for ( std::size_t y = 0; y < y_max; ++y )
-            {
-                for ( std::size_t z = 0; z < z_max; ++z )
-                {
+        for ( std::size_t x = 0; x < x_max; ++x ) {
+            for ( std::size_t y = 0; y < y_max; ++y ) {
+                for ( std::size_t z = 0; z < z_max; ++z ) {
                     const std::size_t ind = x_off + y_off + z;
 
                     std::array<LabelType, 8> vals = {
@@ -293,31 +290,33 @@ public:
                             c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
                         }
 
-                        if ( edge_table[ c ] ) {
-                            if ( edge_table[ c ] & 1   ) ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label );
-                            if ( edge_table[ c ] & 2   ) ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label );
-                            if ( edge_table[ c ] & 4   ) ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label );
-                            if ( edge_table[ c ] & 8   ) ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label );
-                            if ( edge_table[ c ] & 16  ) ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label );
-                            if ( edge_table[ c ] & 32  ) ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label );
-                            if ( edge_table[ c ] & 64  ) ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label );
-                            if ( edge_table[ c ] & 128 ) ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label );
-                            if ( edge_table[ c ] & 256 ) ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label );
-                            if ( edge_table[ c ] & 512 ) ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label );
-                            if ( edge_table[ c ] & 1024) ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label );
-                            if ( edge_table[ c ] & 2048) ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label );
-
-                            for ( std::size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3)
-                            {
-                                ++num_faces_;
-                                meshes_[ label ].push_back
-                                    ( triangle( ptrs_[ tri_table[ c ][ n + 2 ] ],
-                                                ptrs_[ tri_table[ c ][ n + 1 ] ],
-                                                ptrs_[ tri_table[ c ][ n ] ] ) );
-                            }
-
+                        if (!edge_table[c]) {
+                            continue;
                         }
 
+                        if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
+                        if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
+                        if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
+                        if (edge_table[ c ] & 8   ) { ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label ); }
+                        if (edge_table[ c ] & 16  ) { ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label ); }
+                        if (edge_table[ c ] & 32  ) { ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label ); }
+                        if (edge_table[ c ] & 64  ) { ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label ); }
+                        if (edge_table[ c ] & 128 ) { ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label ); }
+                        if (edge_table[ c ] & 256 ) { ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label ); }
+                        if (edge_table[ c ] & 512 ) { ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label ); }
+                        if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
+                        if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
+
+                        for ( std::size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
+                            ++num_faces_;
+                            meshes_[ label ].push_back(
+                                triangle( 
+                                    ptrs_[tri_table[c][ n + 2 ]],
+                                    ptrs_[tri_table[c][ n + 1 ]],
+                                    ptrs_[tri_table[c][ n ]]
+                                )
+                            );
+                        }
                     }
 
                     // move 2 units z
