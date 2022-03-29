@@ -279,7 +279,7 @@ public:
                     // iterate from high to low values and skip repeats. This
                     // Saves almost 40% of the march time. We make an array
                     // copy before sorting to preserve the structure in vals.
-                    // std::unordered_set uses closed hashing + chaining 
+                    // std::unordered_set uses a hash with closed addressing + chaining 
                     // which is inefficient for our case.
                     std::array<LabelType, 8> uvals = vals;
                     sorter(uvals);
