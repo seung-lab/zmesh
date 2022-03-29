@@ -28,7 +28,6 @@
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/type_traits.hpp>
 #include <zi/bits/unordered_map.hpp>
-#include <zi/bits/unordered_set.hpp>
 
 #include <zi/utility/non_copyable.hpp>
 
@@ -219,9 +218,6 @@ public:
 
     void marche( const LabelType* data, std::size_t x_dim, std::size_t y_dim, std::size_t z_dim )
     {
-
-        unordered_set< LabelType > local;
-
         // If we don't use uint64_t, then uint32_t
         // messes up in the final position due to some
         // kind of truncation or overflow issue. We use
@@ -259,7 +255,7 @@ public:
         std::size_t x_off = 0;
         std::size_t y_off = 0;
 
-        StaticSortUnique<8> unique8;
+        StaticSort<8> sorter;
 
         for ( std::size_t x = 0; x < x_max; ++x )
         {
@@ -280,31 +276,15 @@ public:
                         data[ ind + off7 ]
                     };
                     std::array<LabelType, 8> uvals = vals;
-                    unique8(uvals);
-                    // std::sort(&vals[0], &vals[8]);
-                    // for (int i = 0; i < 8; i++) {
-                    //     printf("%d, ", vals[i]);
-                    // }
-                    // printf("\n");
+                    sorter(uvals);
 
-
-                    // local.clear();
-
-                    // for ( std::size_t i = 0; i < 8; ++i )
-                    // {
-                    //     if ( vals[ i ] )
-                    //     {
-                    //         local.insert( vals[ i ] );
-                    //     }
-                    // }
-
-                    // FOR_EACH( it, local ) 
-                    // {
                     for (int i = 7; i >= 0; i--) {
                         const LabelType label = uvals[i];
-                        // const LabelType label = *it;
                         if (label == 0) { 
                             break;
+                        }
+                        else if (i < 7 && uvals[i + 1] == label) {
+                            continue;
                         }
 
                         std::size_t c = 0;

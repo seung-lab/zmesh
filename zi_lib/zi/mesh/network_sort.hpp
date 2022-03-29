@@ -10,14 +10,14 @@
  * \tparam Compare      A comparator functor class that returns true if lhs < rhs.
  */
 template <unsigned NumElements, class Compare = void> 
-class StaticSortUnique {
+class StaticSort {
     template <class A, class C> struct Swap
     {
         template <class T> inline void s(T &v0, T &v1)
         {
             T t = Compare()(v0, v1) ? v0 : v1; // Min
             v1 = Compare()(v0, v1) ? v1 : v0; // Max
-            v0 = t * (Compare(t,v1) == true); // this is the unique op that converts matches to zero
+            v0 = t;
         }
 
         inline Swap(A &a, const int &i0, const int &i1) { s(a[i0], a[i1]); }
@@ -32,7 +32,7 @@ class StaticSortUnique {
             // to generate branchless code.
             T t = v0 < v1 ? v0 : v1; // Min
             v1 = v0 < v1 ? v1 : v0; // Max
-            v0 = t * (t != v1); // this is the unique op that converts matches to zero
+            v0 = t;
         }
 
         inline Swap(A &a, const int &i0, const int &i1) { s(a[i0], a[i1]); }
