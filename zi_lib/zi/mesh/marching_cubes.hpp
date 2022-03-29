@@ -289,16 +289,11 @@ public:
 
                         std::size_t c = 0;
 
-                        for ( std::size_t n = 0; n < 8; ++n )
-                        {
-                            if ( vals[ n ] != label )
-                            {
-                                c |= ( 1 << n );
-                            }
+                        for ( std::size_t n = 0; n < 8; ++n ) {
+                            c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
                         }
 
-                        if ( edge_table[ c ] )
-                        {
+                        if ( edge_table[ c ] ) {
                             if ( edge_table[ c ] & 1   ) ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label );
                             if ( edge_table[ c ] & 2   ) ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label );
                             if ( edge_table[ c ] & 4   ) ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label );
