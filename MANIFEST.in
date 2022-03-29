@@ -1,2 +1,3 @@
 prune connectomics_npy_meshes
+exclude connectomics.npy.gz
 include LICENSE
