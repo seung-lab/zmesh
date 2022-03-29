@@ -1,5 +1,5 @@
-# marching cubes (connectomics.npy 512^3, uint32): 24.395s, 5.49 MVx/sec, N=1
-# marching cubes (random, 448^3 uint64): 72.481s, 1.23 MVx/sec, N=1
+# marching cubes (connectomics.npy 512^3, uint32): 13.787s, 9.72 MVx/sec, N=1
+# marching cubes (random, 448^3 uint64): 41.789s, 2.13 MVx/sec, N=1
 
 import numpy as np
 
