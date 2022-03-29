@@ -1,4 +1,7 @@
 // Network sort for small arrays (e.g. < 64 elements)
+// Network sort generates a decision tree for a 
+// small sized array to perform a high efficiency sort.
+
 // c/o stack overflow
 // https://stackoverflow.com/questions/19790522/very-fast-sorting-of-fixed-length-arrays-using-comparator-networks
 
