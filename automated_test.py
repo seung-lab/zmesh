@@ -1,9 +1,15 @@
 import pytest
 import numpy as np
+import gzip
 
 import zmesh
 
 DTYPE = [ np.uint8, np.uint16, np.uint32, np.uint64 ]
+
+@pytest.fixture
+def connectomics_labels():
+  with gzip.open('./connectomics.npy.gz', 'rb') as f:
+    return np.load(f)
 
 @pytest.mark.parametrize("dtype", DTYPE)
 @pytest.mark.parametrize("close", [ False, True ])
@@ -92,3 +98,15 @@ def test_ply_import():
   mesh2 = zmesh.Mesh.from_ply(plydata)
   
   assert mesh == mesh2
+
+# def test_meshes_remain_the_same(connectomics_labels):
+#   mesher = zmesh.Mesher( (32,32,40) )
+#   mesher.mesh(connectomics_labels)
+
+#   for lbl in mesher.ids():
+#     with open(f"./connectomics_npy_meshes/simplified/{lbl}.ply", "rb") as f:
+#       old_mesh = zmesh.Mesh.from_ply(f.read())
+#     new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=100, max_simplification_error=40)
+#     assert old_mesh == new_mesh
+#     print(lbl, "ok")
+
