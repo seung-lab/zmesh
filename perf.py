@@ -1,5 +1,14 @@
-# marching cubes (connectomics.npy 512^3, uint32): 13.787s, 9.72 MVx/sec, N=1
-# marching cubes (random, 448^3 uint64): 41.789s, 2.13 MVx/sec, N=1
+# ZMESH
+# marching cubes (blank): 0.897s, 149.42 MVx/sec, N=1
+# marching cubes (filled): 0.966s, 138.78 MVx/sec, N=1
+# marching cubes (connectomics.npy 512^3, uint32): 3.132s, 42.78 MVx/sec, N=1
+# marching cubes (random 448^3 uint64): 25.092s, 3.55 MVx/sec, N=1
+# SKIMAGE
+# marching cubes (blank) NOT HANDLED
+# marching cubes (filled) NOT HANDLED
+# marching cubes (connectomics.npy 512^3, uint32): 5.359s, 25.00 MVx/sec, N=1
+# marching cubes (random 448^3 uint64): 69.927s, 1.27 MVx/sec, N=1
+
 
 import numpy as np
 
