@@ -79,7 +79,7 @@ def test_scikit_marching_cubes():
     end = time.time()
     result("marching cubes (random)", end - start, labels, N=N)
 
-# print("ZMESH")
-# test_zmesh_marching_cubes()
+print("ZMESH")
+test_zmesh_marching_cubes()
 print("SKIMAGE")
 test_scikit_marching_cubes()
