@@ -27,14 +27,11 @@ class CMesher {
   ~CMesher() {};
 
   void mesh(
-      const std::vector<LabelType> &data, 
+      const LabelType* data, 
       unsigned int sx, unsigned int sy, unsigned int sz
     ) {
-    // Create Marching Cubes class for type T volume
-
-    const LabelType *a = &data[0];
     // Run global marching cubes, a mesh is generated for each segment ID group
-    marchingcubes_.marche(a, sx, sy, sz);
+    marchingcubes_.marche(data, sx, sy, sz);
   }
 
   std::vector<LabelType> ids() {

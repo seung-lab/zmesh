@@ -256,6 +256,7 @@ public:
         std::size_t y_off = 0;
 
         StaticSort<8> sorter;
+        std::array<LabelType, 8> uvals;
 
         for ( std::size_t x = 0; x < x_max; ++x ) {
             for ( std::size_t y = 0; y < y_max; ++y ) {
@@ -273,6 +274,18 @@ public:
                         data[ ind + off7 ]
                     };
 
+                    if (
+                           vals[0] == vals[1] 
+                        && vals[1] == vals[2] 
+                        && vals[2] == vals[3] 
+                        && vals[3] == vals[4] 
+                        && vals[4] == vals[5]
+                        && vals[5] == vals[6] 
+                        && vals[6] == vals[7]
+                    ) {
+                        goto NEXT;
+                    }
+
                     // Instead of using std::unordered_set or similar
                     // to get unique labels, use a high efficiency sort,
                     // a "network sort", for a fixed size labels and then
@@ -281,7 +294,7 @@ public:
                     // copy before sorting to preserve the structure in vals.
                     // std::unordered_set uses a hash with closed addressing + chaining 
                     // which is inefficient for our case.
-                    std::array<LabelType, 8> uvals = vals;
+                    uvals = vals;
                     sorter(uvals);
 
                     for (int i = 7; i >= 0; i--) {
@@ -328,6 +341,7 @@ public:
                         }
                     }
 
+                    NEXT:
                     // move 2 units z
                     for ( std::size_t i = 0; i < 8 ; ++i )
                     {

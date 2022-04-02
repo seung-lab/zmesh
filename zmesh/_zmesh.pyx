@@ -19,7 +19,7 @@ cdef extern from "cMesher.hpp":
 
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
-    void mesh(vector[L], unsigned int, unsigned int, unsigned int)
+    void mesh(L*, unsigned int, unsigned int, unsigned int)
     vector[L] ids()
     MeshObject get_mesh(L segid, bool normals, int simplification_factor, int max_simplification_error)
     # NOTE: need to define triangle_t
@@ -261,9 +261,9 @@ cdef class Mesher3208:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
-      flat_data.astype(np.uint8, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -289,9 +289,9 @@ cdef class Mesher3216:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
-      flat_data.astype(np.uint16, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -317,9 +317,9 @@ cdef class Mesher3232:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
-      flat_data.astype(np.uint32, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -345,9 +345,9 @@ cdef class Mesher3264:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
-      flat_data.astype(np.uint64, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -373,9 +373,9 @@ cdef class Mesher6408:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
-      flat_data.astype(np.uint8, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -401,9 +401,9 @@ cdef class Mesher6416:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
-      flat_data.astype(np.uint16, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -429,9 +429,9 @@ cdef class Mesher6432:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
-      flat_data.astype(np.uint32, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 
@@ -457,9 +457,9 @@ cdef class Mesher6464:
     del self.ptr
 
   def mesh(self, data):
-    flat_data = reshape(data, (data.size,))
+    cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
-      flat_data.astype(np.uint64, copy=False), 
+      &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2]
     )
 

@@ -12,6 +12,24 @@ def result(label, dt, data, N):
 	print(f"{label}: {dt:02.3f}s, {N * mvx / dt:.2f} MVx/sec, N={N}")
 
 def test_marching_cubes():
+	labels = np.zeros((512,512,512), dtype=np.uint8, order="C")
+	mesher = zmesh.Mesher((1,1,1))
+	N = 1
+	start = time.time()
+	for _ in range(N):
+		mesher.mesh(labels)
+	end = time.time()
+	result("marching cubes (blank)", end - start, labels, N=N)
+
+	labels = np.ones((512,512,512), dtype=np.uint8, order="C")
+	mesher = zmesh.Mesher((1,1,1))
+	N = 1
+	start = time.time()
+	for _ in range(N):
+		mesher.mesh(labels, close=True)
+	end = time.time()
+	result("marching cubes (filled)", end - start, labels, N=N)
+
 	labels = np.load("./connectomics.npy")
 	labels = np.ascontiguousarray(labels)
 	mesher = zmesh.Mesher((1,1,1))
