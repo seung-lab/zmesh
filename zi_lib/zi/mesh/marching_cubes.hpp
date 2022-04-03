@@ -51,8 +51,7 @@
 
 #define ZI_MC_QUICK_INTERP( p1, p2, val )                      \
     (((( vals[ p1 ] == val ) ^ ( vals[ p2 ] == val )) ?        \
-     ((vert[ p1 ] >> 1) + (vert[ p2 ] >> 1)) : vert[ p1 ] ))
-
+     (((cur + vert[p1]) >> 1) + ((cur + vert[p2]) >> 1)) : (cur + vert[p1]) ))
 
 namespace zi {
 namespace mesh {
@@ -216,8 +215,10 @@ public:
         return meshes_.size();
     }
 
-    void marche( const LabelType* data, std::size_t x_dim, std::size_t y_dim, std::size_t z_dim )
-    {
+    void marche( 
+        const LabelType* data, 
+        const std::size_t x_dim, const std::size_t y_dim, const std::size_t z_dim 
+    ) {
         // If we don't use uint64_t, then uint32_t
         // messes up in the final position due to some
         // kind of truncation or overflow issue. We use
@@ -226,8 +227,7 @@ public:
         // either way.
         uint64_t ptrs_[ 12 ];
 
-        PositionType vert[ 8 ] =
-        {
+        PositionType vert[ 8 ] = {
             pack_coords( 0, 0, 0 ),
             pack_coords( 2, 0, 0 ),
             pack_coords( 2, 0, 2 ),
@@ -250,18 +250,13 @@ public:
         const std::size_t y_max = y_dim - 1;
         const std::size_t z_max = z_dim - 1;
 
-        const std::size_t yz_dim = y_dim * z_dim;
-
-        std::size_t x_off = 0;
-        std::size_t y_off = 0;
-
         StaticSort<8> sorter;
         std::array<LabelType, 8> uvals;
 
         for ( std::size_t x = 0; x < x_max; ++x ) {
             for ( std::size_t y = 0; y < y_max; ++y ) {
                 for ( std::size_t z = 0; z < z_max; ++z ) {
-                    const std::size_t ind = x_off + y_off + z;
+                    const std::size_t ind = z + z_dim * (y + y_dim * x);
 
                     std::array<LabelType, 8> vals = {
                         data[ ind ],
@@ -283,7 +278,7 @@ public:
                         && vals[5] == vals[6] 
                         && vals[6] == vals[7]
                     ) {
-                        goto NEXT;
+                        continue;
                     }
 
                     // Instead of using std::unordered_set or similar
@@ -316,6 +311,8 @@ public:
                             continue;
                         }
 
+                        PositionType cur = (x * masks.delta_2x) | (y * masks.delta_2y) | (z << 1);
+
                         if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
                         if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
                         if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
@@ -331,55 +328,16 @@ public:
 
                         for ( std::size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
                             ++num_faces_;
-                            meshes_[ label ].push_back(
-                                triangle( 
-                                    ptrs_[tri_table[c][ n + 2 ]],
-                                    ptrs_[tri_table[c][ n + 1 ]],
-                                    ptrs_[tri_table[c][ n ]]
-                                )
+                            meshes_[label].emplace_back(
+                                ptrs_[tri_table[c][ n + 2 ]],
+                                ptrs_[tri_table[c][ n + 1 ]],
+                                ptrs_[tri_table[c][ n ]]
                             );
                         }
                     }
-
-                    NEXT:
-                    // move 2 units z
-                    for ( std::size_t i = 0; i < 8 ; ++i )
-                    {
-                        vert[ i ] += 2;
-                    }
                 }
-
-                // move 2 units y
-                for ( std::size_t i = 0; i < 8 ; ++i )
-                {
-                    vert[ i ] += masks.delta_2y;
-                }
-
-                // set every other vertex to z = 0, 2
-                for ( std::size_t i = 0; i < 8 ; ++i )
-                {   
-                    vert[ i ]  = ( vert[ i ] & masks.xy_mask ) | ( i & 2 );
-                }
-
-                y_off += z_dim;
             }
-
-            // move 2 units x
-            for ( std::size_t i = 0; i < 8 ; ++i )
-            {
-                vert[ i ] += masks.delta_2x;
-            }
-
-            // set y to to 0,0,0,0, 2,2,2,2
-            for ( std::size_t i = 0; i < 8 ; ++i )
-            {
-                vert[ i ]  = ( vert[ i ] & masks.xz_mask ) | ( ( i & 4 ) << (masks.yshift - 1) );
-            }
-
-            y_off = 0;
-            x_off += yz_dim;
         }
-
     }
 
     template< class T > std::size_t
