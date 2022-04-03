@@ -249,7 +249,6 @@ public:
         const std::size_t x_max = x_dim - 1;
         const std::size_t y_max = y_dim - 1;
         const std::size_t z_max = z_dim - 1;
-        const std::size_t voxels = x_dim * y_dim * z_dim;
 
         StaticSort<8> sorter;
         std::array<LabelType, 8> uvals;
