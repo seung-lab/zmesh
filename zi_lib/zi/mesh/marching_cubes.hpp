@@ -217,7 +217,7 @@ public:
 
     void marche( 
         const LabelType* data, 
-        const size_t x_dim, const size_t y_dim, const size_t z_dim 
+        const size_t sx, const size_t sy, const size_t sz 
     ) {
         // If we don't use uint64_t, then uint32_t
         // messes up in the final position due to some
@@ -238,25 +238,21 @@ public:
             pack_coords( 0, 2, 2 )
         };
 
-        const size_t off1 = y_dim * z_dim;
-        const size_t off2 = y_dim * z_dim + 1;
+        const size_t off1 = sy * sz;
+        const size_t off2 = sy * sz + 1;
         const size_t off3 = 1;
-        const size_t off4 = z_dim;
-        const size_t off5 = y_dim * z_dim + z_dim;
-        const size_t off6 = y_dim * z_dim + z_dim + 1;
-        const size_t off7 = z_dim + 1;
-
-        const size_t x_max = x_dim - 1;
-        const size_t y_max = y_dim - 1;
-        const size_t z_max = z_dim - 1;
+        const size_t off4 = sz;
+        const size_t off5 = sy * sz + sz;
+        const size_t off6 = sy * sz + sz + 1;
+        const size_t off7 = sz + 1;
 
         StaticSort<8> sorter;
         std::array<LabelType, 8> uvals;
 
-        for ( size_t x = 0; x < x_max; ++x ) {
-            for ( size_t y = 0; y < y_max; ++y ) {
-                for ( size_t z = 0; z < z_max; ++z ) {
-                    const size_t ind = z + z_dim * (y + y_dim * x);
+        for ( size_t x = 0; x < sx - 1; ++x ) {
+            for ( size_t y = 0; y < sy - 1; ++y ) {
+                for ( size_t z = 0; z < sz - 1; ++z ) {
+                    const size_t ind = z + sz * (y + sy * x);
 
                     std::array<LabelType, 8> vals = {
                         data[ ind ],
@@ -326,7 +322,7 @@ public:
                         if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
                         if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
 
-                        for ( size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
+                        for (size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
                             ++num_faces_;
                             meshes_[label].emplace_back(
                                 ptrs_[tri_table[c][ n + 2 ]],
