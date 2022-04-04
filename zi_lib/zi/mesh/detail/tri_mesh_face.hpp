@@ -35,7 +35,7 @@ namespace zi {
 namespace mesh {
 
 // forward declaration
-struct tri_mesh;
+class tri_mesh;
 
 namespace detail {
 
@@ -160,7 +160,7 @@ public:
         v_[ 2 ] = z;
     }
 
-    friend struct tri_mesh;
+    friend class tri_mesh;
 
 private:
 
@@ -199,7 +199,7 @@ protected:
     {
     }
 
-    friend struct ::zi::mesh::tri_mesh;
+    friend class ::zi::mesh::tri_mesh;
 
 public:
 

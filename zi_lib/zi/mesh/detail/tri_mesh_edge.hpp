@@ -35,7 +35,7 @@ namespace zi {
 namespace mesh {
 
 // forward declaration
-struct tri_mesh;
+class tri_mesh;
 
 namespace detail {
 
@@ -45,7 +45,7 @@ private:
     const uint32_t face_  ;
     const uint32_t vertex_;
 
-    friend struct ::zi::mesh::tri_mesh;
+    friend class ::zi::mesh::tri_mesh;
 
 public:
     tri_mesh_edge_impl()
@@ -99,7 +99,7 @@ protected:
     {
     }
 
-    friend struct ::zi::mesh::tri_mesh;
+    friend class ::zi::mesh::tri_mesh;
 
 public:
 
