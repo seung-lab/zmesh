@@ -19,7 +19,7 @@ cdef extern from "cMesher.hpp":
 
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
-    void mesh(L*, unsigned int, unsigned int, unsigned int)
+    void mesh(L*, unsigned int, unsigned int, unsigned int, bool c_order)
     vector[L] ids()
     MeshObject get_mesh(L segid, bool normals, int simplification_factor, int max_simplification_error)
     # NOTE: need to define triangle_t
@@ -50,7 +50,8 @@ class Mesher:
     """
     del self._mesher
 
-    data = np.ascontiguousarray(data)
+    if not data.flags.c_contiguous and not data.flags.f_contiguous:
+      data = np.ascontiguousarray(data)
 
     if close:
       tmp = np.zeros(np.array(data.shape) + 2, dtype=data.dtype, order="C")
@@ -264,7 +265,8 @@ cdef class Mesher3208:
     cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -292,7 +294,8 @@ cdef class Mesher3216:
     cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -320,7 +323,8 @@ cdef class Mesher3232:
     cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -348,7 +352,8 @@ cdef class Mesher3264:
     cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -376,7 +381,8 @@ cdef class Mesher6408:
     cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -404,7 +410,8 @@ cdef class Mesher6416:
     cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -432,7 +439,8 @@ cdef class Mesher6432:
     cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
@@ -460,7 +468,8 @@ cdef class Mesher6464:
     cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
