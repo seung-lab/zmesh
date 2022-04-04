@@ -215,6 +215,65 @@ public:
         return meshes_.size();
     }
 
+    std::unique_ptr<uint32_t[]> compute_foreground_index(
+      const LabelType* in_labels, 
+      const int64_t sx, const int64_t sy, const int64_t sz
+    ) {
+      const int64_t voxels = sx * sy * sz;
+      std::unique_ptr<uint32_t[]> runs(new uint32_t[2*sx*sy]());
+
+      int64_t row = 0;
+      for (int64_t loc = 0; loc < voxels; loc += sz, row++) {
+        int64_t index = (row << 1);
+        for (int64_t z = 0; z < sz; z++) {
+          if (in_labels[loc + z]) {
+              runs[index] = static_cast<uint32_t>(z);
+              break;
+          }
+        }
+        for (int64_t z = sz - 2; z >= runs[index]; z--) {
+          if (in_labels[loc + z]) {
+            runs[index+1] = static_cast<uint32_t>(z + 1);
+            break;
+          }
+        }
+      }
+
+      for (int64_t x = 0; x < sx - 1; x++) {
+        for (int64_t y = 0; y < sy - 1; y++) {
+            int64_t index1 = 2 * (y + sy * x);
+            int64_t index2 = 2 * (y + sy * (x+1));
+            int64_t index3 = 2 * ((y+1) + sy * x);
+            int64_t index4 = 2 * ((y+1) + sy * (x+1));
+
+            runs[index1] = std::min(
+                std::min(
+                    std::min(runs[index1], runs[index2]),
+                    runs[index3]
+                ),
+                runs[index4]
+            );
+            runs[index1] = (runs[index1] < 2)
+                ? 0 
+                : runs[index1] - 2;
+            
+            runs[index1+1] = std::max(
+                std::max(
+                    std::max(runs[index1+1], runs[index2+1]),
+                    runs[index3+1]
+                ),
+                runs[index4+1]
+            ) + 2;
+            runs[index1+1] = std::min(
+                runs[index1+1], 
+                static_cast<uint32_t>(sz - 1)
+            );
+        }
+      }
+
+      return runs;
+    }
+
     void marche( 
         const LabelType* data, 
         const std::size_t x_dim, const std::size_t y_dim, const std::size_t z_dim 
@@ -253,9 +312,21 @@ public:
         StaticSort<8> sorter;
         std::array<LabelType, 8> uvals;
 
+        std::unique_ptr<uint32_t[]> runs = compute_foreground_index(data, x_dim, y_dim, z_dim);
+        for (int i = 0; i < x_dim * y_dim; i++) {
+            if (runs[2*i] != 0) {
+                printf("%d %d %d %d\n", i, runs[2*i], runs[2*i+1], z_max);
+            }
+        }
+
+
+        std::size_t row = 0;
         for ( std::size_t x = 0; x < x_max; ++x ) {
-            for ( std::size_t y = 0; y < y_max; ++y ) {
-                for ( std::size_t z = 0; z < z_max; ++z ) {
+            for ( std::size_t y = 0; y < y_max; ++y, ++row ) {
+                const std::size_t zstart = runs[row << 1];
+                const std::size_t zend = runs[(row << 1) + 1];
+
+                for ( std::size_t z = zstart; z < zend; ++z ) {
                     const std::size_t ind = z + z_dim * (y + y_dim * x);
 
                     std::array<LabelType, 8> vals = {
@@ -460,8 +531,6 @@ public:
         return idx;
 
     }
-
-
 };
 
 #  define ZI_MESH_MARCHING_CUBES_HPP_INLUDING_TABLES 1
