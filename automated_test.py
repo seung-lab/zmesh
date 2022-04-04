@@ -111,10 +111,10 @@ def test_meshes_remain_the_same(connectomics_labels, order):
   mesher = zmesh.Mesher( (32,32,40) )
   mesher.mesh(connectomics_labels)
 
-  for lbl in mesher.ids()[:100]:
-    with open(f"./connectomics_npy_meshes/simplified/{lbl}.ply", "rb") as f:
+  for lbl in mesher.ids()[:300]:
+    with gzip.open(f"./connectomics_npy_meshes/unsimplified/{lbl}.ply.gz", "rb") as f:
       old_mesh = zmesh.Mesh.from_ply(f.read())
-    new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=100, max_simplification_error=40)
+    new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=0, max_simplification_error=40)
     assert old_mesh == new_mesh
     print(lbl, "ok")
 
