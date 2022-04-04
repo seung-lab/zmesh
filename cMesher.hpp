@@ -28,10 +28,11 @@ class CMesher {
 
   void mesh(
       const LabelType* data, 
-      unsigned int sx, unsigned int sy, unsigned int sz
+      const size_t sx, const size_t sy, const size_t sz,
+      const bool c_order = true
     ) {
     // Run global marching cubes, a mesh is generated for each segment ID group
-    marchingcubes_.marche(data, sx, sy, sz);
+    marchingcubes_.marche(data, sx, sy, sz, c_order);
   }
 
   std::vector<LabelType> ids() {

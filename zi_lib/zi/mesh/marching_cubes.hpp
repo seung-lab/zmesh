@@ -217,7 +217,8 @@ public:
 
     void marche( 
         const LabelType* data, 
-        const size_t sx, const size_t sy, const size_t sz 
+        const size_t sx, const size_t sy, const size_t sz,
+        const bool c_order = true
     ) {
         // If we don't use uint64_t, then uint32_t
         // messes up in the final position due to some
@@ -238,97 +239,194 @@ public:
             pack_coords( 0, 2, 2 )
         };
 
-        const size_t off1 = sy * sz;
-        const size_t off2 = sy * sz + 1;
-        const size_t off3 = 1;
-        const size_t off4 = sz;
-        const size_t off5 = sy * sz + sz;
-        const size_t off6 = sy * sz + sz + 1;
-        const size_t off7 = sz + 1;
-
         StaticSort<8> sorter;
         std::array<LabelType, 8> uvals;
 
-        for ( size_t x = 0; x < sx - 1; ++x ) {
-            for ( size_t y = 0; y < sy - 1; ++y ) {
-                for ( size_t z = 0; z < sz - 1; ++z ) {
-                    const size_t ind = z + sz * (y + sy * x);
+        if (c_order) {
+            const size_t off1 = sy * sz; // +x
+            const size_t off2 = sy * sz + 1; // +x +z
+            const size_t off3 = 1; // +z
+            const size_t off4 = sz; // +y
+            const size_t off5 = sy * sz + sz; // +x +y
+            const size_t off6 = sy * sz + sz + 1; // +x +y +z
+            const size_t off7 = sz + 1; // +y +z
 
-                    std::array<LabelType, 8> vals = {
-                        data[ ind ],
-                        data[ ind + off1 ],
-                        data[ ind + off2 ],
-                        data[ ind + off3 ],
-                        data[ ind + off4 ],
-                        data[ ind + off5 ],
-                        data[ ind + off6 ],
-                        data[ ind + off7 ]
-                    };
+            for ( size_t x = 0; x < sx - 1; ++x ) {
+                for ( size_t y = 0; y < sy - 1; ++y ) {
+                    for ( size_t z = 0; z < sz - 1; ++z ) {
+                        const size_t ind = z + sz * (y + sy * x);
 
-                    if (
-                           vals[0] == vals[1] 
-                        && vals[1] == vals[2] 
-                        && vals[2] == vals[3] 
-                        && vals[3] == vals[4] 
-                        && vals[4] == vals[5]
-                        && vals[5] == vals[6] 
-                        && vals[6] == vals[7]
-                    ) {
-                        continue;
+                        std::array<LabelType, 8> vals = {
+                            data[ ind ],
+                            data[ ind + off1 ],
+                            data[ ind + off2 ],
+                            data[ ind + off3 ],
+                            data[ ind + off4 ],
+                            data[ ind + off5 ],
+                            data[ ind + off6 ],
+                            data[ ind + off7 ]
+                        };
+
+                        if (
+                               vals[0] == vals[1] 
+                            && vals[1] == vals[2] 
+                            && vals[2] == vals[3] 
+                            && vals[3] == vals[4] 
+                            && vals[4] == vals[5]
+                            && vals[5] == vals[6] 
+                            && vals[6] == vals[7]
+                        ) {
+                            continue;
+                        }
+
+                        // Instead of using std::unordered_set or similar
+                        // to get unique labels, use a high efficiency sort,
+                        // a "network sort", for a fixed size labels and then
+                        // iterate from high to low values and skip repeats. This
+                        // Saves almost 40% of the march time. We make an array
+                        // copy before sorting to preserve the structure in vals.
+                        // std::unordered_set uses a hash with closed addressing + chaining 
+                        // which is inefficient for our case.
+                        uvals = vals;
+                        sorter(uvals);
+
+                        for (int i = 7; i >= 0; i--) {
+                            const LabelType label = uvals[i];
+                            if (label == 0) { 
+                                break;
+                            }
+                            else if (i < 7 && uvals[i + 1] == label) {
+                                continue;
+                            }
+
+                            size_t c = 0;
+
+                            for ( size_t n = 0; n < 8; ++n ) {
+                                c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
+                            }
+
+                            if (!edge_table[c]) {
+                                continue;
+                            }
+
+                            PositionType cur = (x * masks.delta_2x) | (y * masks.delta_2y) | (z << 1);
+
+                            if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
+                            if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
+                            if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
+                            if (edge_table[ c ] & 8   ) { ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label ); }
+                            if (edge_table[ c ] & 16  ) { ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label ); }
+                            if (edge_table[ c ] & 32  ) { ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label ); }
+                            if (edge_table[ c ] & 64  ) { ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label ); }
+                            if (edge_table[ c ] & 128 ) { ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label ); }
+                            if (edge_table[ c ] & 256 ) { ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label ); }
+                            if (edge_table[ c ] & 512 ) { ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label ); }
+                            if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
+                            if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
+
+                            for (size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
+                                ++num_faces_;
+                                meshes_[label].emplace_back(
+                                    ptrs_[tri_table[c][ n + 2 ]],
+                                    ptrs_[tri_table[c][ n + 1 ]],
+                                    ptrs_[tri_table[c][ n ]]
+                                );
+                            }
+                        }
                     }
+                }            
+            }
+        }
+        else {
+            const size_t off1 = 1; // +x
+            const size_t off2 = 1 + sx * sy; // +x +z
+            const size_t off3 = sx * sy; // +z
+            const size_t off4 = sx; // +y
+            const size_t off5 = 1 + sx; // +x +y
+            const size_t off6 = 1 + sx + sx * sy; // +x +y +z
+            const size_t off7 = sx + sx * sy; // +y +z 
 
-                    // Instead of using std::unordered_set or similar
-                    // to get unique labels, use a high efficiency sort,
-                    // a "network sort", for a fixed size labels and then
-                    // iterate from high to low values and skip repeats. This
-                    // Saves almost 40% of the march time. We make an array
-                    // copy before sorting to preserve the structure in vals.
-                    // std::unordered_set uses a hash with closed addressing + chaining 
-                    // which is inefficient for our case.
-                    uvals = vals;
-                    sorter(uvals);
+            for ( size_t z = 0; z < sz - 1; ++z ) {
+                for ( size_t y = 0; y < sy - 1; ++y ) {
+                    for ( size_t x = 0; x < sx - 1; ++x ) {
+                        const size_t ind = x + sx * (y + sy * z);
 
-                    for (int i = 7; i >= 0; i--) {
-                        const LabelType label = uvals[i];
-                        if (label == 0) { 
-                            break;
-                        }
-                        else if (i < 7 && uvals[i + 1] == label) {
+                        std::array<LabelType, 8> vals = {
+                            data[ ind ],
+                            data[ ind + off1 ],
+                            data[ ind + off2 ],
+                            data[ ind + off3 ],
+                            data[ ind + off4 ],
+                            data[ ind + off5 ],
+                            data[ ind + off6 ],
+                            data[ ind + off7 ]
+                        };
+
+                        if (
+                               vals[0] == vals[1] 
+                            && vals[1] == vals[2] 
+                            && vals[2] == vals[3] 
+                            && vals[3] == vals[4] 
+                            && vals[4] == vals[5]
+                            && vals[5] == vals[6] 
+                            && vals[6] == vals[7]
+                        ) {
                             continue;
                         }
 
-                        size_t c = 0;
+                        // Instead of using std::unordered_set or similar
+                        // to get unique labels, use a high efficiency sort,
+                        // a "network sort", for a fixed size labels and then
+                        // iterate from high to low values and skip repeats. This
+                        // Saves almost 40% of the march time. We make an array
+                        // copy before sorting to preserve the structure in vals.
+                        // std::unordered_set uses a hash with closed addressing + chaining 
+                        // which is inefficient for our case.
+                        uvals = vals;
+                        sorter(uvals);
 
-                        for ( size_t n = 0; n < 8; ++n ) {
-                            c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
-                        }
+                        for (int i = 7; i >= 0; i--) {
+                            const LabelType label = uvals[i];
+                            if (label == 0) { 
+                                break;
+                            }
+                            else if (i < 7 && uvals[i + 1] == label) {
+                                continue;
+                            }
 
-                        if (!edge_table[c]) {
-                            continue;
-                        }
+                            size_t c = 0;
 
-                        PositionType cur = (x * masks.delta_2x) | (y * masks.delta_2y) | (z << 1);
+                            for ( size_t n = 0; n < 8; ++n ) {
+                                c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
+                            }
 
-                        if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
-                        if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
-                        if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
-                        if (edge_table[ c ] & 8   ) { ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label ); }
-                        if (edge_table[ c ] & 16  ) { ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label ); }
-                        if (edge_table[ c ] & 32  ) { ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label ); }
-                        if (edge_table[ c ] & 64  ) { ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label ); }
-                        if (edge_table[ c ] & 128 ) { ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label ); }
-                        if (edge_table[ c ] & 256 ) { ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label ); }
-                        if (edge_table[ c ] & 512 ) { ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label ); }
-                        if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
-                        if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
+                            if (!edge_table[c]) {
+                                continue;
+                            }
 
-                        for (size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
-                            ++num_faces_;
-                            meshes_[label].emplace_back(
-                                ptrs_[tri_table[c][ n + 2 ]],
-                                ptrs_[tri_table[c][ n + 1 ]],
-                                ptrs_[tri_table[c][ n ]]
-                            );
+                            PositionType cur = (x * masks.delta_2x) | (y * masks.delta_2y) | (z << 1);
+
+                            if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
+                            if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
+                            if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
+                            if (edge_table[ c ] & 8   ) { ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label ); }
+                            if (edge_table[ c ] & 16  ) { ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label ); }
+                            if (edge_table[ c ] & 32  ) { ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label ); }
+                            if (edge_table[ c ] & 64  ) { ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label ); }
+                            if (edge_table[ c ] & 128 ) { ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label ); }
+                            if (edge_table[ c ] & 256 ) { ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label ); }
+                            if (edge_table[ c ] & 512 ) { ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label ); }
+                            if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
+                            if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
+
+                            for (size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
+                                ++num_faces_;
+                                meshes_[label].emplace_back(
+                                    ptrs_[tri_table[c][ n + 2 ]],
+                                    ptrs_[tri_table[c][ n + 1 ]],
+                                    ptrs_[tri_table[c][ n ]]
+                                );
+                            }
                         }
                     }
                 }

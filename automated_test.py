@@ -13,8 +13,9 @@ def connectomics_labels():
 
 @pytest.mark.parametrize("dtype", DTYPE)
 @pytest.mark.parametrize("close", [ False, True ])
-def test_executes(dtype, close):
-  labels = np.zeros( (11,17,19), dtype=dtype)
+@pytest.mark.parametrize("order", [ 'C', 'F' ])
+def test_executes(dtype, close, order):
+  labels = np.zeros( (11,17,19), dtype=dtype, order=order)
   labels[1:-1, 1:-1, 1:-1] = 1
 
   mesher = zmesh.Mesher( (4,4,40) )
@@ -31,8 +32,9 @@ def test_executes(dtype, close):
   assert len(mesh.normals) > 0
 
 @pytest.mark.parametrize("dtype", DTYPE)
-def test_simplify(dtype):
-  labels = np.zeros( (11,17,19), dtype=dtype)
+@pytest.mark.parametrize("order", [ 'C', 'F' ])
+def test_simplify(dtype, order):
+  labels = np.zeros( (11,17,19), dtype=dtype, order=order)
   labels[1:-1, 1:-1, 1:-1] = 1
 
   mesher = zmesh.Mesher( (4,4,40) )
@@ -99,14 +101,20 @@ def test_ply_import():
   
   assert mesh == mesh2
 
-# def test_meshes_remain_the_same(connectomics_labels):
-#   mesher = zmesh.Mesher( (32,32,40) )
-#   mesher.mesh(connectomics_labels)
+@pytest.mark.parametrize("order", [ 'C', 'F' ])
+def test_meshes_remain_the_same(connectomics_labels, order):
+  if order == "C":
+    connectomics_labels = np.ascontiguousarray(connectomics_labels)
+  else:
+    connectomics_labels = np.asfortranarray(connectomics_labels)
 
-#   for lbl in mesher.ids():
-#     with open(f"./connectomics_npy_meshes/simplified/{lbl}.ply", "rb") as f:
-#       old_mesh = zmesh.Mesh.from_ply(f.read())
-#     new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=100, max_simplification_error=40)
-#     assert old_mesh == new_mesh
-#     print(lbl, "ok")
+  mesher = zmesh.Mesher( (32,32,40) )
+  mesher.mesh(connectomics_labels)
+
+  for lbl in mesher.ids()[:300]:
+    with gzip.open(f"./connectomics_npy_meshes/unsimplified/{lbl}.ply.gz", "rb") as f:
+      old_mesh = zmesh.Mesh.from_ply(f.read())
+    new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=0, max_simplification_error=40)
+    assert np.all(np.sort(old_mesh.vertices[old_mesh.faces], axis=0) == np.sort(new_mesh.vertices[new_mesh.faces], axis=0))
+    print(lbl, "ok")
 

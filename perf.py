@@ -51,7 +51,7 @@ def test_zmesh_marching_cubes():
     result("marching cubes (connectomics.npy)", end - start, labels, N=N)
 
     labels = np.random.randint(0,1000, size=(448,448,448), dtype=np.uint32)
-    labels = np.ascontiguousarray(labels)
+    # labels = np.ascontiguousarray(labels)
     mesher = zmesh.Mesher((1,1,1))
 
     N = 1

@@ -11,7 +11,8 @@ cdef class Mesher{{ position_type }}{{ '%02d' % label_type }}:
     cdef cnp.ndarray[uint{{label_type}}_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint{{ label_type }})
     self.ptr.mesh(
       &flat_data[0],
-      data.shape[0], data.shape[1], data.shape[2]
+      data.shape[0], data.shape[1], data.shape[2],
+      a.flags.c_contiguous
     )
 
   def ids(self):
