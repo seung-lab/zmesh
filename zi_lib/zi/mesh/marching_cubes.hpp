@@ -58,48 +58,48 @@ namespace mesh {
 
 template <typename T> 
 struct mc_masks {
-    static const std::size_t zshift = 0;   // z = 21 bits (2^20 - 1) + .5
-    static const std::size_t yshift = 21;  // y = 21 bits (2^20 - 1) + .5
-    static const std::size_t xshift = 42;  // x = 21 bits (2^20 - 1) + .5
+    static const size_t zshift = 0;   // z = 21 bits (2^20 - 1) + .5
+    static const size_t yshift = 21;  // y = 21 bits (2^20 - 1) + .5
+    static const size_t xshift = 42;  // x = 21 bits (2^20 - 1) + .5
 
-    static const std::size_t z_mask = 0x1FFFFF;
-    static const std::size_t y_mask = z_mask << yshift;
-    static const std::size_t x_mask = z_mask << xshift;
+    static const size_t z_mask = 0x1FFFFF;
+    static const size_t y_mask = z_mask << yshift;
+    static const size_t x_mask = z_mask << xshift;
 
-    static const std::size_t xy_mask = x_mask | y_mask;
-    static const std::size_t xz_mask = x_mask | z_mask;
-    static const std::size_t yz_mask = y_mask | z_mask;
+    static const size_t xy_mask = x_mask | y_mask;
+    static const size_t xz_mask = x_mask | z_mask;
+    static const size_t yz_mask = y_mask | z_mask;
 
-    static const std::size_t delta_z = 1;
-    static const std::size_t delta_y = delta_z << yshift;
-    static const std::size_t delta_x = delta_z << xshift;
+    static const size_t delta_z = 1;
+    static const size_t delta_y = delta_z << yshift;
+    static const size_t delta_x = delta_z << xshift;
 
-    static const std::size_t delta_2z = 2;
-    static const std::size_t delta_2y = delta_2z << yshift;
-    static const std::size_t delta_2x = delta_2z << xshift;
+    static const size_t delta_2z = 2;
+    static const size_t delta_2y = delta_2z << yshift;
+    static const size_t delta_2x = delta_2z << xshift;
 };
 
 template <> 
 struct mc_masks<uint32_t> {
-    static const std::size_t zshift = 0;   // z = 10 bits (511.5)
-    static const std::size_t yshift = 10;  // y = 11 bits (1023.5)
-    static const std::size_t xshift = 21;  // x = 11 bits (1023.5) (in theory...)
+    static const size_t zshift = 0;   // z = 10 bits (511.5)
+    static const size_t yshift = 10;  // y = 11 bits (1023.5)
+    static const size_t xshift = 21;  // x = 11 bits (1023.5) (in theory...)
 
-    static const std::size_t z_mask = 0x3FF;
-    static const std::size_t y_mask = 0x7FF << yshift;
-    static const std::size_t x_mask = 0x7FF << xshift;
+    static const size_t z_mask = 0x3FF;
+    static const size_t y_mask = 0x7FF << yshift;
+    static const size_t x_mask = 0x7FF << xshift;
 
-    static const std::size_t xy_mask = x_mask | y_mask;
-    static const std::size_t xz_mask = x_mask | z_mask;
-    static const std::size_t yz_mask = y_mask | z_mask;
+    static const size_t xy_mask = x_mask | y_mask;
+    static const size_t xz_mask = x_mask | z_mask;
+    static const size_t yz_mask = y_mask | z_mask;
 
-    static const std::size_t delta_z = 1;
-    static const std::size_t delta_y = delta_z << yshift;
-    static const std::size_t delta_x = delta_z << xshift;
+    static const size_t delta_z = 1;
+    static const size_t delta_y = delta_z << yshift;
+    static const size_t delta_x = delta_z << xshift;
 
-    static const std::size_t delta_2z = 2;
-    static const std::size_t delta_2y = delta_2z << yshift;
-    static const std::size_t delta_2x = delta_2z << xshift;  
+    static const size_t delta_2z = 2;
+    static const size_t delta_2y = delta_2z << yshift;
+    static const size_t delta_2x = delta_2z << xshift;  
 };
 
 template< typename PositionType, typename LabelType >
@@ -110,9 +110,9 @@ private:
 
     ZI_STATIC_ASSERT( is_integral< PositionType >::value, non_integral_type_for_marching_cubes );
 
-    static const std::size_t tri_table_end = 0xffffffff;
-    static const std::size_t edge_table[ 256 ];
-    static const std::size_t tri_table[ 256 ][ 16 ];
+    static const size_t tri_table_end = 0xffffffff;
+    static const size_t edge_table[ 256 ];
+    static const size_t tri_table[ 256 ][ 16 ];
     constexpr static const mc_masks<PositionType> masks = mc_masks<PositionType>();
 
 public:
@@ -165,7 +165,7 @@ public:
 public:
 
     typedef vl::vec<PositionType, 3>                    triangle;
-    std::size_t                                         num_faces_;
+    size_t                                         num_faces_;
     unordered_map< LabelType, std::vector< triangle > > meshes_   ;
 
 public:
@@ -190,8 +190,8 @@ public:
     bool erase(const LabelType& t) 
     {
         try {
-            std::size_t face_delta = meshes_.at(t).size();
-            std::size_t num_erased = meshes_.erase(t);
+            size_t face_delta = meshes_.at(t).size();
+            size_t num_erased = meshes_.erase(t);
             num_faces_ -= face_delta;
             return num_erased > 0;
         }
@@ -200,24 +200,24 @@ public:
         }
     }
 
-    std::size_t face_count() const
+    size_t face_count() const
     {
         return num_faces_;
     }
 
-    std::size_t count( const LabelType& t ) const
+    size_t count( const LabelType& t ) const
     {
         return meshes_.count( t );
     }
 
-    std::size_t size() const
+    size_t size() const
     {
         return meshes_.size();
     }
 
     void marche( 
         const LabelType* data, 
-        const std::size_t x_dim, const std::size_t y_dim, const std::size_t z_dim 
+        const size_t x_dim, const size_t y_dim, const size_t z_dim 
     ) {
         // If we don't use uint64_t, then uint32_t
         // messes up in the final position due to some
@@ -238,25 +238,25 @@ public:
             pack_coords( 0, 2, 2 )
         };
 
-        const std::size_t off1 = y_dim * z_dim;
-        const std::size_t off2 = y_dim * z_dim + 1;
-        const std::size_t off3 = 1;
-        const std::size_t off4 = z_dim;
-        const std::size_t off5 = y_dim * z_dim + z_dim;
-        const std::size_t off6 = y_dim * z_dim + z_dim + 1;
-        const std::size_t off7 = z_dim + 1;
+        const size_t off1 = y_dim * z_dim;
+        const size_t off2 = y_dim * z_dim + 1;
+        const size_t off3 = 1;
+        const size_t off4 = z_dim;
+        const size_t off5 = y_dim * z_dim + z_dim;
+        const size_t off6 = y_dim * z_dim + z_dim + 1;
+        const size_t off7 = z_dim + 1;
 
-        const std::size_t x_max = x_dim - 1;
-        const std::size_t y_max = y_dim - 1;
-        const std::size_t z_max = z_dim - 1;
+        const size_t x_max = x_dim - 1;
+        const size_t y_max = y_dim - 1;
+        const size_t z_max = z_dim - 1;
 
         StaticSort<8> sorter;
         std::array<LabelType, 8> uvals;
 
-        for ( std::size_t x = 0; x < x_max; ++x ) {
-            for ( std::size_t y = 0; y < y_max; ++y ) {
-                for ( std::size_t z = 0; z < z_max; ++z ) {
-                    const std::size_t ind = z + z_dim * (y + y_dim * x);
+        for ( size_t x = 0; x < x_max; ++x ) {
+            for ( size_t y = 0; y < y_max; ++y ) {
+                for ( size_t z = 0; z < z_max; ++z ) {
+                    const size_t ind = z + z_dim * (y + y_dim * x);
 
                     std::array<LabelType, 8> vals = {
                         data[ ind ],
@@ -301,9 +301,9 @@ public:
                             continue;
                         }
 
-                        std::size_t c = 0;
+                        size_t c = 0;
 
-                        for ( std::size_t n = 0; n < 8; ++n ) {
+                        for ( size_t n = 0; n < 8; ++n ) {
                             c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
                         }
 
@@ -326,7 +326,7 @@ public:
                         if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
                         if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
 
-                        for ( std::size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
+                        for ( size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
                             ++num_faces_;
                             meshes_[label].emplace_back(
                                 ptrs_[tri_table[c][ n + 2 ]],
@@ -340,7 +340,7 @@ public:
         }
     }
 
-    template< class T > std::size_t
+    template< class T > size_t
     fill_tri_mesh( const LabelType& id,
                    tri_mesh& ret,
                    std::vector< vl::vec< T, 3 > >& points,
@@ -404,7 +404,7 @@ public:
         return meshes_.find(id)->second;
     }
 
-    template< class T > std::size_t
+    template< class T > size_t
     fill_simplifier( ::zi::mesh::simplifier< T >& ret,
                      const LabelType& id,
                      const T& xtrans = T( 0 ),
@@ -466,7 +466,7 @@ public:
 
 #  define ZI_MESH_MARCHING_CUBES_HPP_INLUDING_TABLES 1
 #  define ZI_MESH_MARCHING_CUBES_TYPE( var, ext )                       \
-    template< typename PositionType, typename LabelType > const std::size_t marching_cubes< PositionType, LabelType >::var ext
+    template< typename PositionType, typename LabelType > const size_t marching_cubes< PositionType, LabelType >::var ext
 #
 #  include <zi/mesh/detail/marching_cubes_tables.hpp>
 #
