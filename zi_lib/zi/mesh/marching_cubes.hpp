@@ -219,59 +219,88 @@ public:
       const LabelType* in_labels, 
       const int64_t sx, const int64_t sy, const int64_t sz
     ) {
-      const int64_t voxels = sx * sy * sz;
-      std::unique_ptr<uint32_t[]> runs(new uint32_t[2*sx*sy]());
+        const int64_t voxels = sx * sy * sz;
+        std::unique_ptr<uint32_t[]> runs(new uint32_t[2*sx*sy]());
 
-      int64_t row = 0;
-      for (int64_t loc = 0; loc < voxels; loc += sz, row++) {
-        int64_t index = (row << 1);
-        for (int64_t z = 0; z < sz; z++) {
-          if (in_labels[loc + z]) {
-              runs[index] = static_cast<uint32_t>(z);
-              break;
-          }
+        int64_t row = 0;
+        for (int64_t loc = 0; loc < voxels; loc += sz, row++) {
+            int64_t index = (row << 1);
+            for (int64_t z = 0; z < sz; z++) {
+                if (in_labels[loc + z]) {
+                    runs[index] = static_cast<uint32_t>(z);
+                    break;
+                }
+            }
+            for (int64_t z = sz - 2; z >= runs[index]; z--) {
+                if (in_labels[loc + z]) {
+                    runs[index+1] = static_cast<uint32_t>(z + 1);
+                    break;
+                }
+            }
         }
-        for (int64_t z = sz - 2; z >= runs[index]; z--) {
-          if (in_labels[loc + z]) {
-            runs[index+1] = static_cast<uint32_t>(z + 1);
-            break;
-          }
-        }
-      }
 
-      for (int64_t x = 0; x < sx - 1; x++) {
-        for (int64_t y = 0; y < sy - 1; y++) {
+        for (int64_t x = 0; x < sx - 1; x++) {
+            for (int64_t y = 0; y < sy - 1; y++) {
+                int64_t index1 = 2 * (y + sy * x);
+                int64_t index2 = 2 * (y + sy * (x+1));
+                int64_t index3 = 2 * ((y+1) + sy * x);
+                int64_t index4 = 2 * ((y+1) + sy * (x+1));
+
+                runs[index1] = std::min({
+                    runs[index1], runs[index2], runs[index3], runs[index4]
+                });
+
+                runs[index1] = (runs[index1] < 2)
+                    ? 0 
+                    : runs[index1] - 2;
+                
+                runs[index1+1] = std::max({
+                    runs[index1+1], runs[index2+1], runs[index3+1], runs[index4+1]
+                }) + 2;
+                runs[index1+1] = std::min(
+                    runs[index1+1], 
+                    static_cast<uint32_t>(sz > 0 ? sz - 1 : 0)
+                );
+            }
+          }
+
+        for (int64_t x = 0; x < sx - 1; x++) {
+            int64_t y = sy - 1;
             int64_t index1 = 2 * (y + sy * x);
             int64_t index2 = 2 * (y + sy * (x+1));
-            int64_t index3 = 2 * ((y+1) + sy * x);
-            int64_t index4 = 2 * ((y+1) + sy * (x+1));
 
-            runs[index1] = std::min(
-                std::min(
-                    std::min(runs[index1], runs[index2]),
-                    runs[index3]
-                ),
-                runs[index4]
-            );
+            runs[index1] = std::min(runs[index1], runs[index2]);
             runs[index1] = (runs[index1] < 2)
                 ? 0 
                 : runs[index1] - 2;
-            
-            runs[index1+1] = std::max(
-                std::max(
-                    std::max(runs[index1+1], runs[index2+1]),
-                    runs[index3+1]
-                ),
-                runs[index4+1]
-            ) + 2;
+            runs[index1+1] = std::max({
+                runs[index1+1], runs[index2+1]
+            }) + 2;
             runs[index1+1] = std::min(
                 runs[index1+1], 
-                static_cast<uint32_t>(sz - 1)
+                static_cast<uint32_t>(sz > 0 ? sz - 1 : 0)
             );
         }
-      }
 
-      return runs;
+        for (int64_t y = 0; y < sy - 1; y++) {
+            int64_t x = sx - 1;
+            int64_t index1 = 2 * (y + sy * x);
+            int64_t index3 = 2 * ((y+1) + sy * x);
+
+            runs[index1] = std::min(runs[index1], runs[index3]);
+            runs[index1] = (runs[index1] < 2)
+                ? 0 
+                : runs[index1] - 2;
+            runs[index1+1] = std::max({
+                runs[index1+1], runs[index3+1]
+            }) + 2;
+            runs[index1+1] = std::min(
+                runs[index1+1], 
+                static_cast<uint32_t>(sz > 0 ? sz - 1 : 0)
+            );
+        }
+
+        return runs;
     }
 
     void marche( 
