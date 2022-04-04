@@ -115,6 +115,10 @@ def test_meshes_remain_the_same(connectomics_labels, order):
     with gzip.open(f"./connectomics_npy_meshes/unsimplified/{lbl}.ply.gz", "rb") as f:
       old_mesh = zmesh.Mesh.from_ply(f.read())
     new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=0, max_simplification_error=40)
+    print(old_mesh.vertices)
+    print(new_mesh.vertices)
+    print(old_mesh.faces)
+    print(new_mesh.faces)
     assert old_mesh == new_mesh
     print(lbl, "ok")
 
