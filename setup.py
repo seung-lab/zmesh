@@ -16,7 +16,7 @@ if sys.platform == 'win32':
   ]
 else:
   extra_compile_args += [
-    '-std=c++11', '-O3'
+    '-std=c++11', '-O3', '-Wno-unused-local-typedefs'
   ]
 
 include_dirs = [ np.get_include(), 'zi_lib/', './' ]

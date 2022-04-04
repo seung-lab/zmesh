@@ -113,7 +113,7 @@ private:
     static const std::size_t tri_table_end = 0xffffffff;
     static const std::size_t edge_table[ 256 ];
     static const std::size_t tri_table[ 256 ][ 16 ];
-    static const mc_masks<PositionType> masks;
+    constexpr static const mc_masks<PositionType> masks = mc_masks<PositionType>();
 
 public:
     static inline PositionType pack_coords( PositionType x, PositionType y, PositionType z )
