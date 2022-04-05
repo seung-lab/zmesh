@@ -163,10 +163,9 @@ public:
 
 
 public:
-
-    typedef vl::vec<PositionType, 3>                    triangle;
-    size_t                                         num_faces_;
-    unordered_map< LabelType, std::vector< triangle > > meshes_   ;
+    typedef vl::vec<PositionType, 3> triangle;
+    size_t num_faces_;
+    unordered_map< LabelType, std::vector<triangle> > meshes_;
 
 public:
 
@@ -184,6 +183,7 @@ public:
     void clear()
     {
         meshes_.clear();
+        meshes_.rehash(0);
         num_faces_ = 0;
     }
 
