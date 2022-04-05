@@ -266,7 +266,7 @@ cdef class Mesher3208:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -295,7 +295,7 @@ cdef class Mesher3216:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -324,7 +324,7 @@ cdef class Mesher3232:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -353,7 +353,7 @@ cdef class Mesher3264:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -382,7 +382,7 @@ cdef class Mesher6408:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -411,7 +411,7 @@ cdef class Mesher6416:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -440,7 +440,7 @@ cdef class Mesher6432:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
@@ -469,7 +469,7 @@ cdef class Mesher6464:
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      a.flags.c_contiguous
+      data.flags.c_contiguous
     )
 
   def ids(self):
