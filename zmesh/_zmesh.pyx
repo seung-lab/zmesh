@@ -39,6 +39,9 @@ class Mesher:
 
   def mesh(self, data, close=False):
     """
+    NOTE: For backwards compatibility! This function 
+    transposes the mesh! Use march instead.
+
     Triggers the multi-label meshing process.
     After the mesher has run, you can call get_mesh.
 
@@ -48,6 +51,22 @@ class Mesher:
       the boundary. If True, this ensures that all meshes
       produced will be closed.
     """
+    return self._march(data.T, close, reverse_res=True)
+
+  def march(self, data, close=False):
+    """
+    Triggers the multi-label meshing process.
+    After the mesher has run, you can call get_mesh.
+
+    data: 3d numpy array
+    close: By default, meshes flush against the edge of
+      the image will be left open on the sides that touch
+      the boundary. If True, this ensures that all meshes
+      produced will be closed.
+    """
+    return self._march(data, close, reverse_res=False)
+
+  def _march(self, data, close, reverse_res):
     del self._mesher
 
     if not data.flags.c_contiguous and not data.flags.f_contiguous:
@@ -82,7 +101,11 @@ class Mesher:
       elif nbytes == 1:
         MesherClass = Mesher3208
 
-    self._mesher = MesherClass(self.voxel_res)
+    res = self.voxel_res
+    if reverse_res:
+      res = res[::-1]
+
+    self._mesher = MesherClass(res)
 
     return self._mesher.mesh(data)
 

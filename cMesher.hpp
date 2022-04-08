@@ -86,7 +86,7 @@ class CMesher {
     im.template fill_simplifier<SimplifierType>(
       simplifier_, 
       0, 0, 0, 
-      voxelresolution_[2], voxelresolution_[1], voxelresolution_[0]
+      voxelresolution_[0], voxelresolution_[1], voxelresolution_[2]
     );
 
     if (simplification_factor > 0) {
@@ -111,22 +111,24 @@ class CMesher {
     }
 
     for (auto v = points.begin(); v != points.end(); ++v) {
-      obj.points.push_back((*v)[2]);
-      obj.points.push_back((*v)[1]);
       obj.points.push_back((*v)[0]);
+      obj.points.push_back((*v)[1]);
+      obj.points.push_back((*v)[2]);
     }
 
     if (generate_normals) {
       for (auto vn = normals.begin(); vn != normals.end(); ++vn) {
-        obj.normals.push_back((*vn)[2]);
-        obj.normals.push_back((*vn)[1]);
         obj.normals.push_back((*vn)[0]);
+        obj.normals.push_back((*vn)[1]);
+        obj.normals.push_back((*vn)[2]);
       }
     }
 
     for (auto f = faces.begin(); f != faces.end(); ++f) {
-      obj.faces.push_back((*f)[0]);
+      // previously 0,2,1
+
       obj.faces.push_back((*f)[2]);
+      obj.faces.push_back((*f)[0]);
       obj.faces.push_back((*f)[1]);
     }
 
