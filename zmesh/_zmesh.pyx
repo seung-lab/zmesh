@@ -187,9 +187,7 @@ class Mesher:
         packed_triangles[ti, vi] = mesher.pack_coords(
           <uint64_t>triangles[ti, vi, 0], <uint64_t>triangles[ti, vi, 1], <uint64_t>triangles[ti, vi, 2]
         )
-    print(triangles)
     del triangles
-    print(packed_triangles)
 
     cdef MeshObject result = mesher.simplify_points(
       <uint64_t*>&packed_triangles[0,0], Nv, 
