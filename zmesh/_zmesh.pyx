@@ -113,12 +113,15 @@ class Mesher:
 
     return self._normalize_simplified_mesh(mesh, voxel_centered)
   
-  def _normalize_simplified_mesh(self, mesh, voxel_centered):
+  def _normalize_simplified_mesh(self, mesh, voxel_centered, physical=True):
     points = np.array(mesh['points'], dtype=np.float32)
     Nv = points.size // 3
     Nf = len(mesh['faces']) // 3
 
     points = points.reshape(Nv, 3)
+    if not physical:
+      points *= self.voxel_res
+
     if voxel_centered:
       points += self.voxel_res
     points /= 2.0
@@ -129,19 +132,6 @@ class Mesher:
       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
 
     return Mesh(points, faces, normals)
-
-  def _triangles(self, mesh):
-    cdef size_t Nf = mesh.faces.shape[0]
-    cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
-
-    cdef size_t i = 0
-    cdef short int j = 0
-
-    for i in range(Nf):
-      for j in range(3):
-        tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]
-
-    return tris
 
   def compute_normals(self, mesh):
     """
@@ -182,11 +172,12 @@ class Mesher:
     cdef size_t vi = 0
     cdef uint64_t vert = 0
 
-    cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
+    cdef cnp.ndarray[float, ndim=3] triangles = mesh.vertices[mesh.faces]
     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros( 
       (triangles.shape[0], 3), dtype=np.uint64, order='C'
     ) 
 
+    triangles /= self.voxel_res
     triangles *= 2.0
 
     cdef size_t Nv = triangles.shape[0]
@@ -196,14 +187,16 @@ class Mesher:
         packed_triangles[ti, vi] = mesher.pack_coords(
           <uint64_t>triangles[ti, vi, 0], <uint64_t>triangles[ti, vi, 1], <uint64_t>triangles[ti, vi, 2]
         )
+    print(triangles)
     del triangles
+    print(packed_triangles)
 
     cdef MeshObject result = mesher.simplify_points(
       <uint64_t*>&packed_triangles[0,0], Nv, 
       <bool>compute_normals, reduction_factor, max_error
     )
     del mesher
-    return self._normalize_simplified_mesh(result, voxel_centered)
+    return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
 
   def clear(self):
     self._mesher.clear()
