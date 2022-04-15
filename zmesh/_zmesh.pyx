@@ -179,16 +179,15 @@ class Mesher:
 
     triangles /= self.voxel_res
     triangles *= 2.0
+    cdef float min_vertex = np.min(triangles)
+    if min_vertex != 0:
+      triangles -= min_vertex
 
     # uint64 // 3 = 21 bits - 1 bit for representing half voxels
     if np.max(triangles) > 2**20:
       raise ValueError(
         "Vertex positions larger than simplifier representation limit (2^20). "
         f"Did you set the resolution correctly? voxel res: {self.voxel_res}"
-      )
-    elif np.min(triangles) < 0:
-      raise ValueError(
-        "Vertex positions must be greater than zero."
       )
 
     cdef size_t Nv = triangles.shape[0]
@@ -205,6 +204,12 @@ class Mesher:
       <bool>compute_normals, reduction_factor, max_error
     )
     del mesher
+
+    cdef int i = 0
+    if min_vertex != 0:
+      for i in range(len(result.points)):
+        result.points[i] += min_vertex
+
     return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
 
   def clear(self):
