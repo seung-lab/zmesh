@@ -33,9 +33,16 @@ cdef extern from "cMesher.hpp":
 
 class Mesher:
   def __init__(self, voxel_res):
-    voxel_res = np.array(voxel_res, dtype=np.float32)
-    self._mesher = Mesher6464(voxel_res)
     self.voxel_res = voxel_res
+    self._mesher = Mesher6464(self.voxel_res)
+
+  @property
+  def voxel_res(self):
+    return self._voxel_res
+
+  @voxel_res.setter
+  def voxel_res(self, res):
+    self._voxel_res = np.array(res, dtype=np.float32)
 
   def mesh(self, data, close=False):
     """
@@ -111,14 +118,17 @@ class Mesher:
       mesh_id, normals, simplification_factor, max_simplification_error
     )
 
-    return self._normalize_simplified_mesh(mesh, voxel_centered)
+    return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
   
-  def _normalize_simplified_mesh(self, mesh, voxel_centered):
+  def _normalize_simplified_mesh(self, mesh, voxel_centered, physical):
     points = np.array(mesh['points'], dtype=np.float32)
     Nv = points.size // 3
     Nf = len(mesh['faces']) // 3
 
     points = points.reshape(Nv, 3)
+    if not physical:
+      points *= self.voxel_res
+
     if voxel_centered:
       points += self.voxel_res
     points /= 2.0
@@ -129,19 +139,6 @@ class Mesher:
       normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
 
     return Mesh(points, faces, normals)
-
-  def _triangles(self, mesh):
-    cdef size_t Nf = mesh.faces.shape[0]
-    cdef cnp.ndarray[float, ndim=3] tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
-
-    cdef size_t i = 0
-    cdef short int j = 0
-
-    for i in range(Nf):
-      for j in range(3):
-        tris[i,j,:] = mesh.vertices[ mesh.faces[i,j] ]
-
-    return tris
 
   def compute_normals(self, mesh):
     """
@@ -163,6 +160,9 @@ class Mesher:
     mesh.vertices and mesh.faces implemented as numpy arrays), apply
     the quadratic edge collapse algorithm. 
 
+    Note: the maximum range spread between vertex values (in x, y, or z)
+    is 2^20. The simplifier cannot represent values outside that range.
+
     Optional:
       reduction_factor: Triangle reduction factor target. If all vertices
         are maxxed out in terms of their error tolerance the algorithm will
@@ -176,18 +176,29 @@ class Mesher:
 
     Returns: Mesh
     """
-    mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)
+    mesher = new CMesher[uint64_t, uint64_t, float](self.voxel_res)
 
     cdef size_t ti = 0
     cdef size_t vi = 0
     cdef uint64_t vert = 0
 
-    cdef cnp.ndarray[float, ndim=3] triangles = self._triangles(mesh)
+    cdef cnp.ndarray[float, ndim=3] triangles = mesh.vertices[mesh.faces]
     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros( 
       (triangles.shape[0], 3), dtype=np.uint64, order='C'
     ) 
 
+    triangles /= self.voxel_res
     triangles *= 2.0
+    cdef float min_vertex = np.min(triangles)
+    if min_vertex != 0:
+      triangles -= min_vertex
+
+    # uint64 // 3 = 21 bits - 1 bit for representing half voxels
+    if np.max(triangles) > 2**20:
+      raise ValueError(
+        "Vertex positions larger than simplifier representation limit (2^20). "
+        f"Did you set the resolution correctly? voxel res: {self.voxel_res}"
+      )
 
     cdef size_t Nv = triangles.shape[0]
 
@@ -203,7 +214,13 @@ class Mesher:
       <bool>compute_normals, reduction_factor, max_error
     )
     del mesher
-    return self._normalize_simplified_mesh(result, voxel_centered)
+
+    cdef int i = 0
+    if min_vertex != 0:
+      for i in range(len(result.points)):
+        result.points[i] += min_vertex
+
+    return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
 
   def clear(self):
     self._mesher.clear()

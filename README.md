@@ -87,7 +87,8 @@ pip install zmesh --no-binary :all:
 - The mesher will consume about double memory in 64 bit mode if the size of the 
 object exceeds <1023, 1023, 511> on the x, y, or z axes. This is due to a limitation 
 of the 32-bit format. 
-- The mesher processes in C order.
+- The mesher is ambidextrous, it can handle C or Fortran order arrays.
+- The maximum vertex range supported `.simplify` after converting to voxel space is 2<sup>20</sup> (appx. 1M) due to the packed 64-bit vertex format.
 
 ## Related Projects 
 
