@@ -173,7 +173,7 @@ class Mesher:
 
     Returns: Mesh
     """
-    mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)
+    mesher = new CMesher[uint64_t, uint64_t, float](self.voxel_res)
 
     cdef size_t ti = 0
     cdef size_t vi = 0

@@ -4901,7 +4901,7 @@ static PyObject *__pyx_pw_5zmesh_6_zmesh_6Mesher_17simplify(PyObject *__pyx_self
 }
 
 static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16simplify(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_mesh, int __pyx_v_reduction_factor, int __pyx_v_max_error, PyObject *__pyx_v_compute_normals, PyObject *__pyx_v_voxel_centered) {
-  CMesher<uint64_t,uint64_t,double>  *__pyx_v_mesher;
+  CMesher<uint64_t,uint64_t,float>  *__pyx_v_mesher;
   size_t __pyx_v_ti;
   size_t __pyx_v_vi;
   CYTHON_UNUSED uint64_t __pyx_v_vert;
@@ -4919,7 +4919,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16simplify(CYTHON_UNUSED PyObje
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   std::vector<float>  __pyx_t_2;
-  CMesher<uint64_t,uint64_t,double>  *__pyx_t_3;
+  CMesher<uint64_t,uint64_t,float>  *__pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
   PyArrayObject *__pyx_t_6 = NULL;
@@ -4967,7 +4967,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16simplify(CYTHON_UNUSED PyObje
   /* "zmesh/_zmesh.pyx":176
  *     Returns: Mesh
  *     """
- *     mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)             # <<<<<<<<<<<<<<
+ *     mesher = new CMesher[uint64_t, uint64_t, float](self.voxel_res)             # <<<<<<<<<<<<<<
  * 
  *     cdef size_t ti = 0
  */
@@ -4976,7 +4976,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16simplify(CYTHON_UNUSED PyObje
   __pyx_t_2 = __pyx_convert_vector_from_py_float(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
-    __pyx_t_3 = new CMesher<uint64_t,uint64_t,double> (__pyx_t_2);
+    __pyx_t_3 = new CMesher<uint64_t,uint64_t,float> (__pyx_t_2);
   } catch(...) {
     __Pyx_CppExn2PyErr();
     __PYX_ERR(0, 176, __pyx_L1_error)
@@ -4984,7 +4984,7 @@ static PyObject *__pyx_pf_5zmesh_6_zmesh_6Mesher_16simplify(CYTHON_UNUSED PyObje
   __pyx_v_mesher = __pyx_t_3;
 
   /* "zmesh/_zmesh.pyx":178
- *     mesher = new CMesher[uint64_t, uint64_t, double](self.voxel_res)
+ *     mesher = new CMesher[uint64_t, uint64_t, float](self.voxel_res)
  * 
  *     cdef size_t ti = 0             # <<<<<<<<<<<<<<
  *     cdef size_t vi = 0
