@@ -160,6 +160,9 @@ class Mesher:
     mesh.vertices and mesh.faces implemented as numpy arrays), apply
     the quadratic edge collapse algorithm. 
 
+    Note: the maximum range spread between vertex values (in x, y, or z)
+    is 2^20. The simplifier cannot represent values outside that range.
+
     Optional:
       reduction_factor: Triangle reduction factor target. If all vertices
         are maxxed out in terms of their error tolerance the algorithm will
