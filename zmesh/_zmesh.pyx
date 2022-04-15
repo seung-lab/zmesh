@@ -33,9 +33,16 @@ cdef extern from "cMesher.hpp":
 
 class Mesher:
   def __init__(self, voxel_res):
-    voxel_res = np.array(voxel_res, dtype=np.float32)
-    self._mesher = Mesher6464(voxel_res)
     self.voxel_res = voxel_res
+    self._mesher = Mesher6464(self.voxel_res)
+
+  @property
+  def voxel_res(self):
+    return self._voxel_res
+
+  @voxel_res.setter
+  def voxel_res(self, res):
+    self._voxel_res = np.array(res, dtype=np.float32)
 
   def mesh(self, data, close=False):
     """
