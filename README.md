@@ -82,13 +82,14 @@ sudo apt-get install python3-dev libboost-all-dev
 pip install zmesh --no-binary :all:
 ```
 
-## Performance Tuning
+## Performance Tuning & Notes
 
 - The mesher will consume about double memory in 64 bit mode if the size of the 
 object exceeds <1023, 1023, 511> on the x, y, or z axes. This is due to a limitation 
 of the 32-bit format. 
 - The mesher is ambidextrous, it can handle C or Fortran order arrays.
 - The maximum vertex range supported `.simplify` after converting to voxel space is 2<sup>20</sup> (appx. 1M) due to the packed 64-bit vertex format.
+- There is a longstanding design flaw in `cMesher.hpp` that transposes the returned mesh and resolution. We're working on a backwards compatible solution. That's why you need to do `mesher.mesh(data.T)`.
 
 ## Related Projects 
 
