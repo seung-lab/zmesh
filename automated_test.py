@@ -56,6 +56,26 @@ def test_simplify(dtype, order):
   assert mesh.faces.shape[0] < Nf
   assert mesh.normals.size > 0
 
+  mesher.voxel_res = (1,1,1)
+  mesh = mesher.get_mesh(1, normals=False)
+
+  # ensure negative vertices work
+  mesh.vertices -= 10000
+  mesh = mesher.simplify(mesh, reduction_factor=2, max_error=40, compute_normals=True)
+  assert len(mesh) > 0
+  assert len(mesh) <= Nv 
+  assert mesh.faces.shape[0] <= Nf
+  assert mesh.normals.size > 0
+
+  # check that upper limit of precision errors
+  try:
+    mesh.vertices[0] = 0
+    mesh.vertices[1:] = 2**20
+    mesh = mesher.simplify(mesh, reduction_factor=2, max_error=40, compute_normals=True)
+    assert False
+  except ValueError:
+    pass
+
 @pytest.mark.parametrize("dtype", DTYPE)
 def test_precomputed(dtype):
   labels = np.zeros( (11,17,19), dtype=dtype)
