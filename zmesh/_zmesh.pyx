@@ -111,9 +111,9 @@ class Mesher:
       mesh_id, normals, simplification_factor, max_simplification_error
     )
 
-    return self._normalize_simplified_mesh(mesh, voxel_centered)
+    return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
   
-  def _normalize_simplified_mesh(self, mesh, voxel_centered, physical=True):
+  def _normalize_simplified_mesh(self, mesh, voxel_centered, physical):
     points = np.array(mesh['points'], dtype=np.float32)
     Nv = points.size // 3
     Nf = len(mesh['faces']) // 3
@@ -179,6 +179,17 @@ class Mesher:
 
     triangles /= self.voxel_res
     triangles *= 2.0
+
+    # uint64 // 3 = 21 bits - 1 bit for representing half voxels
+    if np.max(triangles) > 2**20:
+      raise ValueError(
+        "Vertex positions larger than simplifier representation limit (2^20). "
+        f"Did you set the resolution correctly? voxel res: {self.voxel_res}"
+      )
+    elif np.min(triangles) < 0:
+      raise ValueError(
+        "Vertex positions must be greater than zero."
+      )
 
     cdef size_t Nv = triangles.shape[0]
 
