@@ -9,11 +9,13 @@
 # marching cubes (connectomics.npy 512^3, uint32): 5.359s, 25.00 MVx/sec, N=1
 # marching cubes (random 448^3 uint64): 69.927s, 1.27 MVx/sec, N=1
 
+# simplification (connectomics.npy): 434.549s, 0.31 MVx/sec, N=1
 
 import numpy as np
 
 import zmesh
 import time
+from tqdm import tqdm
 
 def result(label, dt, data, N):
     voxels = data.size
@@ -88,7 +90,26 @@ def test_scikit_marching_cubes():
     end = time.time()
     result("marching cubes (random)", end - start, labels, N=N)
 
+def test_zmesh_simplification():
+    labels = np.load("./connectomics.npy")
+    mesher = zmesh.Mesher((1,1,1))
+    mesher.mesh(labels)
+
+    N = 1
+    start = time.time()
+    for label in tqdm(mesher.ids()):
+        mesher.get_mesh(label, 
+            simplification_factor=100, 
+
+            # Max tolerable error in physical distance
+            max_simplification_error=1,
+        )
+    end = time.time()
+    result("simplification (connectomics.npy)", end - start, labels, N=N)
+
 print("ZMESH")
 test_zmesh_marching_cubes()
 print("SKIMAGE")
 test_scikit_marching_cubes()
+print("ZMESH SIMPLIFICATION")
+test_zmesh_simplification()
