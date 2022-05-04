@@ -44,6 +44,13 @@ class Mesh:
       (None if self.normals is None else self.normals.shape[0])
     )
 
+  @property
+  def nbytes(self) -> int:
+    nbytes = self.vertices.nbytes if self.vertices is not None else 0
+    nbytes += self.faces.nbytes if self.faces is not None else 0
+    nbytes += self.normals.nbytes if self.normals is not None else 0
+    return nbytes
+
   def clone(self):
     if self.normals is None:
       return Mesh(np.copy(self.vertices), np.copy(self.faces), None)
