@@ -90,6 +90,12 @@ def test_scikit_marching_cubes():
     end = time.time()
     result("marching cubes (random)", end - start, labels, N=N)
 
+# Ran zmesh simplification and summed the sizes
+# of the meshes.
+# factor 0 max error 0:  1614121164 bytes (1.0x)
+# factor 100 max error 0: 503561448 bytes (3.2x)
+# factor 100 max error 1: 350636148 bytes (4.6x)
+
 def test_zmesh_simplification():
     labels = np.load("./connectomics.npy")
     mesher = zmesh.Mesher((1,1,1))
