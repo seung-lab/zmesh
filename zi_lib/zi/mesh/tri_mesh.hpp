@@ -302,11 +302,6 @@ public:
         ZI_ASSERT( x < size_ && y < size_ && z < size_ );
 
         ++max_face_;
-        while ( faces_.count( max_face_ ) )
-        {
-            ++max_face_;
-        }
-
         faces_.insert( std::make_pair( max_face_, face_type( x, y, z ) ) );
 
         add_edge( x, y, z, max_face_ );
