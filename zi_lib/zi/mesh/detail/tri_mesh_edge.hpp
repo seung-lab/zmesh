@@ -20,13 +20,13 @@
 #define ZI_MESH_TRI_MESH_EDGE_HPP 1
 
 #include <zi/bits/cstdint.hpp>
-#include <zi/bits/unordered_map.hpp>
 #include <zi/bits/ref.hpp>
 
 #include <zi/utility/assert.hpp>
 #include <zi/utility/enable_if.hpp>
 #include <zi/utility/non_copyable.hpp>
 #include <zi/utility/static_if.hpp>
+#include <zi/utility/robin_hood.hpp>
 
 #include <iterator>
 #include <cstddef>
@@ -42,8 +42,8 @@ namespace detail {
 struct tri_mesh_edge_impl
 {
 private:
-    const uint32_t face_  ;
-    const uint32_t vertex_;
+    uint32_t face_  ;
+    uint32_t vertex_;
 
     friend class ::zi::mesh::tri_mesh;
 
@@ -58,11 +58,6 @@ public:
     {
     }
 
-    tri_mesh_edge_impl(const tri_mesh_edge_impl& tri) 
-        : face_( tri.face() ), vertex_( tri.vertex() )
-    {
-    }
-
     inline bool operator==( const tri_mesh_edge_impl& o ) const
     {
         return face_ == o.face_ && vertex_ == o.vertex_;
@@ -71,11 +66,6 @@ public:
     inline bool operator!=( const tri_mesh_edge_impl& o ) const
     {
         return !( *this == o );
-    }
-
-    inline const tri_mesh_edge_impl* operator=( const tri_mesh_edge_impl& o ) const
-    {
-        return this;
     }
 
     uint32_t face() const
@@ -92,9 +82,9 @@ public:
 struct tri_mesh_edge_container
 {
 protected:
-    reference_wrapper< unordered_map< uint64_t, tri_mesh_edge_impl > > edges_;
+    reference_wrapper< robin_hood::unordered_flat_map< uint64_t, tri_mesh_edge_impl > > edges_;
 
-    tri_mesh_edge_container( unordered_map< uint64_t, tri_mesh_edge_impl > &edges )
+    tri_mesh_edge_container( robin_hood::unordered_flat_map< uint64_t, tri_mesh_edge_impl > &edges )
         : edges_( edges )
     {
     }
@@ -243,8 +233,8 @@ public:
 
     private:
         typedef typename if_< IsConst,
-                              unordered_map< uint64_t, tri_mesh_edge_impl >::const_iterator,
-                              unordered_map< uint64_t, tri_mesh_edge_impl >::iterator
+                              robin_hood::unordered_flat_map< uint64_t, tri_mesh_edge_impl >::const_iterator,
+                              robin_hood::unordered_flat_map< uint64_t, tri_mesh_edge_impl >::iterator
                               >::type base_forward_type;
 
         typedef std::reverse_iterator< base_forward_type > base_backward_type;

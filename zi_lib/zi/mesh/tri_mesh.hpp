@@ -26,8 +26,8 @@
 #include <zi/utility/enable_if.hpp>
 #include <zi/utility/detail/dummy.hpp>
 #include <zi/utility/exception.hpp>
+#include <zi/utility/robin_hood.hpp>
 
-#include <zi/bits/unordered_map.hpp>
 #include <vector>
 #include <functional>
 #include <stdexcept>
@@ -128,7 +128,7 @@ public:
 private:
     std::size_t                           size_    ;
     std::vector  < vertex_type >          vertices_;
-    unordered_map< uint64_t, edge_type >  edges_   ;
+    robin_hood::unordered_flat_map< uint64_t, edge_type >  edges_   ;
     unordered_map< uint32_t, face_type >  faces_   ;
     uint32_t                              max_face_;
 
@@ -148,11 +148,6 @@ private:
 
         const uint64_t e = detail::make_edge( x, y );
 
-        // if ( edges_.count( e ) )
-        // {
-        //     return;
-        // }
-
         ZI_ASSERT_0( edges_.count( e ) );
 
         if ( edges_.count( detail::edge_inverse( e ) ) )
@@ -168,7 +163,7 @@ private:
 
         vertices_[ x ].face( f );
 
-        edges_.insert( std::make_pair( e, edge_type( f, z ) ) );
+        edges_.emplace(e, edge_type( f, z ) );
     }
 
     void remove_edge( uint32_t x, uint32_t y, uint32_t f )
@@ -302,7 +297,7 @@ public:
         ZI_ASSERT( x < size_ && y < size_ && z < size_ );
 
         ++max_face_;
-        faces_.insert( std::make_pair( max_face_, face_type( x, y, z ) ) );
+        faces_.emplace(max_face_, face_type( x, y, z ) );
 
         add_edge( x, y, z, max_face_ );
         add_edge( y, z, x, max_face_ );
@@ -332,8 +327,7 @@ public:
     void remove_face( const uint32_t x, const uint32_t y, const uint32_t z )
     {
         static_cast< void >( z );
-        unordered_map< uint64_t, edge_type >::const_iterator it =
-            edges_.find( detail::make_edge( x, y ) );
+        auto it = edges_.find( detail::make_edge( x, y ) );
 
         ZI_ASSERT( it != edges_.end() );
         ZI_ASSERT( it->second.vertex_ == z );
@@ -352,7 +346,7 @@ public:
             return 0;
         }
 
-        unordered_map< uint32_t, face_type >::const_iterator it = faces_.find( vertices_[ id ].face_ );
+        auto it = faces_.find( vertices_[ id ].face_ );
 
         if ( it == faces_.end() )
         {
@@ -376,7 +370,7 @@ public:
 
     uint64_t next_edge( const uint64_t eid ) const
     {
-        unordered_map< uint64_t, edge_type >::const_iterator it = edges_.find( eid );
+        auto it = edges_.find( eid );
 
         if ( it == edges_.end() )
         {
@@ -388,7 +382,7 @@ public:
 
     uint64_t next_around( const uint64_t eid ) const
     {
-        unordered_map< uint64_t, edge_type >::const_iterator it = edges_.find( eid );
+        auto it = edges_.find( eid );
         return ( it == edges_.end() ) ? 0 : ( ( eid | 0xffffffffLL ) ^ it->second.vertex_ );
     }
 
@@ -399,7 +393,7 @@ public:
 
     uint64_t next_around_cw( const uint64_t eid ) const
     {
-        unordered_map< uint64_t, edge_type >::const_iterator it = edges_.find( eid );
+        auto it = edges_.find( eid );
         return ( it == edges_.end() ) ? 0 : ( ( eid | 0xffffffffLL ) ^ it->second.vertex_ );
     }
 
@@ -431,7 +425,7 @@ public:
 
     uint32_t edge_face( const uint64_t eid ) const
     {
-        unordered_map< uint64_t, edge_type >::const_iterator it = edges_.find( eid );
+        auto it = edges_.find( eid );
 
         if ( it == edges_.end() )
         {
@@ -458,8 +452,8 @@ public:
             std::swap( einv, eind );
         }
 
-        const edge_type& er = edges_.find( eind )->second;
-        const edge_type& el = edges_.find( einv )->second;
+        const edge_type er = edges_.find( eind )->second;
+        const edge_type el = edges_.find( einv )->second;
 
         const uint32_t vr = er.vertex_;
         const uint32_t vl = el.vertex_;
@@ -472,7 +466,7 @@ public:
         for ( uint32_t v = vr; v != vl; )
         {
             const uint64_t   e   = detail::make_edge( v1, v );
-            const edge_type& edg = edges_.find( e )->second;
+            const edge_type edg = edges_.find( e )->second;
             const uint32_t   nv  = edg.vertex_;
 
             remove_face( edg.face_ );
