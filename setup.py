@@ -30,8 +30,9 @@ if boost_dir:
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy'],
-  python_requires="~=3.6", # >= 3.6 < 4.0
+  python_requires=">=3.6", # >= 3.6 < 4.0
   pbr=True,
+  define_macros=[ ("NDEBUG", 1) ],
   ext_modules=[
     setuptools.Extension(
       'zmesh._zmesh',
