@@ -348,8 +348,10 @@ private:
 
         alloc_.construct( store_ + heap_[ size_ ], v );
 
-        keymap_.insert( std::make_pair( key_extractor_( const_cast< Type& >( v ) ),
-                                        heap_[ size_ ] ));
+        keymap_.emplace(
+            key_extractor_(const_cast<Type&>(v)),
+            heap_[ size_ ] 
+        );
 
         ZI_ASSERT( map_[ heap_[ size_ ] ] == size_ );
 

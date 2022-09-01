@@ -21,8 +21,8 @@
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/hash.hpp>
-#include <zi/bits/unordered_map.hpp>
 #include <zi/utility/exception.hpp>
+#include <zi/utility/robin_hood.hpp>
 
 #include <functional>
 #include <cstring>
@@ -55,7 +55,7 @@ struct hashed_index
 {
     typedef typename KeyExtractor::result_type                     key_type;
     typedef KeyExtractor                                           key_extractor;
-    typedef unordered_map< const key_type, uint32_t, Hash, Pred >  container_type;
+    typedef robin_hood::unordered_flat_map<key_type, uint32_t, Hash, Pred>  container_type;
 };
 
 template< class KeyExtractor,
