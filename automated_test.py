@@ -122,7 +122,7 @@ def test_ply_import():
   assert mesh == mesh2
 
 @pytest.mark.parametrize("order", [ 'C', 'F' ])
-def test_meshes_remain_the_same(connectomics_labels, order):
+def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
   if order == "C":
     connectomics_labels = np.ascontiguousarray(connectomics_labels)
   else:
@@ -135,6 +135,23 @@ def test_meshes_remain_the_same(connectomics_labels, order):
     with gzip.open(f"./connectomics_npy_meshes/unsimplified/{lbl}.ply.gz", "rb") as f:
       old_mesh = zmesh.Mesh.from_ply(f.read())
     new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=0, max_simplification_error=40)
+    assert np.all(np.sort(old_mesh.vertices[old_mesh.faces], axis=0) == np.sort(new_mesh.vertices[new_mesh.faces], axis=0))
+    print(lbl, "ok")
+
+@pytest.mark.parametrize("order", [ 'C', 'F' ])
+def test_simplified_meshes_remain_the_same(connectomics_labels, order):
+  if order == "C":
+    connectomics_labels = np.ascontiguousarray(connectomics_labels)
+  else:
+    connectomics_labels = np.asfortranarray(connectomics_labels)
+
+  mesher = zmesh.Mesher( (32,32,40) )
+  mesher.mesh(connectomics_labels)
+
+  for lbl in mesher.ids()[:300]:
+    with gzip.open(f"./connectomics_npy_meshes/simplified/{lbl}.ply.gz", "rb") as f:
+      old_mesh = zmesh.Mesh.from_ply(f.read())
+    new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=100, max_simplification_error=40)
     assert np.all(np.sort(old_mesh.vertices[old_mesh.faces], axis=0) == np.sort(new_mesh.vertices[new_mesh.faces], axis=0))
     print(lbl, "ok")
 
