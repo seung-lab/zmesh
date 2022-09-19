@@ -21,12 +21,12 @@
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/ref.hpp>
+#include <zi/bits/unordered_map.hpp>
 
 #include <zi/utility/assert.hpp>
 #include <zi/utility/enable_if.hpp>
 #include <zi/utility/non_copyable.hpp>
 #include <zi/utility/static_if.hpp>
-#include <zi/utility/robin_hood.hpp>
 
 #include <iterator>
 #include <cstddef>
@@ -192,9 +192,9 @@ private:
 struct tri_mesh_face_container
 {
 protected:
-    reference_wrapper< robin_hood::unordered_flat_map< uint32_t, tri_mesh_face_impl > > faces_;
+    reference_wrapper< unordered_map< uint32_t, tri_mesh_face_impl > > faces_;
 
-    tri_mesh_face_container( robin_hood::unordered_flat_map< uint32_t, tri_mesh_face_impl > &faces )
+    tri_mesh_face_container( unordered_map< uint32_t, tri_mesh_face_impl > &faces )
         : faces_( faces )
     {
     }
@@ -341,8 +341,8 @@ public:
 
     private:
         typedef typename if_< IsConst,
-                              robin_hood::unordered_flat_map< uint32_t, tri_mesh_face_impl >::const_iterator,
-                              robin_hood::unordered_flat_map< uint32_t, tri_mesh_face_impl >::iterator
+                              unordered_map< uint32_t, tri_mesh_face_impl >::const_iterator,
+                              unordered_map< uint32_t, tri_mesh_face_impl >::iterator
                               >::type base_forward_type;
 
         typedef std::reverse_iterator< base_forward_type > base_backward_type;

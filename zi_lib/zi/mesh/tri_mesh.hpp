@@ -129,7 +129,7 @@ private:
     std::size_t                           size_    ;
     std::vector  < vertex_type >          vertices_;
     robin_hood::unordered_flat_map< uint64_t, edge_type >  edges_   ;
-    robin_hood::unordered_flat_map< uint32_t, face_type >  faces_   ;
+    unordered_map< uint32_t, face_type >  faces_   ;
     uint32_t                              max_face_;
 
 public:
