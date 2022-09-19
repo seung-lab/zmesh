@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <zi/mesh/marching_cubes.hpp>
+#include <zi/mesh/quadratic_simplifier.hpp>
 #include <boost/shared_ptr.hpp>
 
 namespace zi {
