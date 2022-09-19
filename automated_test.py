@@ -138,7 +138,11 @@ def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
     assert np.all(np.sort(old_mesh.vertices[old_mesh.faces], axis=0) == np.sort(new_mesh.vertices[new_mesh.faces], axis=0))
     print(lbl, "ok")
 
-@pytest.mark.parametrize("order", [ 'C', 'F' ])
+
+# F order meshes are processed in a different order and so
+# the simplifier produces a different mesh. Will have to add F order examples
+# in order to test.
+@pytest.mark.parametrize("order", [ 'C' ])
 def test_simplified_meshes_remain_the_same(connectomics_labels, order):
   if order == "C":
     connectomics_labels = np.ascontiguousarray(connectomics_labels)
