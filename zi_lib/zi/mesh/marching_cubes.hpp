@@ -237,10 +237,10 @@ private:
     };
 
     template <class Fn, class Tag>
-    static inline __attribute__((always_inline)) void
-    mc_nested_loops(std::size_t sx, std::size_t sy, std::size_t sz, Fn&& fn,
-                    Tag const&)
-    {
+    static inline void mc_nested_loops(
+        std::size_t sx, std::size_t sy, std::size_t sz, 
+        Fn&& fn, Tag const&
+    ) {
         if constexpr (std::is_same_v<Tag, c_order_tag>)
         {
             for (std::size_t x = 0; x < sx - 1; ++x)
