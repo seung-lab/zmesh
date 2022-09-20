@@ -16,167 +16,181 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// Algorithm adopted from http://paulbourke.net/geometry/polygonise/
+// and modified for the particular use case.
+
 // Extended with uint32_t support in 2019 by William Silversmith
 
-#ifndef ZI_MESH_MARCHING_CUBES_HPP
-#define ZI_MESH_MARCHING_CUBES_HPP 1
+#pragma once
+
+#include "detail/all_equal.hpp"
+#include "detail/mc_tables.hpp"
 
 #include <zi/mesh/network_sort.hpp>
-#include <zi/mesh/tri_mesh.hpp>
-#include <zi/mesh/quadratic_simplifier.hpp>
-
-#include <zi/bits/cstdint.hpp>
-#include <zi/bits/type_traits.hpp>
-#include <zi/bits/unordered_map.hpp>
-
-#include <zi/utility/non_copyable.hpp>
-
 #include <zi/vl/vec.hpp>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
-#include <vector>
+#include <cstdint>
 #include <ostream>
+#include <type_traits>
+#include <unordered_map>
+#include <vector>
 
-// Logic: If two adjacent labels match, return their avg position. 
+// COMMENT(zi): TODO(anyone): check whether this is still true. I
+// don't think it is with the new implementation.
+
+// Logic: If two adjacent labels match, return their avg position.
 //        Else, return the first vertex position.
-// 
-// The code used to read: (vert[p1]+vert[p2]) >> 1 
+//
+// The code used to read: (vert[p1]+vert[p2]) >> 1
 // However, this can cause overflow in uint32 vertex types
-// when the carry bit reaches from Z to Y or Y to X. 
+// when the carry bit reaches from Z to Y or Y to X.
 //
 // Each vertex has a bit at the beginning representing 2^-1
 // which reads 0 initially. By shifting down first before adding
 // we ensure that the fields never overflow.
 
-#define ZI_MC_QUICK_INTERP( p1, p2, val )                      \
-    (((( vals[ p1 ] == val ) ^ ( vals[ p2 ] == val )) ?        \
-     (((cur + vert[p1]) >> 1) + ((cur + vert[p2]) >> 1)) : (cur + vert[p1]) ))
+// define ZI_MC_QUICK_INTERP(p1, p2, val)
+//     ((((labels[p1] == val) ^ (labels[p2] == val))
+//           ? (((cur + vert[p1]) >> 1) + ((cur + vert[p2]) >> 1))
+//           : (cur + vert[p1])))
 
-namespace zi {
-namespace mesh {
+namespace zi::mesh
+{
 
-template <typename T> 
-struct mc_masks {
-    static const size_t zshift = 0;   // z = 21 bits (2^20 - 1) + .5
-    static const size_t yshift = 21;  // y = 21 bits (2^20 - 1) + .5
-    static const size_t xshift = 42;  // x = 21 bits (2^20 - 1) + .5
+template <typename T>
+struct mc_masks;
 
-    static const size_t z_mask = 0x1FFFFF;
-    static const size_t y_mask = z_mask << yshift;
-    static const size_t x_mask = z_mask << xshift;
+template <>
+struct mc_masks<std::uint64_t>
+{
+    static const std::uint64_t zshift = 0;  // z = 21 bits (2^20 - 1) + .5
+    static const std::uint64_t yshift = 21; // y = 21 bits (2^20 - 1) + .5
+    static const std::uint64_t xshift = 42; // x = 21 bits (2^20 - 1) + .5
 
-    static const size_t xy_mask = x_mask | y_mask;
-    static const size_t xz_mask = x_mask | z_mask;
-    static const size_t yz_mask = y_mask | z_mask;
+    static const std::uint64_t z_mask = 0x1FFFFF;
+    static const std::uint64_t y_mask = z_mask << yshift;
+    static const std::uint64_t x_mask = z_mask << xshift;
 
-    static const size_t delta_z = 1;
-    static const size_t delta_y = delta_z << yshift;
-    static const size_t delta_x = delta_z << xshift;
-
-    static const size_t delta_2z = 2;
-    static const size_t delta_2y = delta_2z << yshift;
-    static const size_t delta_2x = delta_2z << xshift;
+    static const std::uint64_t unit_z = 1;
+    static const std::uint64_t unit_y = unit_z << yshift;
+    static const std::uint64_t unit_x = unit_z << xshift;
 };
 
-template <> 
-struct mc_masks<uint32_t> {
-    static const size_t zshift = 0;   // z = 10 bits (511.5)
-    static const size_t yshift = 10;  // y = 11 bits (1023.5)
-    static const size_t xshift = 21;  // x = 11 bits (1023.5) (in theory...)
+template <>
+struct mc_masks<std::uint32_t>
+{
+    static const std::uint64_t zshift = 0;  // z = 10 bits (511.5)
+    static const std::uint64_t yshift = 10; // y = 11 bits (1023.5)
+    static const std::uint64_t xshift =
+        21; // x = 11 bits (1023.5) (in theory...)
 
-    static const size_t z_mask = 0x3FF;
-    static const size_t y_mask = 0x7FF << yshift;
-    static const size_t x_mask = 0x7FF << xshift;
+    static const std::uint64_t z_mask = 0x3FF;
+    static const std::uint64_t y_mask = 0x7FF << yshift;
+    static const std::uint64_t x_mask = 0x7FF << xshift;
 
-    static const size_t xy_mask = x_mask | y_mask;
-    static const size_t xz_mask = x_mask | z_mask;
-    static const size_t yz_mask = y_mask | z_mask;
-
-    static const size_t delta_z = 1;
-    static const size_t delta_y = delta_z << yshift;
-    static const size_t delta_x = delta_z << xshift;
-
-    static const size_t delta_2z = 2;
-    static const size_t delta_2y = delta_2z << yshift;
-    static const size_t delta_2x = delta_2z << xshift;  
+    static const std::uint64_t unit_z = 1;
+    static const std::uint64_t unit_y = unit_z << yshift;
+    static const std::uint64_t unit_x = unit_z << xshift;
 };
 
-template< typename PositionType, typename LabelType >
-class marching_cubes: non_copyable
+template <typename PositionType, typename LabelType>
+class marching_cubes
 {
 private:
-    typedef marching_cubes< PositionType, LabelType > this_type;
+    static_assert(std::is_same_v<PositionType, std::uint64_t> ||
+                      std::is_same_v<PositionType, std::uint32_t>,
+                  "Unsupported PositionType");
 
-    ZI_STATIC_ASSERT( is_integral< PositionType >::value, non_integral_type_for_marching_cubes );
+private:
+    marching_cubes(marching_cubes const&) = delete;
+    marching_cubes& operator=(marching_cubes const&) = delete;
 
-    static const size_t tri_table_end = 0xffffffff;
-    static const size_t edge_table[ 256 ];
-    static const size_t tri_table[ 256 ][ 16 ];
-    constexpr static const mc_masks<PositionType> masks = mc_masks<PositionType>();
+    // static std::size_t const tri_table_end = 0xffffffff;
+    // static std::size_t const edge_table[256];
+    // static std::size_t const tri_table[256][16];
 
-public:
-    static inline PositionType pack_coords( PositionType x, PositionType y, PositionType z )
-    {
-        return ( x << masks.xshift ) | ( y << masks.yshift ) | z;
-    }
-
-    template< class T >
-    static inline T unpack_x( PositionType packed, const T& offset = T( 0 ), const T& factor = T( 1 ) )
-    {
-        return factor * ( offset + ((packed & masks.x_mask) >> masks.xshift) );
-    }
-
-    template< class T >
-    static inline T unpack_y( PositionType packed, const T& offset = T( 0 ), const T& factor = T( 1 ) )
-    {
-        return factor * ( offset + ((packed & masks.y_mask) >> masks.yshift) );
-    }
-
-    template< class T >
-    static inline T unpack_z( PositionType packed, const T& offset = T( 0 ), const T& factor = T( 1 ) )
-    {
-        return factor * ( offset + ( packed & masks.z_mask ) );
-    }    
+    using mask_traits = mc_masks<PositionType>;
 
 public:
-    struct packed_printer: non_copyable
+    static constexpr inline PositionType
+    pack_coords(PositionType x, PositionType y, PositionType z) noexcept
+    {
+        return (x << mask_traits::xshift) | (y << mask_traits::yshift) | z;
+    }
+
+    template <class T>
+    static inline T unpack_x(PositionType packed, const T& offset = T(0),
+                             const T& factor = T(1))
+    {
+        return factor * (offset + ((packed & mask_traits::x_mask) >>
+                                   mask_traits::xshift));
+    }
+
+    template <class T>
+    static inline T unpack_y(PositionType packed, const T& offset = T(0),
+                             const T& factor = T(1))
+    {
+        return factor * (offset + ((packed & mask_traits::y_mask) >>
+                                   mask_traits::yshift));
+    }
+
+    template <class T>
+    static inline T unpack_z(PositionType packed, const T& offset = T(0),
+                             const T& factor = T(1))
+    {
+        return factor * (offset + (packed & mask_traits::z_mask));
+    }
+
+public:
+    struct packed_printer
     {
     private:
         const PositionType coor_;
 
+        packed_printer(packed_printer const&) = delete;
+        packed_printer* operator=(packed_printer const&) = delete;
+
     public:
-        packed_printer( const PositionType c ): coor_( c )
+        packed_printer(const PositionType c)
+            : coor_(c)
         {
         }
 
-        inline friend
-        std::ostream& operator<<( std::ostream& os, const packed_printer& p )
+        inline friend std::ostream& operator<<(std::ostream&         os,
+                                               const packed_printer& p)
         {
             os << "[ "
-               << marching_cubes< PositionType, LabelType >::template unpack_x< PositionType >( p.coor_ ) << ", "
-               << marching_cubes< PositionType, LabelType >::template unpack_y< PositionType >( p.coor_ ) << ", "
-               << marching_cubes< PositionType, LabelType >::template unpack_z< PositionType >( p.coor_ ) << " ]";
+               << marching_cubes<PositionType, LabelType>::template unpack_x<
+                      PositionType>(p.coor_)
+               << ", "
+               << marching_cubes<PositionType, LabelType>::template unpack_y<
+                      PositionType>(p.coor_)
+               << ", "
+               << marching_cubes<PositionType, LabelType>::template unpack_z<
+                      PositionType>(p.coor_)
+               << " ]";
             return os;
         }
     };
 
+public:
+    using triangle_t = vl::vec<PositionType, 3>;
+
+    std::size_t                                            num_faces_;
+    std::unordered_map<LabelType, std::vector<triangle_t>> meshes_;
 
 public:
-    typedef vl::vec<PositionType, 3> triangle;
-    size_t num_faces_;
-    unordered_map< LabelType, std::vector<triangle> > meshes_;
-
-public:
-
-    const unordered_map< LabelType, std::vector< triangle > >& meshes() const
+    const std::unordered_map<LabelType, std::vector<triangle_t>>& meshes() const
     {
         return meshes_;
     }
 
     marching_cubes()
-        : num_faces_( 0 ),
-          meshes_()
+        : num_faces_(0)
+        , meshes_()
     {
     }
 
@@ -187,389 +201,229 @@ public:
         num_faces_ = 0;
     }
 
-    bool erase(const LabelType& t) 
+    bool erase(const LabelType& t)
     {
-        try {
-            size_t face_delta = meshes_.at(t).size();
-            size_t num_erased = meshes_.erase(t);
+        try
+        {
+            std::size_t face_delta = meshes_.at(t).size();
+            std::size_t num_erased = meshes_.erase(t);
             num_faces_ -= face_delta;
             return num_erased > 0;
         }
-        catch (const std::out_of_range& oor) {
+        catch (const std::out_of_range& oor)
+        {
             return false;
         }
     }
 
-    size_t face_count() const
+    std::size_t face_count() const { return num_faces_; }
+
+    std::size_t count(const LabelType& t) const { return meshes_.count(t); }
+
+    std::size_t size() const { return meshes_.size(); }
+
+    static constexpr inline PositionType midpoint(PositionType p1,
+                                                  PositionType p2) noexcept
     {
-        return num_faces_;
+        return (p1 >> 1) + (p2 >> 1);
     }
 
-    size_t count( const LabelType& t ) const
+private:
+    struct c_order_tag
     {
-        return meshes_.count( t );
-    }
-
-    size_t size() const
+    };
+    struct fortran_order_tag
     {
-        return meshes_.size();
-    }
+    };
 
-    void marche( 
-        const LabelType* data, 
-        const size_t sx, const size_t sy, const size_t sz,
-        const bool c_order = true
-    ) {
-        // If we don't use uint64_t, then uint32_t
-        // messes up in the final position due to some
-        // kind of truncation or overflow issue. We use
-        // all the bits in a uint32_t, but only 63 bits
-        // for the uint64_t, so we don't see the issue
-        // either way.
-        uint64_t ptrs_[ 12 ];
-
-        PositionType vert[ 8 ] = {
-            pack_coords( 0, 0, 0 ),
-            pack_coords( 2, 0, 0 ),
-            pack_coords( 2, 0, 2 ),
-            pack_coords( 0, 0, 2 ),
-            pack_coords( 0, 2, 0 ),
-            pack_coords( 2, 2, 0 ),
-            pack_coords( 2, 2, 2 ),
-            pack_coords( 0, 2, 2 )
-        };
-
-        StaticSort<8> sorter;
-        std::array<LabelType, 8> uvals;
-
-        if (c_order) {
-            const size_t off1 = sy * sz; // +x
-            const size_t off2 = sy * sz + 1; // +x +z
-            const size_t off3 = 1; // +z
-            const size_t off4 = sz; // +y
-            const size_t off5 = sy * sz + sz; // +x +y
-            const size_t off6 = sy * sz + sz + 1; // +x +y +z
-            const size_t off7 = sz + 1; // +y +z
-
-            for ( size_t x = 0; x < sx - 1; ++x ) {
-                for ( size_t y = 0; y < sy - 1; ++y ) {
-                    for ( size_t z = 0; z < sz - 1; ++z ) {
-                        const size_t ind = z + sz * (y + sy * x);
-
-                        std::array<LabelType, 8> vals = {
-                            data[ ind ],
-                            data[ ind + off1 ],
-                            data[ ind + off2 ],
-                            data[ ind + off3 ],
-                            data[ ind + off4 ],
-                            data[ ind + off5 ],
-                            data[ ind + off6 ],
-                            data[ ind + off7 ]
-                        };
-
-                        if (
-                               vals[0] == vals[1] 
-                            && vals[1] == vals[2] 
-                            && vals[2] == vals[3] 
-                            && vals[3] == vals[4] 
-                            && vals[4] == vals[5]
-                            && vals[5] == vals[6] 
-                            && vals[6] == vals[7]
-                        ) {
-                            continue;
-                        }
-
-                        // Instead of using std::unordered_set or similar
-                        // to get unique labels, use a high efficiency sort,
-                        // a "network sort", for a fixed size labels and then
-                        // iterate from high to low values and skip repeats. This
-                        // Saves almost 40% of the march time. We make an array
-                        // copy before sorting to preserve the structure in vals.
-                        // std::unordered_set uses a hash with closed addressing + chaining 
-                        // which is inefficient for our case.
-                        uvals = vals;
-                        sorter(uvals);
-
-                        for (int i = 7; i >= 0; i--) {
-                            const LabelType label = uvals[i];
-                            if (label == 0) { 
-                                break;
-                            }
-                            else if (i < 7 && uvals[i + 1] == label) {
-                                continue;
-                            }
-
-                            size_t c = 0;
-
-                            for ( size_t n = 0; n < 8; ++n ) {
-                                c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
-                            }
-
-                            if (!edge_table[c]) {
-                                continue;
-                            }
-
-                            PositionType cur = (x * masks.delta_2x) | (y * masks.delta_2y) | (z << 1);
-
-                            if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
-                            if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
-                            if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
-                            if (edge_table[ c ] & 8   ) { ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label ); }
-                            if (edge_table[ c ] & 16  ) { ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label ); }
-                            if (edge_table[ c ] & 32  ) { ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label ); }
-                            if (edge_table[ c ] & 64  ) { ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label ); }
-                            if (edge_table[ c ] & 128 ) { ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label ); }
-                            if (edge_table[ c ] & 256 ) { ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label ); }
-                            if (edge_table[ c ] & 512 ) { ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label ); }
-                            if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
-                            if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
-
-                            for (size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
-                                ++num_faces_;
-                                meshes_[label].emplace_back(
-                                    ptrs_[tri_table[c][ n + 2 ]],
-                                    ptrs_[tri_table[c][ n + 1 ]],
-                                    ptrs_[tri_table[c][ n ]]
-                                );
-                            }
-                        }
+    template <class Fn, class Tag>
+    static inline __attribute__((always_inline)) void
+    mc_nested_loops(std::size_t sx, std::size_t sy, std::size_t sz, Fn&& fn,
+                    Tag const&)
+    {
+        if constexpr (std::is_same_v<Tag, c_order_tag>)
+        {
+            for (std::size_t x = 0; x < sx - 1; ++x)
+            {
+                for (std::size_t y = 0; y < sy - 1; ++y)
+                {
+                    for (std::size_t z = 0; z < sz - 1; ++z)
+                    {
+                        fn(x, y, z, z + sz * (y + sy * x));
                     }
-                }            
+                }
             }
         }
-        else {
-            const size_t off1 = 1; // +x
-            const size_t off2 = 1 + sx * sy; // +x +z
-            const size_t off3 = sx * sy; // +z
-            const size_t off4 = sx; // +y
-            const size_t off5 = 1 + sx; // +x +y
-            const size_t off6 = 1 + sx + sx * sy; // +x +y +z
-            const size_t off7 = sx + sx * sy; // +y +z 
-
-            for ( size_t z = 0; z < sz - 1; ++z ) {
-                for ( size_t y = 0; y < sy - 1; ++y ) {
-                    for ( size_t x = 0; x < sx - 1; ++x ) {
-                        const size_t ind = x + sx * (y + sy * z);
-
-                        std::array<LabelType, 8> vals = {
-                            data[ ind ],
-                            data[ ind + off1 ],
-                            data[ ind + off2 ],
-                            data[ ind + off3 ],
-                            data[ ind + off4 ],
-                            data[ ind + off5 ],
-                            data[ ind + off6 ],
-                            data[ ind + off7 ]
-                        };
-
-                        if (
-                               vals[0] == vals[1] 
-                            && vals[1] == vals[2] 
-                            && vals[2] == vals[3] 
-                            && vals[3] == vals[4] 
-                            && vals[4] == vals[5]
-                            && vals[5] == vals[6] 
-                            && vals[6] == vals[7]
-                        ) {
-                            continue;
-                        }
-
-                        // Instead of using std::unordered_set or similar
-                        // to get unique labels, use a high efficiency sort,
-                        // a "network sort", for a fixed size labels and then
-                        // iterate from high to low values and skip repeats. This
-                        // Saves almost 40% of the march time. We make an array
-                        // copy before sorting to preserve the structure in vals.
-                        // std::unordered_set uses a hash with closed addressing + chaining 
-                        // which is inefficient for our case.
-                        uvals = vals;
-                        sorter(uvals);
-
-                        for (int i = 7; i >= 0; i--) {
-                            const LabelType label = uvals[i];
-                            if (label == 0) { 
-                                break;
-                            }
-                            else if (i < 7 && uvals[i + 1] == label) {
-                                continue;
-                            }
-
-                            size_t c = 0;
-
-                            for ( size_t n = 0; n < 8; ++n ) {
-                                c |= ( 1 << n ) & (static_cast<size_t>(vals[n] == label) - 1);
-                            }
-
-                            if (!edge_table[c]) {
-                                continue;
-                            }
-
-                            PositionType cur = (x * masks.delta_2x) | (y * masks.delta_2y) | (z << 1);
-
-                            if (edge_table[ c ] & 1   ) { ptrs_[  0 ] = ZI_MC_QUICK_INTERP( 0, 1, label ); }
-                            if (edge_table[ c ] & 2   ) { ptrs_[  1 ] = ZI_MC_QUICK_INTERP( 1, 2, label ); }
-                            if (edge_table[ c ] & 4   ) { ptrs_[  2 ] = ZI_MC_QUICK_INTERP( 2, 3, label ); }
-                            if (edge_table[ c ] & 8   ) { ptrs_[  3 ] = ZI_MC_QUICK_INTERP( 3, 0, label ); }
-                            if (edge_table[ c ] & 16  ) { ptrs_[  4 ] = ZI_MC_QUICK_INTERP( 4, 5, label ); }
-                            if (edge_table[ c ] & 32  ) { ptrs_[  5 ] = ZI_MC_QUICK_INTERP( 5, 6, label ); }
-                            if (edge_table[ c ] & 64  ) { ptrs_[  6 ] = ZI_MC_QUICK_INTERP( 6, 7, label ); }
-                            if (edge_table[ c ] & 128 ) { ptrs_[  7 ] = ZI_MC_QUICK_INTERP( 7, 4, label ); }
-                            if (edge_table[ c ] & 256 ) { ptrs_[  8 ] = ZI_MC_QUICK_INTERP( 0, 4, label ); }
-                            if (edge_table[ c ] & 512 ) { ptrs_[  9 ] = ZI_MC_QUICK_INTERP( 1, 5, label ); }
-                            if (edge_table[ c ] & 1024) { ptrs_[ 10 ] = ZI_MC_QUICK_INTERP( 2, 6, label ); }
-                            if (edge_table[ c ] & 2048) { ptrs_[ 11 ] = ZI_MC_QUICK_INTERP( 3, 7, label ); }
-
-                            for (size_t n = 0; tri_table[ c ][ n ] != tri_table_end; n += 3) {
-                                ++num_faces_;
-                                meshes_[label].emplace_back(
-                                    ptrs_[tri_table[c][ n + 2 ]],
-                                    ptrs_[tri_table[c][ n + 1 ]],
-                                    ptrs_[tri_table[c][ n ]]
-                                );
-                            }
-                        }
+        else
+        {
+            static_assert(std::is_same_v<Tag, fortran_order_tag>);
+            for (std::size_t z = 0; z < sz - 1; ++z)
+            {
+                for (std::size_t y = 0; y < sy - 1; ++y)
+                {
+                    for (std::size_t x = 0; x < sx - 1; ++x)
+                    {
+                        fn(x, y, z, x + sx * (y + sy * z));
                     }
                 }
             }
         }
     }
 
-    template< class T > size_t
-    fill_tri_mesh( const LabelType& id,
-                   tri_mesh& ret,
-                   std::vector< vl::vec< T, 3 > >& points,
-                   const T& xtrans = T( 0 ),
-                   const T& ytrans = T( 0 ),
-                   const T& ztrans = T( 0 ),
-                   const T& xscale = T( 1 ),
-                   const T& yscale = T( 1 ),
-                   const T& zscale = T( 1 ) ) const
+    template <class Tag>
+    static inline __attribute__((always_inline)) std::array<std::size_t, 7>
+    get_strides(std::size_t sx, std::size_t sy, std::size_t sz, Tag const&)
     {
-        if ( !meshes_.count( id ) )
+        if constexpr (std::is_same_v<Tag, c_order_tag>)
         {
-            return 0;
+            return {
+                static_cast<std::size_t>(sy * sx),          // +x
+                static_cast<std::size_t>(sy * sz + 1),      // +x +z
+                static_cast<std::size_t>(1),                // +z
+                static_cast<std::size_t>(sz),               // +y
+                static_cast<std::size_t>(sy * sz + sz),     // +x +y
+                static_cast<std::size_t>(sy * sz + sz + 1), // +x +y +z
+                static_cast<std::size_t>(sz + 1)            // +y +z
+            };
         }
-
-        uint32_t idx = 0;
-        unordered_map< PositionType, uint32_t > pts;
-
-        const std::vector< triangle >& data = meshes_.find( id )->second;
-
-        FOR_EACH( it, data )
+        else
         {
-            if ( !pts.count( it->at(0) ) )
-            {
-                pts.insert( std::make_pair( it->at(0), idx++ ) );
-            }
-            if ( !pts.count( it->at(1) ) )
-            {
-                pts.insert( std::make_pair( it->at(1), idx++ ) );
-            }
-            if ( !pts.count( it->at(2) ) )
-            {
-                pts.insert( std::make_pair( it->at(2), idx++ ) );
-            }
+            static_assert(std::is_same_v<Tag, fortran_order_tag>);
+
+            return {
+                static_cast<std::size_t>(1),                // +x
+                static_cast<std::size_t>(1 + sx * sy),      // +x +z
+                static_cast<std::size_t>(sx * sy),          // +z
+                static_cast<std::size_t>(sx),               // +y
+                static_cast<std::size_t>(1 + sx),           // +x +y
+                static_cast<std::size_t>(1 + sx + sx * sy), // +x +y +z
+                static_cast<std::size_t>(sx + sx * sy)      // +y +z
+            };
         }
-
-        ret.resize( idx );
-        points.resize( idx );
-
-        FOR_EACH( it, pts )
-        {
-            points[ it->second ] = vl::vec< T, 3 >
-                ( this_type::template unpack_x< T >( it->first, xtrans, xscale ),
-                  this_type::template unpack_y< T >( it->first, ytrans, yscale ),
-                  this_type::template unpack_z< T >( it->first, ztrans, zscale ) );
-
-
-        }
-
-        FOR_EACH( it, data )
-        {
-            ret.add_face( pts[ it->at(0) ], pts[ it->at(1) ], pts[ it->at(2) ] );
-        }
-
-        return idx;
-
     }
 
-    const std::vector< triangle >& get_triangles( const LabelType& id ) const
+    template <class Tag>
+    void marche(const LabelType* data, std::size_t const sx,
+                std::size_t const sy, std::size_t const sz,
+                Tag const& order_tag)
+    {
+        constexpr std::array<PositionType, 8> cube_corners = {
+            pack_coords(0, 0, 0), pack_coords(2, 0, 0), pack_coords(2, 0, 2),
+            pack_coords(0, 0, 2), pack_coords(0, 2, 0), pack_coords(2, 2, 0),
+            pack_coords(2, 2, 2), pack_coords(0, 2, 2)};
+
+        constexpr std::array<PositionType, 12> edge_midpoints = {
+            midpoint(cube_corners[0], cube_corners[1]),
+            midpoint(cube_corners[1], cube_corners[2]),
+            midpoint(cube_corners[2], cube_corners[3]),
+            midpoint(cube_corners[3], cube_corners[0]),
+            midpoint(cube_corners[4], cube_corners[5]),
+            midpoint(cube_corners[5], cube_corners[6]),
+            midpoint(cube_corners[6], cube_corners[7]),
+            midpoint(cube_corners[7], cube_corners[4]),
+            midpoint(cube_corners[0], cube_corners[4]),
+            midpoint(cube_corners[1], cube_corners[5]),
+            midpoint(cube_corners[2], cube_corners[6]),
+            midpoint(cube_corners[3], cube_corners[7])};
+
+        auto strides = get_strides(sx, sy, sz, order_tag);
+
+        static_network_sorter<8> network_sort;
+
+        mc_nested_loops(
+            sx, sy, sz,
+            [&](std::size_t x, std::size_t y, std::size_t z, std::size_t ind)
+            {
+                std::array<LabelType, 8> const labels = {
+                    data[ind],
+                    data[ind + strides[0]],
+                    data[ind + strides[1]],
+                    data[ind + strides[2]],
+                    data[ind + strides[3]],
+                    data[ind + strides[4]],
+                    data[ind + strides[5]],
+                    data[ind + strides[6]]};
+
+                if (all_equal(labels))
+                {
+                    return;
+                }
+
+                // Instead of using std::unordered_set or similar
+                // to get unique labels, use a high efficiency sort,
+                // a "network sort", for a fixed size labels and then
+                // iterate from high to low values and skip repeats.
+                // This Saves almost 40% of the march time. We make an
+                // array copy before sorting to preserve the structure
+                // in labels. std::unordered_set uses a hash with closed
+                // addressing + chaining which is inefficient for our
+                // case.
+                std::array<LabelType, 8> ulabels = labels;
+                network_sort(ulabels);
+
+                for (int i = 7; i >= 0; i--)
+                {
+                    const LabelType label = ulabels[i];
+                    if (label == 0)
+                    {
+                        break;
+                    }
+                    else if (i < 7 && ulabels[i + 1] == label)
+                    {
+                        continue;
+                    }
+
+                    std::size_t c = 0;
+
+                    for (std::size_t n = 0; n < 8; ++n)
+                    {
+                        c |= (labels[n] != label) << n;
+                    }
+
+                    if (!mc_edge_table[c])
+                    {
+                        continue;
+                    }
+
+                    PositionType cur =
+                        ((x * mask_traits::unit_x) | (y * mask_traits::unit_y) |
+                         (z * mask_traits::unit_z))
+                        << 1;
+
+                    for (std::size_t n = 0;
+                         mc_triangle_table[c][n] != mc_triangle_table_end;
+                         n += 3)
+                    {
+                        ++num_faces_;
+                        meshes_[label].emplace_back(
+                            edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
+                            edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
+                            edge_midpoints[mc_triangle_table[c][n]] + cur);
+                    }
+                }
+            },
+            order_tag);
+    }
+
+public:
+    void marche(const LabelType* data, std::size_t const sx,
+                std::size_t const sy, std::size_t const sz,
+                const bool c_order = true)
+    {
+        if (c_order)
+        {
+            marche(data, sx, sy, sz, c_order_tag());
+        }
+        else
+        {
+            marche(data, sx, sy, sz, fortran_order_tag());
+        }
+    }
+
+    std::vector<triangle_t> const& get_triangles(LabelType const& id) const
     {
         return meshes_.find(id)->second;
     }
-
-    template< class T > size_t
-    fill_simplifier( ::zi::mesh::simplifier< T >& ret,
-                     const LabelType& id,
-                     const T& xtrans = T( 0 ),
-                     const T& ytrans = T( 0 ),
-                     const T& ztrans = T( 0 ),
-                     const T& xscale = T( 1 ),
-                     const T& yscale = T( 1 ),
-                     const T& zscale = T( 1 ) ) const
-    {
-        if ( !meshes_.count( id ) )
-        {
-            return 0;
-        }
-
-        uint32_t idx = 0;
-        unordered_map< PositionType, uint32_t > pts;
-
-        const std::vector< triangle >& data = meshes_.find( id )->second;
-
-        FOR_EACH( it, data )
-        {
-            if ( !pts.count( it->at(0) ) )
-            {
-                pts.insert( std::make_pair( it->at(0), idx++ ) );
-            }
-            if ( !pts.count( it->at(1) ) )
-            {
-                pts.insert( std::make_pair( it->at(1), idx++ ) );
-            }
-            if ( !pts.count( it->at(2) ) )
-            {
-                pts.insert( std::make_pair( it->at(2), idx++ ) );
-            }
-        }
-
-        ret.resize( idx );
-
-        FOR_EACH( it, pts )
-        {
-            ret.point( it->second ) = vl::vec< T, 3 >
-                ( this_type::template unpack_x< T >( it->first, xtrans, xscale ),
-                  this_type::template unpack_y< T >( it->first, ytrans, yscale ),
-                  this_type::template unpack_z< T >( it->first, ztrans, zscale ) );
-
-
-        }
-
-        FOR_EACH( it, data )
-        {
-            ret.add_face( pts[ it->at(0) ], pts[ it->at(1) ], pts[ it->at(2) ] );
-        }
-
-        return idx;
-
-    }
-
-
 };
 
-#  define ZI_MESH_MARCHING_CUBES_HPP_INLUDING_TABLES 1
-#  define ZI_MESH_MARCHING_CUBES_TYPE( var, ext )                       \
-    template< typename PositionType, typename LabelType > const size_t marching_cubes< PositionType, LabelType >::var ext
-#
-#  include <zi/mesh/detail/marching_cubes_tables.hpp>
-#
-#  undef ZI_MESH_MARCHING_CUBES_TYPE
-#  undef ZI_MESH_MARCHING_CUBES_HPP_INLUDING_TABLES
-
-#undef ZI_MC_QUICK_INTERP
-
-} // namespace mesh
-} // namespace zi
-
-#endif
+} // namespace zi::mesh
