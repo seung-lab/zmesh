@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import gzip
+import sys
 
 import zmesh
 
@@ -143,6 +144,7 @@ def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
 # the simplifier produces a different mesh. Will have to add F order examples
 # in order to test.
 @pytest.mark.parametrize("order", [ 'C' ])
+@pytest.mark.skipif(sys.platform != 'darwin', reason="Different implementations of unordered_map on different platforms have different iteration behavior. Only MacOS will match.")
 def test_simplified_meshes_remain_the_same(connectomics_labels, order):
   if order == "C":
     connectomics_labels = np.ascontiguousarray(connectomics_labels)
