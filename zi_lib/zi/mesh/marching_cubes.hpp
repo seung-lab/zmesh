@@ -271,7 +271,7 @@ private:
     }
 
     template <class Tag>
-    static inline __attribute__((always_inline)) std::array<std::size_t, 7>
+    static inline std::array<std::size_t, 7>
     get_strides(std::size_t sx, std::size_t sy, std::size_t sz, Tag const&)
     {
         if constexpr (std::is_same_v<Tag, c_order_tag>)
