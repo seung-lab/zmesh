@@ -21,19 +21,8 @@
 
 #include <zi/config/config.hpp>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <unordered_set>
-#  define ZI_UNORDERED_SET_NAMESPACE ::std
-#else
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/utility>
-#    include <tr1/unordered_set>
-#    define ZI_UNORDERED_SET_NAMESPACE ::std::tr1
-#  else
-#    include <boost/unordered_set.hpp>
-#    define ZI_UNORDERED_SET_NAMESPACE ::boost
-#  endif
-#endif
+#include <unordered_set>
+#define ZI_UNORDERED_SET_NAMESPACE ::std
 
 namespace zi {
 

@@ -21,25 +21,10 @@
 
 #include <zi/config/config.hpp>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <functional>
-#  define ZI_HASH_NAMESPACE ::std
-#  define ZI_HASH_EXPORT_NAMESPACE_BEGIN namespace std {
-#  define ZI_HASH_EXPORT_NAMESPACE_END }
-#else
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/utility>
-#    include <tr1/functional>
-#    define ZI_HASH_NAMESPACE ::std::tr1
-#    define ZI_HASH_EXPORT_NAMESPACE_BEGIN namespace std { namespace tr1 {
-#    define ZI_HASH_EXPORT_NAMESPACE_END } }
-#  else
-#    include <boost/functional/hash.hpp>
-#    define ZI_HASH_NAMESPACE ::boost
-#    define ZI_HASH_EXPORT_NAMESPACE_BEGIN namespace boost {
-#    define ZI_HASH_EXPORT_NAMESPACE_END }
-#  endif
-#endif
+#include <functional>
+#define ZI_HASH_NAMESPACE ::std
+#define ZI_HASH_EXPORT_NAMESPACE_BEGIN namespace std {
+#define ZI_HASH_EXPORT_NAMESPACE_END }
 
 namespace zi {
 

@@ -16,17 +16,11 @@ if sys.platform == 'win32':
   ]
 else:
   extra_compile_args += [
-    '-std=c++17', '-O3', '-Wno-unused-local-typedefs', '-DNDEBUG'
+    '-std=c++17', '-O3', '-Wno-unused-local-typedefs', 
+    '-DNDEBUG',
   ]
 
 include_dirs = [ np.get_include(), 'zi_lib/', './' ]
-
-# Note: On MacOS add boost before zi_lib:
-# /opt/homebrew/Cellar/boost/1.75.0_2/include
-boost_dir = os.environ.get("BOOST_ROOT", None) 
-if boost_dir:
-  boost_dir = os.path.join(boost_dir, 'include')
-  include_dirs.insert(1, boost_dir)
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy'],

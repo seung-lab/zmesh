@@ -30,7 +30,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <boost/lexical_cast.hpp>
+// #include <boost/lexical_cast.hpp>
 
 namespace zi {
 namespace ai {
@@ -79,10 +79,10 @@ private:
             return probability_;
         }
 
-        std::string to_string() const
-        {
-            return boost::lexical_cast<std::string>(probability_);
-        }
+        // std::string to_string() const
+        // {
+        //     return boost::lexical_cast<std::string>(probability_);
+        // }
 
         void dump_to_file( std::ofstream& ofs ) const
         {
@@ -221,21 +221,21 @@ private:
             }
         }
 
-        std::string to_string() const
-        {
-            if ( split_fn_.is_dummy() )
-            {
-                return left_->to_string();
-            }
-            else
-            {
-                std::ostringstream iss;
-                iss << "( " << boost::lexical_cast<std::string>(split_fn_.get_index()) << " " <<
-                    boost::lexical_cast<std::string>(split_fn_.get_threshold()) << " " <<
-                    left_->to_string() << " " << right_->to_string() << " )";
-                return iss.str();
-            }
-        }
+        // std::string to_string() const
+        // {
+        //     if ( split_fn_.is_dummy() )
+        //     {
+        //         return left_->to_string();
+        //     }
+        //     else
+        //     {
+        //         std::ostringstream iss;
+        //         iss << "( " << boost::lexical_cast<std::string>(split_fn_.get_index()) << " " <<
+        //             boost::lexical_cast<std::string>(split_fn_.get_threshold()) << " " <<
+        //             left_->to_string() << " " << right_->to_string() << " )";
+        //         return iss.str();
+        //     }
+        // }
     };
 
 

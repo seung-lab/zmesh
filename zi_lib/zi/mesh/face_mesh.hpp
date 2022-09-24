@@ -20,7 +20,7 @@
 #define ZI_MESH_FACE_MESH_HPP 1
 
 #include <zi/mesh/marching_cubes.hpp>
-#include <boost/shared_ptr.hpp>
+// #include <boost/shared_ptr.hpp>
 
 namespace zi {
 namespace mesh {
@@ -198,14 +198,14 @@ public:
         add(fm.points(), fm.normals(), fm.faces(), x, y, z);
     }
 
-    void add( boost::shared_ptr<face_mesh> v,
-              const T& x=T(0), const T& y=T(0), const T& z=T(0))
-    {
-        if ( v )
-        {
-            add(*v.get(), x, y, z);
-        }
-    }
+    // void add( boost::shared_ptr<face_mesh> v,
+    //           const T& x=T(0), const T& y=T(0), const T& z=T(0))
+    // {
+    //     if ( v )
+    //     {
+    //         add(*v.get(), x, y, z);
+    //     }
+    // }
 
     std::size_t size() const
     {

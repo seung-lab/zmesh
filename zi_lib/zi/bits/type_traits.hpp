@@ -21,13 +21,8 @@
 
 #include <zi/config/config.hpp>
 
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/type_traits>
-#    define ZI_TYPE_TRAITS_NAMESPACE ::std::tr1
-#  else
-#    include <boost/type_traits.hpp>
-#    define ZI_TYPE_TRAITS_NAMESPACE ::boost
-#  endif
+#include <type_traits>
+#define ZI_TYPE_TRAITS_NAMESPACE ::std
 
 namespace zi {
 
@@ -58,9 +53,9 @@ using ZI_TYPE_TRAITS_NAMESPACE::is_pod;
 using ZI_TYPE_TRAITS_NAMESPACE::is_empty;
 using ZI_TYPE_TRAITS_NAMESPACE::is_polymorphic;
 using ZI_TYPE_TRAITS_NAMESPACE::is_abstract;
-using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_assign;
-using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_destructor;
-using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_assign;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_assign;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_destructor;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_assign;
 using ZI_TYPE_TRAITS_NAMESPACE::has_virtual_destructor;
 using ZI_TYPE_TRAITS_NAMESPACE::is_signed;
 using ZI_TYPE_TRAITS_NAMESPACE::is_unsigned;
@@ -102,11 +97,11 @@ using ZI_TYPE_TRAITS_NAMESPACE::aligned_storage;
 
 // #else
 
-using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_constructor;
-using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_copy;
-using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_constructor;
-using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_copy;
-using ZI_TYPE_TRAITS_NAMESPACE::add_reference;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_constructor;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_trivial_copy;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_constructor;
+// using ZI_TYPE_TRAITS_NAMESPACE::has_nothrow_copy;
+// using ZI_TYPE_TRAITS_NAMESPACE::add_reference;
 
 // #endif
 
