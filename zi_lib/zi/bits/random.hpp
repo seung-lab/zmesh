@@ -21,18 +21,8 @@
 
 #include <zi/config/config.hpp>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <random>
-#  define ZI_RANDOM_NAMESPACE ::std
-#else
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/random>
-#    define ZI_RANDOM_NAMESPACE ::std::tr1
-#  else
-#    include <boost/tr1/random.hpp>
-#    define ZI_RANDOM_NAMESPACE ::std::tr1
-#  endif
-#endif
+#include <random>
+#define ZI_RANDOM_NAMESPACE ::std
 
 namespace zi {
 

@@ -21,18 +21,8 @@
 
 #include <zi/config/config.hpp>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <memory>
-#  define ZI_SHARED_PTR_NAMESPACE ::std
-#else
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/memory>
-#    define ZI_SHARED_PTR_NAMESPACE ::std::tr1
-#  else
-#    include <boost/shared_ptr.hpp>
-#    define ZI_SHARED_PTR_NAMESPACE ::boost
-#  endif
-#endif
+#include <memory>
+#define ZI_SHARED_PTR_NAMESPACE ::std
 
 namespace zi {
 

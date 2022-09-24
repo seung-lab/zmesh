@@ -21,19 +21,8 @@
 
 #include <zi/config/config.hpp>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <cstdint>
-#  define ZI_CSTDINT_NAMESPACE ::std
-#else
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/cstdint>
-#    define ZI_CSTDINT_NAMESPACE ::std::tr1
-#  else
-#    include <boost/cstdint.hpp>
-#    define ZI_NEED_INTPTR_TYPES
-#    define ZI_CSTDINT_NAMESPACE ::boost
-#  endif
-#endif
+#include <cstdint>
+#define ZI_CSTDINT_NAMESPACE ::std
 
 namespace zi {
 

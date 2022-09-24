@@ -21,18 +21,8 @@
 
 #include <zi/config/config.hpp>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <functional>
-#  define ZI_RESULT_OF_NAMESPACE ::std
-#else
-#  if defined( ZI_USE_TR1 ) || defined( ZI_NO_BOOST )
-#    include <tr1/functional>
-#    define ZI_RESULT_OF_NAMESPACE ::std::tr1
-#  else
-#    include <boost/utility/result_of.hpp>
-#    define ZI_RESULT_OF_NAMESPACE ::boost
-#  endif
-#endif
+#include <functional>
+#define ZI_RESULT_OF_NAMESPACE ::std
 
 namespace zi {
 

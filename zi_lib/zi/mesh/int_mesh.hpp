@@ -22,7 +22,7 @@
 #include <vector>
 #include <zi/mesh/marching_cubes.hpp>
 #include <zi/mesh/quadratic_simplifier.hpp>
-#include <boost/shared_ptr.hpp>
+// #include <boost/shared_ptr.hpp>
 
 namespace zi {
 namespace mesh {
@@ -78,13 +78,13 @@ public:
         add(v.data(), x, y, z);
     }
 
-    void add( boost::shared_ptr<int_mesh> v, PositionType x=0, PositionType y=0, PositionType z=0)
-    {
-        if ( v )
-        {
-            add(*v.get(), x, y, z);
-        }
-    }
+    // void add( boost::shared_ptr<int_mesh> v, PositionType x=0, PositionType y=0, PositionType z=0)
+    // {
+    //     if ( v )
+    //     {
+    //         add(*v.get(), x, y, z);
+    //     }
+    // }
 
     std::size_t size() const
     {

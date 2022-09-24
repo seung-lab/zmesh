@@ -71,15 +71,15 @@ private:
         {
             const std::size_t s = reserved_ << 1;
 
-            Type* new_store = alloc_.allocate( s );
+            Type* new_store = std::allocator_traits<Allocator>::allocate(alloc_,  s );
 
             for ( std::size_t i = 0; i < size_; ++i )
             {
-                alloc_.construct( new_store + heap_[ i ], store_[ heap_[ i ] ] );
-                alloc_.destroy( store_ + heap_[ i ] );
+                std::allocator_traits<Allocator>::construct(alloc_,  new_store + heap_[ i ], store_[ heap_[ i ] ] );
+                std::allocator_traits<Allocator>::destroy(alloc_,  store_ + heap_[ i ] );
             }
 
-            alloc_.deallocate( store_, reserved_ );
+            std::allocator_traits<Allocator>::deallocate(alloc_,  store_, reserved_ );
 
             store_ = new_store;
 
@@ -114,7 +114,7 @@ private:
 
             Type* old = store_;
 
-            store_ = alloc_.allocate( s );
+            store_ = std::allocator_traits<Allocator>::allocate(alloc_,  s );
 
             std::size_t si = 0;
 
@@ -128,16 +128,16 @@ private:
                     }
 
                     keymap_[ key_extractor_( old[ heap_[ i ] ] ) ] = si;
-                    alloc_.construct( store_ + si, old[ heap_[ i ] ] );
-                    alloc_.destroy( old + heap_[ i ] );
+                    std::allocator_traits<Allocator>::construct(alloc_,  store_ + si, old[ heap_[ i ] ] );
+                    std::allocator_traits<Allocator>::destroy(alloc_,  old + heap_[ i ] );
 
                     heap_[ i ] = si;
                     map_[ si ] = i;
                 }
                 else // heap_[ i ] < s
                 {
-                    alloc_.construct( store_ + heap_[ i ], old[ heap_[ i ] ] );
-                    alloc_.destroy( old + heap_[ i ] );
+                    std::allocator_traits<Allocator>::construct(alloc_,  store_ + heap_[ i ], old[ heap_[ i ] ] );
+                    std::allocator_traits<Allocator>::destroy(alloc_,  old + heap_[ i ] );
                 }
 
             }
@@ -155,7 +155,7 @@ private:
                 }
             }
 
-            alloc_.deallocate( old, reserved_ );
+            std::allocator_traits<Allocator>::deallocate(alloc_, old, reserved_ );
 
             std::size_t* nheap = new std::size_t[ s ];
             std::copy( heap_, heap_ + s, nheap );
@@ -194,7 +194,7 @@ public:
         }
         heap_ = new std::size_t[ reserved_ ];
         map_  = new std::size_t[ reserved_ ];
-        store_ = alloc_.allocate( reserved_ );
+        store_ = std::allocator_traits<Allocator>::allocate(alloc_,  reserved_ );
 
         for ( std::size_t i = 0; i < reserved_; ++i )
         {
@@ -206,10 +206,10 @@ public:
     {
         for ( std::size_t i = 0; i < size_; ++i )
         {
-            alloc_.destroy( store_ + heap_[ i ] );
+            std::allocator_traits<Allocator>::destroy(alloc_,  store_ + heap_[ i ] );
         }
 
-        alloc_.deallocate( store_, reserved_ );
+        std::allocator_traits<Allocator>::deallocate(alloc_,  store_, reserved_ );
 
         delete [] heap_;
         delete [] map_ ;
@@ -346,7 +346,7 @@ private:
     {
         ZI_ASSERT( heap_[ size_ ] < reserved_ );
 
-        alloc_.construct( store_ + heap_[ size_ ], v );
+        std::allocator_traits<Allocator>::construct(alloc_, store_ + heap_[ size_ ], v );
 
         keymap_.emplace(
             key_extractor_(const_cast<Type&>(v)),
@@ -365,13 +365,13 @@ private:
     {
         for ( std::size_t i = 0; i < size_; ++i )
         {
-            alloc_.destroy( store_ + heap_[ i ] );
+            std::allocator_traits<Allocator>::destroy(alloc_,  store_ + heap_[ i ] );
         }
 
         if ( reserved_ > 16 )
         {
 
-            alloc_.deallocate( store_, reserved_ );
+            std::allocator_traits<Allocator>::deallocate(alloc_,  store_, reserved_ );
 
             delete [] heap_;
             delete [] map_ ;
@@ -380,7 +380,7 @@ private:
             map_  = new std::size_t[ 16 ];
 
             reserved_ = 16;
-            store_ = alloc_.allocate( reserved_ );
+            store_ = std::allocator_traits<Allocator>::allocate(alloc_,  reserved_ );
 
             for ( std::size_t i = 0; i < reserved_; ++i )
             {
@@ -406,7 +406,7 @@ private:
     {
         ZI_VERIFY( keymap_.erase( key_extractor_( store_[ pos ] )));
 
-        alloc_.destroy( store_ + pos );
+        std::allocator_traits<Allocator>::destroy(alloc_,  store_ + pos );
         --size_;
 
         if ( map_[ pos ] < size_ )
