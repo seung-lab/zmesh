@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+1.6.0
+-----
+
+* release(1.6.0): removed dependency on BOOST
+* refactor/install: remove Boost as dependency (#37)
+
 1.5.0
 -----
 
