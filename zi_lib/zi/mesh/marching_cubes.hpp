@@ -277,7 +277,7 @@ private:
         if constexpr (std::is_same_v<Tag, c_order_tag>)
         {
             return {
-                static_cast<std::size_t>(sy * sx),          // +x
+                static_cast<std::size_t>(sy * sz),          // +x
                 static_cast<std::size_t>(sy * sz + 1),      // +x +z
                 static_cast<std::size_t>(1),                // +z
                 static_cast<std::size_t>(sz),               // +y
