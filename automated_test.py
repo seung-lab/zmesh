@@ -12,6 +12,11 @@ def connectomics_labels():
   with gzip.open('./connectomics.npy.gz', 'rb') as f:
     return np.load(f)
 
+@pytest.fixture
+def fanc_label():
+  with gzip.open('./fanc_bug.npy.gz', 'rb') as f:
+    return np.load(f)[...,0]
+
 @pytest.mark.parametrize("dtype", DTYPE)
 @pytest.mark.parametrize("close", [ False, True ])
 @pytest.mark.parametrize("order", [ 'C', 'F' ])
@@ -126,7 +131,31 @@ def test_C_F_meshes_same(connectomics_labels):
   connectomics_labels = connectomics_labels[102:,31:,17:]
 
   fdata = np.asfortranarray(connectomics_labels)
-  cdata = np.asfortranarray(connectomics_labels)
+  cdata = np.ascontiguousarray(connectomics_labels)
+
+  f_mesher = zmesh.Mesher((1,1,1))
+  f_mesher.mesh(fdata)
+
+  c_mesher = zmesh.Mesher((1,1,1))
+  c_mesher.mesh(cdata)
+
+  cids = c_mesher.ids()
+  cids.sort()
+  fids = f_mesher.ids()
+  fids.sort()
+  assert cids == fids
+
+  for label in c_mesher.ids()[:300]:
+    c_mesh = c_mesher.get_mesh(label, normals=False, simplification_factor=0)
+    f_mesh = f_mesher.get_mesh(label, normals=False, simplification_factor=0)
+    assert np.isclose(c_mesh.vertices.mean(), f_mesh.vertices.mean())
+
+@pytest.mark.parametrize("transpose", [True,False])
+def test_fanc_bug(fanc_label, transpose):
+  if transpose:
+    fanc_label = fanc_label.T
+  fdata = np.asfortranarray(fanc_label)
+  cdata = np.ascontiguousarray(fanc_label)
 
   f_mesher = zmesh.Mesher((1,1,1))
   f_mesher.mesh(fdata)
@@ -136,10 +165,10 @@ def test_C_F_meshes_same(connectomics_labels):
 
   assert c_mesher.ids() == f_mesher.ids()
 
-  for label in c_mesher.ids()[:300]:
+  for label in c_mesher.ids():
     c_mesh = c_mesher.get_mesh(label, normals=False, simplification_factor=0)
     f_mesh = f_mesher.get_mesh(label, normals=False, simplification_factor=0)
-    assert c_mesh == f_mesh
+    assert np.isclose(c_mesh.vertices.mean(), f_mesh.vertices.mean())
 
 @pytest.mark.parametrize("order", [ 'C', 'F' ])
 def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
