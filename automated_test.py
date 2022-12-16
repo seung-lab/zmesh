@@ -122,6 +122,25 @@ def test_ply_import():
   
   assert mesh == mesh2
 
+def test_C_F_meshes_same(connectomics_labels):
+  connectomics_labels = connectomics_labels[102:,31:,17:]
+
+  fdata = np.asfortranarray(connectomics_labels)
+  cdata = np.asfortranarray(connectomics_labels)
+
+  f_mesher = zmesh.Mesher((1,1,1))
+  f_mesher.mesh(fdata)
+
+  c_mesher = zmesh.Mesher((1,1,1))
+  c_mesher.mesh(cdata)
+
+  assert c_mesher.ids() == f_mesher.ids()
+
+  for label in c_mesher.ids()[:300]:
+    c_mesh = c_mesher.get_mesh(label, normals=False, simplification_factor=0)
+    f_mesh = f_mesher.get_mesh(label, normals=False, simplification_factor=0)
+    assert c_mesh == f_mesh
+
 @pytest.mark.parametrize("order", [ 'C', 'F' ])
 def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
   if order == "C":
