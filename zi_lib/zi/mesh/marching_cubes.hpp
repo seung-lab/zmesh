@@ -38,25 +38,6 @@
 #include <unordered_map>
 #include <vector>
 
-// COMMENT(zi): TODO(anyone): check whether this is still true. I
-// don't think it is with the new implementation.
-
-// Logic: If two adjacent labels match, return their avg position.
-//        Else, return the first vertex position.
-//
-// The code used to read: (vert[p1]+vert[p2]) >> 1
-// However, this can cause overflow in uint32 vertex types
-// when the carry bit reaches from Z to Y or Y to X.
-//
-// Each vertex has a bit at the beginning representing 2^-1
-// which reads 0 initially. By shifting down first before adding
-// we ensure that the fields never overflow.
-
-// define ZI_MC_QUICK_INTERP(p1, p2, val)
-//     ((((labels[p1] == val) ^ (labels[p2] == val))
-//           ? (((cur + vert[p1]) >> 1) + ((cur + vert[p2]) >> 1))
-//           : (cur + vert[p1])))
-
 namespace zi::mesh
 {
 
