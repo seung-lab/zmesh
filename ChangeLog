@@ -1,6 +1,15 @@
 CHANGES
 =======
 
+1.6.1
+-----
+
+* release(1.6.1): fixes bug in marching cubes
+* docs: remove old comment
+* test: check C and F meshes same
+* fix(marching\_cubes): incorrect strides when array is C order
+* update build system for py311
+
 1.6.0
 -----
 

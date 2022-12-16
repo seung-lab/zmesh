@@ -67,19 +67,10 @@ with open('10001001:0', 'wb') as f:
 
 ## Installation 
 
-If binaries are available for your system:
+If binaries are not available for your system, ensure you have a C++ compiler installed.
 
 ```bash
 pip install zmesh
-```
-
-*Requires a C++ compiler and boost*
-
-Note that you may need to set the environment variable `BOOST_ROOT`.
-
-```bash
-sudo apt-get install python3-dev libboost-all-dev
-pip install zmesh --no-binary :all:
 ```
 
 ## Performance Tuning & Notes
