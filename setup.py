@@ -24,7 +24,7 @@ include_dirs = [ np.get_include(), 'zi_lib/', './' ]
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy'],
-  python_requires=">=3.6", # >= 3.6 < 4.0
+  python_requires=">=3.7", # >= 3.6 < 4.0
   pbr=True,
   define_macros=[ ("NDEBUG", 1) ],
   ext_modules=[
