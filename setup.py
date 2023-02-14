@@ -2,12 +2,19 @@
 
 import os
 import setuptools
-import numpy as np
 import sys
+
+class NumpyImport:
+  def __repr__(self):
+    import numpy as np
+
+    return np.get_include()
+
+  __fspath__ = __repr__
+
 
 # NOTE: If zmesh.cpp does not exist, you must run
 # cython --cplus -I./zi_lib/ zmesh.pyx
-
 
 extra_compile_args = []
 if sys.platform == 'win32':
@@ -20,7 +27,7 @@ else:
     '-DNDEBUG',
   ]
 
-include_dirs = [ np.get_include(), 'zi_lib/', './' ]
+include_dirs = [ NumpyImport(), 'zi_lib/', './' ]
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy'],
