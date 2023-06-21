@@ -40,7 +40,7 @@ mesher.clear() # clear memory retained by mesher
 mesh = meshes[0]
 mesh = mesher.simplify(
   mesh, 
-  # same as simplification_factor in get_mesh
+  # same as reduction_factor in get
   reduction_factor=100, 
   # same as max_error in get
   max_error=40, 
