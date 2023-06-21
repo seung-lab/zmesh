@@ -46,3 +46,5 @@ __pycache__
 
 # mesh files
 *.ply
+
+zmesh/_zmesh.cpp
