@@ -21,7 +21,13 @@ cdef extern from "cMesher.hpp":
 
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
-    void mesh(L*, unsigned int, unsigned int, unsigned int, bool c_order)
+    void mesh(
+      L* data, 
+      unsigned int sx, 
+      unsigned int sy, 
+      unsigned int sz, 
+      bool c_order
+    )
     vector[L] ids()
     MeshObject get_mesh(
       L segid, 
@@ -32,8 +38,11 @@ cdef extern from "cMesher.hpp":
     )
     # NOTE: need to define triangle_t
     MeshObject simplify_points(
-      uint64_t* points, size_t Nv, 
-      bool normals, int simplification_factor, int max_simplification_error
+      uint64_t* points, 
+      size_t Nv, 
+      bool normals, 
+      int simplification_factor, 
+      int max_simplification_error
     )
     bool erase(L segid)
     void clear()
