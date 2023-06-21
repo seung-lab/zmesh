@@ -203,7 +203,6 @@ class Mesher:
     """
     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
 
-  @cython.binding(True)
   def simplify(
     self, mesh, int reduction_factor=0, 
     int max_error=40, compute_normals=False,
@@ -278,7 +277,6 @@ class Mesher:
 
     return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
   
-  @cython.binding(True)
   def clear(self):
     self._mesher.clear()
   
