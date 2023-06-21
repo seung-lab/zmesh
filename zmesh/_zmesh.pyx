@@ -209,7 +209,11 @@ class Mesher:
     voxel_centered=False
   ):
     """
-    Mesh simplify(mesh, reduction_factor=0, max_error=40)
+    Mesh simplify(
+      mesh, reduction_factor=0, 
+      max_error=40, compute_normals=False, 
+      voxel_centered=False
+    )
 
     Given a mesh object (either zmesh.Mesh or another object that has
     mesh.vertices and mesh.faces implemented as numpy arrays), apply
