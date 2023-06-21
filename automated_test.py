@@ -20,7 +20,7 @@ def fanc_label():
 @pytest.mark.parametrize("dtype", DTYPE)
 @pytest.mark.parametrize("close", [ False, True ])
 @pytest.mark.parametrize("order", [ 'C', 'F' ])
-def test_executes(dtype, close, order):
+def test_executes_legacy(dtype, close, order):
   labels = np.zeros( (11,17,19), dtype=dtype, order=order)
   labels[1:-1, 1:-1, 1:-1] = 1
 
@@ -33,6 +33,27 @@ def test_executes(dtype, close, order):
   assert mesh.normals is None
 
   mesh = mesher.get_mesh(1, normals=True)
+  assert len(mesh.vertices) > 0
+  assert len(mesh.faces) > 0
+  assert len(mesh.normals) > 0
+
+
+@pytest.mark.parametrize("dtype", DTYPE)
+@pytest.mark.parametrize("close", [ False, True ])
+@pytest.mark.parametrize("order", [ 'C', 'F' ])
+def test_executes(dtype, close, order):
+  labels = np.zeros( (11,17,19), dtype=dtype, order=order)
+  labels[1:-1, 1:-1, 1:-1] = 1
+
+  mesher = zmesh.Mesher( (4,4,40) )
+  mesher.mesh(labels, close=close)
+
+  mesh = mesher.get(1, normals=False)
+  assert len(mesh.vertices) > 0
+  assert len(mesh.faces) > 0
+  assert mesh.normals is None
+
+  mesh = mesher.get(1, normals=True)
   assert len(mesh.vertices) > 0
   assert len(mesh.faces) > 0
   assert len(mesh.normals) > 0
@@ -83,7 +104,7 @@ def test_simplify(dtype, order):
     pass
 
 @pytest.mark.parametrize("dtype", DTYPE)
-def test_precomputed(dtype):
+def test_precomputed_legacy(dtype):
   labels = np.zeros( (11,17,19), dtype=dtype)
   labels[1:-1, 1:-1, 1:-1] = 1
 
@@ -101,13 +122,32 @@ def test_precomputed(dtype):
   reconstituted = zmesh.Mesh.from_precomputed(precomputed_mesh)
   assert reconstituted != mesh # Precomputed doesn't preserve normals
 
+@pytest.mark.parametrize("dtype", DTYPE)
+def test_precomputed(dtype):
+  labels = np.zeros( (11,17,19), dtype=dtype)
+  labels[1:-1, 1:-1, 1:-1] = 1
+
+  mesher = zmesh.Mesher( (4,4,40) )
+  mesher.mesh(labels)
+  mesh = mesher.get(1, normals=False)
+
+  precomputed_mesh = mesh.to_precomputed()
+  reconstituted = zmesh.Mesh.from_precomputed(precomputed_mesh)
+  assert reconstituted == mesh
+
+  mesh = mesher.get(1, normals=True)
+
+  precomputed_mesh = mesh.to_precomputed()
+  reconstituted = zmesh.Mesh.from_precomputed(precomputed_mesh)
+  assert reconstituted != mesh # Precomputed doesn't preserve normals
+
 def test_obj_import():
   labels = np.zeros( (11,17,19), dtype=np.uint32)
   labels[1:-1, 1:-1, 1:-1] = 1
 
   mesher = zmesh.Mesher( (4,4,40) )
   mesher.mesh(labels)
-  mesh = mesher.get_mesh(1, normals=False)
+  mesh = mesher.get(1, normals=False)
 
   obj_str = mesh.to_obj()
   mesh2 = zmesh.Mesh.from_obj(obj_str)
@@ -120,14 +160,14 @@ def test_ply_import():
 
   mesher = zmesh.Mesher( (4,4,40) )
   mesher.mesh(labels)
-  mesh = mesher.get_mesh(1, normals=False)
+  mesh = mesher.get(1, normals=False)
 
   plydata = mesh.to_ply()
   mesh2 = zmesh.Mesh.from_ply(plydata)
   
   assert mesh == mesh2
 
-def test_C_F_meshes_same(connectomics_labels):
+def test_C_F_meshes_same_legacy(connectomics_labels):
   connectomics_labels = connectomics_labels[102:,31:,17:]
 
   fdata = np.asfortranarray(connectomics_labels)
@@ -166,8 +206,8 @@ def test_fanc_bug(fanc_label, transpose):
   assert c_mesher.ids() == f_mesher.ids()
 
   for label in c_mesher.ids():
-    c_mesh = c_mesher.get_mesh(label, normals=False, simplification_factor=0)
-    f_mesh = f_mesher.get_mesh(label, normals=False, simplification_factor=0)
+    c_mesh = c_mesher.get(label, normals=False, reduction_factor=0)
+    f_mesh = f_mesher.get(label, normals=False, reduction_factor=0)
     assert np.isclose(c_mesh.vertices.mean(), f_mesh.vertices.mean())
 
 @pytest.mark.parametrize("order", [ 'C', 'F' ])
