@@ -228,6 +228,31 @@ def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
     print(lbl, "ok")
 
 
+  mesher = zmesh.Mesher( (1,1,1) )
+  mesher.mesh(connectomics_labels)
+
+  mesher2 = zmesh.Mesher( (1,1,1) )
+  mesher2.mesh(connectomics_labels)
+
+  for lbl in mesher.ids()[:300]:
+    old_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=0, max_simplification_error=40)
+    new_mesh = mesher2.get(lbl, normals=False, reduction_factor=0, max_error=40)
+
+    old_pts = old_mesh.vertices[old_mesh.faces]
+    old_pts = old_pts.reshape(old_pts.shape[0] * old_pts.shape[1], 3)
+    transposed_old = np.copy(old_pts)
+    transposed_old[:,0] = old_pts[:,2]
+    transposed_old[:,2] = old_pts[:,0]
+    del old_pts
+    transposed_old.sort(axis=0)
+
+    new_pts = new_mesh.vertices[new_mesh.faces]
+    new_pts = new_pts.reshape(new_pts.shape[0] * new_pts.shape[1], 3)
+    new_pts.sort(axis=0)
+
+    assert np.all(transposed_old == new_pts)
+    print(lbl, "ok")  
+
 # F order meshes are processed in a different order and so
 # the simplifier produces a different mesh. Will have to add F order examples
 # in order to test.
