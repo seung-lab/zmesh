@@ -90,10 +90,20 @@ class CMesher {
 
     zi::mesh::int_mesh<PositionType, LabelType> im;
     im.add(triangles);
+
+    float wx = voxelresolution_[0];
+    float wy = voxelresolution_[1]; 
+    float wz = voxelresolution_[2];
+    if (transpose) {
+      wx = voxelresolution_[2];
+      wy = voxelresolution_[1];
+      wz = voxelresolution_[0];
+    }
+
     im.template fill_simplifier<SimplifierType>(
       simplifier_, 
       0, 0, 0, 
-      voxelresolution_[2], voxelresolution_[1], voxelresolution_[0]
+      wx, wy, wz
     );
 
     if (simplification_factor > 0) {
