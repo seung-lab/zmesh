@@ -49,6 +49,12 @@ cdef extern from "cMesher.hpp":
     P pack_coords(P x, P y, P z)
 
 class Mesher:
+  """
+  Represents a meshed volume. 
+
+  Call mesher.mesh(labels) then you can 
+  extract meshes from it using mesher.get(label).
+  """
   def __init__(self, voxel_res):
     self.voxel_res = voxel_res
     self._mesher = Mesher6464(self.voxel_res)
