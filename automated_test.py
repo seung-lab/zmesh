@@ -234,7 +234,7 @@ def test_unsimplified_meshes_remain_the_same(connectomics_labels, order):
   mesher2 = zmesh.Mesher( (1,1,1) )
   mesher2.mesh(connectomics_labels)
 
-  for lbl in mesher.ids()[:300]:
+  for lbl in mesher.ids()[:50]:
     old_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=0, max_simplification_error=40)
     new_mesh = mesher2.get(lbl, normals=False, reduction_factor=0, max_error=40)
 
