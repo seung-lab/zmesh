@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+1.7.0
+-----
+
+* release(1.7.0): deprecates get\_mesh in favor of get
+* fix: transpose of mesh image (#38)
+
 1.6.2
 -----
 
