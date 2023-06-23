@@ -30,14 +30,14 @@ else:
 include_dirs = [ NumpyImport(), 'zi_lib/', './' ]
 
 setuptools.setup(
-  setup_requires=['pbr', 'numpy'],
+  setup_requires=['pbr', 'numpy', 'cython'],
   python_requires=">=3.7", # >= 3.6 < 4.0
   pbr=True,
   define_macros=[ ("NDEBUG", 1) ],
   ext_modules=[
     setuptools.Extension(
       'zmesh._zmesh',
-      sources=[ 'zmesh/_zmesh.cpp' ],
+      sources=[ 'zmesh/_zmesh.pyx' ],
       depends=[ 'cMesher.hpp' ],
       language='c++',
       include_dirs=include_dirs,

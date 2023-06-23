@@ -15,16 +15,19 @@ mesher.mesh(labels, close=False)
 meshes = []
 for obj_id in mesher.ids():
   meshes.append(
-    mesher.get_mesh(
+    mesher.get(
       obj_id, 
       normals=False, # whether to calculate normals or not
 
       # tries to reduce triangles by this factor
       # 0 disables simplification
-      simplification_factor=100, 
+      reduction_factor=100, 
 
       # Max tolerable error in physical distance
-      max_simplification_error=8,
+      # note: if max_error is not set, the max error
+      # will be set equivalent to one voxel along the 
+      # smallest dimension.
+      max_error=8,
       # whether meshes should be centered in the voxel
       # on (0,0,0) [False] or (0.5,0.5,0.5) [True]
       voxel_centered=False, 
@@ -37,9 +40,9 @@ mesher.clear() # clear memory retained by mesher
 mesh = meshes[0]
 mesh = mesher.simplify(
   mesh, 
-  # same as simplification_factor in get_mesh
+  # same as reduction_factor in get
   reduction_factor=100, 
-  # same as max_simplification_error in get_mesh
+  # same as max_error in get
   max_error=40, 
   compute_normals=False, # whether to also compute face normals
 ) # apply simplifier to a pre-existing mesh
@@ -64,6 +67,8 @@ with open('iconic_doge.ply', 'wb') as f:
 with open('10001001:0', 'wb') as f:
   f.write(mesh.to_precomputed())
 ```
+
+Note: As of the latest version, `mesher.get_mesh` has been deprecated in favor of `mesher.get` which fixes a long standing bug where you needed to transpose your data in order to get a mesh in the correct orientation.
 
 ## Installation 
 

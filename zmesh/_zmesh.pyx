@@ -1,4 +1,6 @@
+# cython:language_level = 3
 # distutils: language = c++
+import cython
 
 from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 from libcpp.vector cimport vector
@@ -19,19 +21,40 @@ cdef extern from "cMesher.hpp":
 
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
-    void mesh(L*, unsigned int, unsigned int, unsigned int, bool c_order)
+    void mesh(
+      L* data, 
+      unsigned int sx, 
+      unsigned int sy, 
+      unsigned int sz, 
+      bool c_order
+    )
     vector[L] ids()
-    MeshObject get_mesh(L segid, bool normals, int simplification_factor, int max_simplification_error)
+    MeshObject get_mesh(
+      L segid, 
+      bool normals,
+      int simplification_factor, 
+      int max_simplification_error, 
+      bool transpose
+    )
     # NOTE: need to define triangle_t
     MeshObject simplify_points(
-      uint64_t* points, size_t Nv, 
-      bool normals, int simplification_factor, int max_simplification_error
+      uint64_t* points, 
+      size_t Nv, 
+      bool normals, 
+      int simplification_factor, 
+      int max_simplification_error
     )
     bool erase(L segid)
     void clear()
     P pack_coords(P x, P y, P z)
 
 class Mesher:
+  """
+  Represents a meshed volume. 
+
+  Call mesher.mesh(labels) then you can 
+  extract meshes from it using mesher.get(label).
+  """
   def __init__(self, voxel_res):
     self.voxel_res = voxel_res
     self._mesher = Mesher6464(self.voxel_res)
@@ -44,10 +67,11 @@ class Mesher:
   def voxel_res(self, res):
     self._voxel_res = np.array(res, dtype=np.float32)
 
+  @cython.binding(True)
   def mesh(self, data, close=False):
     """
     Triggers the multi-label meshing process.
-    After the mesher has run, you can call get_mesh.
+    After the mesher has run, you can call mesher.get.
 
     data: 3d numpy array
     close: By default, meshes flush against the edge of
@@ -93,16 +117,19 @@ class Mesher:
 
     return self._mesher.mesh(data)
 
+  @cython.binding(True)
   def ids(self):
     return self._mesher.ids()
 
+  @cython.binding(True)
   def get_mesh(
     self, mesh_id, normals=False, 
     simplification_factor=0, max_simplification_error=40,
     voxel_centered=False
   ):
     """
-    get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40)
+    NOTE: This function is deprecated. Please use "get" as 
+    this function transposes the mesh.
 
     mesh_id: the integer id of the mesh
     normals: whether to calculate vertex normals for the mesh
@@ -115,11 +142,46 @@ class Mesher:
     Returns: Mesh
     """
     mesh = self._mesher.get_mesh(
-      mesh_id, normals, simplification_factor, max_simplification_error
+      mesh_id, normals, 
+      simplification_factor, max_simplification_error, 
+      transpose=True
     )
 
     return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
-  
+
+  @cython.binding(True)
+  def get(
+    self, label, 
+    normals = False, 
+    reduction_factor = 0, 
+    max_error = None,
+    voxel_centered = False
+  ):
+    """
+    label: the integer id of the mesh
+    normals: whether to calculate vertex normals for the mesh
+    reduction_factor: Try to reduce the number of triangles by this integer factor. 
+      0 disables simplification.
+    max_error: maximum distance vertices are allowed to deviate from
+      their original position. Units are physical, not voxels. If None, automatically
+      is set to at most one voxel distortion based on the provided resolution.
+    voxel_centered: By default, the meshes produced will be centered at 0,0,0.
+      If enabled, the meshes will be centered in the voxel at 0.5,0.5,0.5.
+
+    Returns: Mesh
+    """
+    # automatically select one voxel max distortion
+    if max_error is None:
+      max_error = self.voxel_res.max()
+
+    mesh = self._mesher.get_mesh(
+      label, normals, 
+      reduction_factor, max_error,
+      transpose=False
+    )
+
+    return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+
   def _normalize_simplified_mesh(self, mesh, voxel_centered, physical):
     points = np.array(mesh['points'], dtype=np.float32)
     Nv = points.size // 3
@@ -140,10 +202,9 @@ class Mesher:
 
     return Mesh(points, faces, normals)
 
+  @cython.binding(True)
   def compute_normals(self, mesh):
     """
-    Mesh compute_normals(mesh)
-
     Returns: Mesh with normals computed
     """
     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
@@ -154,7 +215,11 @@ class Mesher:
     voxel_centered=False
   ):
     """
-    Mesh simplify(mesh, reduction_factor=0, max_error=40)
+    Mesh simplify(
+      mesh, reduction_factor=0, 
+      max_error=40, compute_normals=False, 
+      voxel_centered=False
+    )
 
     Given a mesh object (either zmesh.Mesh or another object that has
     mesh.vertices and mesh.faces implemented as numpy arrays), apply
@@ -221,10 +286,11 @@ class Mesher:
         result.points[i] += min_vertex
 
     return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
-
+  
   def clear(self):
     self._mesher.clear()
-   
+  
+  @cython.binding(True) 
   def erase(self, segid):
     return self._mesher.erase(segid)
 
@@ -273,7 +339,7 @@ cdef class Mesher3208:
   cdef CMesher[uint32_t, uint8_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint8_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint32_t, uint8_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -289,8 +355,8 @@ cdef class Mesher3208:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -302,7 +368,7 @@ cdef class Mesher3216:
   cdef CMesher[uint32_t, uint16_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint16_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint32_t, uint16_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -318,8 +384,8 @@ cdef class Mesher3216:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -331,7 +397,7 @@ cdef class Mesher3232:
   cdef CMesher[uint32_t, uint32_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint32_t, uint32_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -347,8 +413,8 @@ cdef class Mesher3232:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -360,7 +426,7 @@ cdef class Mesher3264:
   cdef CMesher[uint32_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint32_t, uint64_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -376,8 +442,8 @@ cdef class Mesher3264:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -389,7 +455,7 @@ cdef class Mesher6408:
   cdef CMesher[uint64_t, uint8_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint8_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint64_t, uint8_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -405,8 +471,8 @@ cdef class Mesher6408:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -418,7 +484,7 @@ cdef class Mesher6416:
   cdef CMesher[uint64_t, uint16_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint16_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint64_t, uint16_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -434,8 +500,8 @@ cdef class Mesher6416:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -447,7 +513,7 @@ cdef class Mesher6432:
   cdef CMesher[uint64_t, uint32_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint32_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint64_t, uint32_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -463,8 +529,8 @@ cdef class Mesher6432:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -476,7 +542,7 @@ cdef class Mesher6464:
   cdef CMesher[uint64_t, uint64_t, float] *ptr      # hold a C++ instance which we're wrapping
 
   def __cinit__(self, voxel_res):
-    self.ptr = new CMesher[uint64_t, uint64_t, float](voxel_res.astype(np.float32))
+    self.ptr = new CMesher[uint64_t, uint64_t, float](voxel_res)
 
   def __dealloc__(self):
     del self.ptr
@@ -492,8 +558,8 @@ cdef class Mesher6464:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()

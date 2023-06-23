@@ -1,6 +1,15 @@
 CHANGES
 =======
 
+1.6.2
+-----
+
+* release(1.6.2): obj import accepts scientific notation
+* feat: allow from\_obj to parse scientific notation (e.g. 1e-5)
+* test: check broken fanc example to prevent regressions
+* build: update cibuildwheel
+* docs: update installation instructions
+
 1.6.1
 -----
 

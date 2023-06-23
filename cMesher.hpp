@@ -50,10 +50,12 @@ class CMesher {
   }
 
   MeshObject get_mesh(
-      LabelType segid, bool generate_normals,
-      int simplification_factor,
-      int max_simplification_error
-    ) {
+    LabelType segid, 
+    bool generate_normals,
+    int simplification_factor,
+    int max_simplification_error,
+    bool transpose = true
+  ) {
 
     // MC produces no triangles if either
     // none or all voxels were labeled.
@@ -68,7 +70,8 @@ class CMesher {
       triangles,
       generate_normals,
       simplification_factor,
-      max_simplification_error
+      max_simplification_error,
+      transpose
     );
   }
 
@@ -76,17 +79,31 @@ class CMesher {
       const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
       bool generate_normals,
       int simplification_factor,
-      int max_simplification_error
+      int max_simplification_error,
+
+      // This is to support the old broken version
+      // w/ backwards compatibility
+      bool transpose = true 
     ) {
 
     MeshObject obj;
 
     zi::mesh::int_mesh<PositionType, LabelType> im;
     im.add(triangles);
+
+    float wx = voxelresolution_[0];
+    float wy = voxelresolution_[1]; 
+    float wz = voxelresolution_[2];
+    if (transpose) {
+      wx = voxelresolution_[2];
+      wy = voxelresolution_[1];
+      wz = voxelresolution_[0];
+    }
+
     im.template fill_simplifier<SimplifierType>(
       simplifier_, 
       0, 0, 0, 
-      voxelresolution_[2], voxelresolution_[1], voxelresolution_[0]
+      wx, wy, wz
     );
 
     if (simplification_factor > 0) {
@@ -110,24 +127,47 @@ class CMesher {
       obj.normals.reserve(3 * points.size());
     }
 
-    for (auto v = points.begin(); v != points.end(); ++v) {
-      obj.points.push_back((*v)[2]);
-      obj.points.push_back((*v)[1]);
-      obj.points.push_back((*v)[0]);
-    }
+    if (transpose) {
+      for (auto v = points.begin(); v != points.end(); ++v) {
+        obj.points.push_back((*v)[2]);
+        obj.points.push_back((*v)[1]);
+        obj.points.push_back((*v)[0]);
+      }
 
-    if (generate_normals) {
-      for (auto vn = normals.begin(); vn != normals.end(); ++vn) {
-        obj.normals.push_back((*vn)[2]);
-        obj.normals.push_back((*vn)[1]);
-        obj.normals.push_back((*vn)[0]);
+      if (generate_normals) {
+        for (auto vn = normals.begin(); vn != normals.end(); ++vn) {
+          obj.normals.push_back((*vn)[2]);
+          obj.normals.push_back((*vn)[1]);
+          obj.normals.push_back((*vn)[0]);
+        }
+      }
+
+      for (auto f = faces.begin(); f != faces.end(); ++f) {
+        obj.faces.push_back((*f)[0]);
+        obj.faces.push_back((*f)[2]);
+        obj.faces.push_back((*f)[1]);
       }
     }
+    else {
+      for (auto v = points.begin(); v != points.end(); ++v) {
+        obj.points.push_back((*v)[0]);
+        obj.points.push_back((*v)[1]);
+        obj.points.push_back((*v)[2]);
+      }
 
-    for (auto f = faces.begin(); f != faces.end(); ++f) {
-      obj.faces.push_back((*f)[0]);
-      obj.faces.push_back((*f)[2]);
-      obj.faces.push_back((*f)[1]);
+      if (generate_normals) {
+        for (auto vn = normals.begin(); vn != normals.end(); ++vn) {
+          obj.normals.push_back((*vn)[0]);
+          obj.normals.push_back((*vn)[1]);
+          obj.normals.push_back((*vn)[2]);
+        }
+      }
+
+      for (auto f = faces.begin(); f != faces.end(); ++f) {
+        obj.faces.push_back((*f)[1]);
+        obj.faces.push_back((*f)[2]);
+        obj.faces.push_back((*f)[0]);
+      }
     }
 
     return obj;
