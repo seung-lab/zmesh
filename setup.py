@@ -27,7 +27,7 @@ else:
     '-DNDEBUG',
   ]
 
-include_dirs = [ NumpyImport(), 'zi_lib/', './' ]
+include_dirs = [ str(NumpyImport()), 'zi_lib/', './' ]
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy', 'cython'],
