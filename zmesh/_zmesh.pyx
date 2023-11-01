@@ -285,7 +285,7 @@ class Mesher:
       for i in range(len(result.points)):
         result.points[i] += min_vertex
 
-    return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
+    return self._normalize_simplified_mesh(result, voxel_centered, physical=True)
   
   def clear(self):
     self._mesher.clear()
