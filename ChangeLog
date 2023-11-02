@@ -1,6 +1,15 @@
 CHANGES
 =======
 
+1.7.1
+-----
+
+* build: update cibuildwheel
+* fix: re-simplification works
+* fix(simplify): double multiplication by resolution
+* fix: avoid numpy import error
+* docs: removed sentence about design flaw
+
 1.7.0
 -----
 
