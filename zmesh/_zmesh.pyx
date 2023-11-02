@@ -241,7 +241,7 @@ class Mesher:
 
     Returns: Mesh
     """
-    mesher = new CMesher[uint64_t, uint64_t, float](self.voxel_res)
+    mesher = new CMesher[uint64_t, uint64_t, float]((1,1,1))
 
     cdef size_t ti = 0
     cdef size_t vi = 0
@@ -251,6 +251,8 @@ class Mesher:
     cdef cnp.ndarray[uint64_t, ndim=2] packed_triangles = np.zeros( 
       (triangles.shape[0], 3), dtype=np.uint64, order='C'
     ) 
+
+    max_error //= np.sqrt(np.sum(self.voxel_res ** 2))
 
     triangles /= self.voxel_res
     triangles *= 2.0
@@ -285,7 +287,7 @@ class Mesher:
       for i in range(len(result.points)):
         result.points[i] += min_vertex
 
-    return self._normalize_simplified_mesh(result, voxel_centered, physical=True)
+    return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
   
   def clear(self):
     self._mesher.clear()

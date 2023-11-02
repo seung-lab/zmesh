@@ -198,7 +198,8 @@ class CMesher {
       triangles, 
       generate_normals, 
       simplification_factor, 
-      max_simplification_error
+      max_simplification_error,
+      false
     );
   }
 
