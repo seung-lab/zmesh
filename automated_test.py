@@ -274,3 +274,26 @@ def test_simplified_meshes_remain_the_same(connectomics_labels, order):
     assert np.all(np.isclose(np.sort(old_mesh.vertices[old_mesh.faces], axis=0), np.sort(new_mesh.vertices[new_mesh.faces], axis=0)))
     print(lbl, "ok")
 
+
+@pytest.mark.parametrize("reduction_factor", [2,5,10])
+def test_min_error_skip(reduction_factor):
+  for order in ['C','F']:
+    labels = np.zeros((11, 17, 19), dtype=np.uint8, order=order)
+    labels[1:-1, 1:-1, 1:-1] = 1
+
+    mesher = zmesh.Mesher((4, 4, 40))
+    mesher.mesh(labels)
+
+    original_mesh = mesher.get_mesh(1, normals=False)
+    mesh = mesher.simplify(
+        original_mesh, 
+        reduction_factor=reduction_factor, 
+        max_error=40, 
+        min_error=0,
+        compute_normals=True
+    )
+    factor = len(original_mesh.faces) / len(mesh.faces)
+    assert abs(factor - reduction_factor) < 1
+
+
+
