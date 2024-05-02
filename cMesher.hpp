@@ -54,6 +54,7 @@ class CMesher {
     bool generate_normals,
     int simplification_factor,
     float max_simplification_error,
+    float min_simplification_error,
     bool transpose = true
   ) {
 
@@ -71,6 +72,7 @@ class CMesher {
       generate_normals,
       simplification_factor,
       max_simplification_error,
+      min_simplification_error,
       transpose
     );
   }
@@ -80,6 +82,7 @@ class CMesher {
       bool generate_normals,
       int simplification_factor,
       float max_simplification_error,
+      float min_simplification_error,
 
       // This is to support the old broken version
       // w/ backwards compatibility
@@ -111,7 +114,8 @@ class CMesher {
       // This is the most cpu intensive line
       simplifier_.optimize(
           simplifier_.face_count() / simplification_factor,
-          max_simplification_error
+          max_simplification_error,
+          min_simplification_error
       );
     }
 
@@ -178,7 +182,8 @@ class CMesher {
     const size_t Nv,
     bool generate_normals,
     int simplification_factor,
-    float max_simplification_error
+    float max_simplification_error,
+    float min_simplification_error
   ) {
 
     std::vector< zi::vl::vec< PositionType, 3> > triangles;
@@ -199,6 +204,7 @@ class CMesher {
       generate_normals, 
       simplification_factor, 
       max_simplification_error,
+      min_simplification_error,
       false
     );
   }
