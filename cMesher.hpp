@@ -53,7 +53,7 @@ class CMesher {
     LabelType segid, 
     bool generate_normals,
     int simplification_factor,
-    int max_simplification_error,
+    float max_simplification_error,
     bool transpose = true
   ) {
 
@@ -79,7 +79,7 @@ class CMesher {
       const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
       bool generate_normals,
       int simplification_factor,
-      int max_simplification_error,
+      float max_simplification_error,
 
       // This is to support the old broken version
       // w/ backwards compatibility
@@ -178,7 +178,7 @@ class CMesher {
     const size_t Nv,
     bool generate_normals,
     int simplification_factor,
-    int max_simplification_error
+    float max_simplification_error
   ) {
 
     std::vector< zi::vl::vec< PositionType, 3> > triangles;

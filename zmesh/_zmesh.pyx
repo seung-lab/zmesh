@@ -33,7 +33,7 @@ cdef extern from "cMesher.hpp":
       L segid, 
       bool normals,
       int simplification_factor, 
-      int max_simplification_error, 
+      float max_simplification_error, 
       bool transpose
     )
     # NOTE: need to define triangle_t
@@ -42,7 +42,7 @@ cdef extern from "cMesher.hpp":
       size_t Nv, 
       bool normals, 
       int simplification_factor, 
-      int max_simplification_error
+      float max_simplification_error
     )
     bool erase(L segid)
     void clear()
