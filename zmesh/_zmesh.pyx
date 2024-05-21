@@ -212,19 +212,21 @@ class Mesher:
     """
     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
 
+  # adding this causes a cython compilation error as of 3.0.10
+  # @cython.binding(True)
   def simplify(
     self, mesh, 
     int reduction_factor = 0, 
     float max_error = 40, 
     compute_normals = False,
     voxel_centered = False, 
-    float min_error = (25 * sys.float_info.epsilon), # used in cpp code
+    float min_error = -1,
   ):
     """
     Mesh simplify(
       mesh, reduction_factor=0, 
       max_error=40, compute_normals=False, 
-      voxel_centered=False, min_error = 25 * sys.float_info.epsilon
+      voxel_centered=False, min_error = -1
     )
 
     Given a mesh object (either zmesh.Mesh or another object that has
@@ -242,7 +244,11 @@ class Mesher:
         distance.
       min_error: Continue simplifying until this error target is met OR secondarily 
         the target number of triangles is met. Set this to 0 to force the 
-        reduction_factor to take precedence.
+        reduction_factor to take precedence. -1 indicates that the c++ default
+        value should be used.
+
+        The c++ default value is std::numeric_limits<Float>::epsilon() * 25
+
       compute_normals: whether or not to also compute the vertex normals
       voxel_centered: By default, the meshes produced will be centered at 
         0,0,0. If enabled, the meshes will be centered in the voxel at 

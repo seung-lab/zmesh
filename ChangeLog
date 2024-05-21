@@ -1,9 +1,13 @@
 CHANGES
 =======
 
+* fix: max simplification error int -> float
+* feat: support more types of obj files
+
 1.7.1
 -----
 
+* fix: some setup issues for py312
 * build: update cibuildwheel
 * fix: re-simplification works
 * fix(simplify): double multiplication by resolution
