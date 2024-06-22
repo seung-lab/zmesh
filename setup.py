@@ -30,8 +30,8 @@ else:
 include_dirs = [ str(NumpyImport()), 'zi_lib/', './' ]
 
 setuptools.setup(
-  setup_requires=['pbr', 'numpy', 'cython<3'],
-  python_requires=">=3.7", # >= 3.6 < 4.0
+  setup_requires=['pbr', 'numpy', 'cython'],
+  python_requires=">=3.8",
   pbr=True,
   define_macros=[ ("NDEBUG", 1) ],
   ext_modules=[
