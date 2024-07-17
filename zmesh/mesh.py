@@ -210,3 +210,51 @@ end_header
     )
 
     return plydata
+
+  def viewer(self):
+    # thanks to ChatGPT for making it easy to figure out
+    # how to display VTK meshes.
+    import vtk
+    polydata = _create_vtk_mesh(self.vertices, self.faces)
+
+    mapper = vtk.vtkPolyDataMapper()
+    mapper.SetInputData(polydata)
+
+    actor = vtk.vtkActor()
+    actor.SetMapper(mapper)
+
+    renderer = vtk.vtkRenderer()
+    render_window = vtk.vtkRenderWindow()
+    render_window.AddRenderer(renderer)
+    render_window_interactor = vtk.vtkRenderWindowInteractor()
+    render_window_interactor.SetRenderWindow(render_window)
+
+    render_window.SetSize(1024, 1024)
+
+    renderer.AddActor(actor)
+    renderer.SetBackground(0.1, 0.2, 0.3)  # Background color
+
+    render_window.Render()
+    render_window_interactor.Start()
+
+def _create_vtk_mesh(vertices, faces):
+  import vtk
+  from vtk.util.numpy_support import numpy_to_vtk, numpy_to_vtkIdTypeArray
+
+  vtk_points = vtk.vtkPoints()
+  vtk_points.SetData(numpy_to_vtk(vertices))
+  
+  polydata = vtk.vtkPolyData()
+  polydata.SetPoints(vtk_points)
+  
+  vtk_faces = vtk.vtkCellArray()
+  vtk_faces.SetCells(
+    faces.shape[0], 
+    numpy_to_vtkIdTypeArray(np.hstack([np.full((faces.shape[0], 1), 3), faces]).flatten())
+  )
+
+  polydata.SetPolys(vtk_faces)
+  
+  return polydata
+
+

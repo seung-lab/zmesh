@@ -34,6 +34,9 @@ setuptools.setup(
   python_requires=">=3.8",
   pbr=True,
   define_macros=[ ("NDEBUG", 1) ],
+  extras_require={
+    "viewer": [ "vtk" ],
+  },
   ext_modules=[
     setuptools.Extension(
       'zmesh._zmesh',
