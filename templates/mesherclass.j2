@@ -18,8 +18,8 @@ cdef class Mesher{{ position_type }}{{ '%02d' % label_type }}:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()

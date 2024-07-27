@@ -460,8 +460,11 @@ public:
 
     std::size_t
     optimize(std::size_t target_faces, Float max_error,
-             Float min_error = std::numeric_limits<Float>::epsilon() * 25)
+             Float min_error = -1.0)
     {
+        if (min_error < 0) {
+            min_error = std::numeric_limits<Float>::epsilon() * 25;
+        }
 
         // double no_faces = static_cast< double >( mesh_.face_count() );
 

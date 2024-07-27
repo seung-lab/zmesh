@@ -8,6 +8,7 @@ from libcpp cimport bool
 
 import operator
 from functools import reduce
+import sys
 
 cimport numpy as cnp
 import numpy as np
@@ -33,7 +34,8 @@ cdef extern from "cMesher.hpp":
       L segid, 
       bool normals,
       int simplification_factor, 
-      int max_simplification_error, 
+      float max_simplification_error, 
+      float min_simplification_error,
       bool transpose
     )
     # NOTE: need to define triangle_t
@@ -42,7 +44,8 @@ cdef extern from "cMesher.hpp":
       size_t Nv, 
       bool normals, 
       int simplification_factor, 
-      int max_simplification_error
+      float max_simplification_error,
+      float min_simplification_error,
     )
     bool erase(L segid)
     void clear()
@@ -180,7 +183,9 @@ class Mesher:
       transpose=False
     )
 
-    return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+    mesh = self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+    mesh.id = int(label)
+    return mesh
 
   def _normalize_simplified_mesh(self, mesh, voxel_centered, physical):
     points = np.array(mesh['points'], dtype=np.float32)
@@ -209,16 +214,21 @@ class Mesher:
     """
     return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
 
+  # adding this causes a cython compilation error as of 3.0.10
+  # @cython.binding(True)
   def simplify(
-    self, mesh, int reduction_factor=0, 
-    int max_error=40, compute_normals=False,
-    voxel_centered=False
+    self, mesh, 
+    int reduction_factor = 0, 
+    float max_error = 40, 
+    compute_normals = False,
+    voxel_centered = False, 
+    float min_error = -1,
   ):
     """
     Mesh simplify(
       mesh, reduction_factor=0, 
       max_error=40, compute_normals=False, 
-      voxel_centered=False
+      voxel_centered=False, min_error = -1
     )
 
     Given a mesh object (either zmesh.Mesh or another object that has
@@ -234,6 +244,13 @@ class Mesher:
         stop short of this target.
       max_error: The maximum allowed displacement of a vertex in physical
         distance.
+      min_error: Continue simplifying until this error target is met OR secondarily 
+        the target number of triangles is met. Set this to 0 to force the 
+        reduction_factor to take precedence. -1 indicates that the c++ default
+        value should be used.
+
+        The c++ default value is std::numeric_limits<Float>::epsilon() * 25
+
       compute_normals: whether or not to also compute the vertex normals
       voxel_centered: By default, the meshes produced will be centered at 
         0,0,0. If enabled, the meshes will be centered in the voxel at 
@@ -278,7 +295,8 @@ class Mesher:
 
     cdef MeshObject result = mesher.simplify_points(
       <uint64_t*>&packed_triangles[0,0], Nv, 
-      <bool>compute_normals, reduction_factor, max_error
+      <bool>compute_normals, reduction_factor, 
+      max_error, min_error
     )
     del mesher
 
@@ -357,8 +375,8 @@ cdef class Mesher3208:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -386,8 +404,8 @@ cdef class Mesher3216:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -415,8 +433,8 @@ cdef class Mesher3232:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -444,8 +462,8 @@ cdef class Mesher3264:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -473,8 +491,8 @@ cdef class Mesher6408:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -502,8 +520,8 @@ cdef class Mesher6416:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -531,8 +549,8 @@ cdef class Mesher6432:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
@@ -560,8 +578,8 @@ cdef class Mesher6464:
   def ids(self):
     return self.ptr.ids()
   
-  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, transpose)
+  def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
+    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
   
   def clear(self):
     self.ptr.clear()
