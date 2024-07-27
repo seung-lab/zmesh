@@ -183,7 +183,9 @@ class Mesher:
       transpose=False
     )
 
-    return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+    mesh = self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+    mesh.id = int(label)
+    return mesh
 
   def _normalize_simplified_mesh(self, mesh, voxel_centered, physical):
     points = np.array(mesh['points'], dtype=np.float32)

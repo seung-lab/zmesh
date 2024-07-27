@@ -13,10 +13,11 @@ class Mesh:
     ndarray[float32, ndim=2] self.normals:  [ [nx,ny,nz], ... ]
 
   """
-  def __init__(self, vertices, faces, normals):
+  def __init__(self, vertices, faces, normals, id=None):
     self.vertices = vertices
     self.faces = faces
     self.normals = normals
+    self.id = id
 
   def __len__(self):
     return self.vertices.shape[0]
