@@ -271,7 +271,7 @@ def test_simplified_meshes_remain_the_same(connectomics_labels, order):
     with gzip.open(f"./connectomics_npy_meshes/simplified/{lbl}.ply.gz", "rb") as f:
       old_mesh = zmesh.Mesh.from_ply(f.read())
     new_mesh = mesher.get_mesh(lbl, normals=False, simplification_factor=100, max_simplification_error=40)
-    assert np.all(np.isclose(np.sort(old_mesh.vertices[old_mesh.faces], axis=0), np.sort(new_mesh.vertices[new_mesh.faces], axis=0), atol=0.01))
+    assert np.all(np.isclose(np.sort(old_mesh.vertices[old_mesh.faces], axis=0), np.sort(new_mesh.vertices[new_mesh.faces], axis=0)))
     print(lbl, "ok")
 
 
