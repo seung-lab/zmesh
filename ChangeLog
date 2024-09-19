@@ -1,7 +1,22 @@
 CHANGES
 =======
 
-* fix: max simplification error int -> float
+1.8.0
+-----
+
+* fixtest: remove macos (will build locally)
+* fixtest: putting down test failure to different compilers/libraries
+* feat: expose min error (#40)
+* fixtest: allow tiny differences in floating point
+* feat: add vtk mesh display to zmesh meshes
+* ci: add deps for py312
+* ci: update test set
+* install: add pyproject.toml
+
+1.7.2
+-----
+
+* ci: rebuild for numpy 2.0
 * feat: support more types of obj files
 
 1.7.1
