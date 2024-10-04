@@ -468,7 +468,7 @@ public:
 
         // double no_faces = static_cast< double >( mesh_.face_count() );
 
-        std::size_t bad = 0;
+        // std::size_t bad = 0;
         while (heap_.size())
         {
             if (((mesh_.face_count() <= target_faces) &&
@@ -477,10 +477,13 @@ public:
             {
                 break;
             }
-            if (!iterate())
-            {
-                ++bad;
-            }
+
+            iterate();
+
+            // if (!iterate())
+            // {
+            //     ++bad;
+            // }
         }
 
         // generate_normals();
