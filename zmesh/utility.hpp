@@ -14,10 +14,12 @@ struct MeshObject {
   std::vector<unsigned int> faces;
 };
 
-std::vector<MeshObject> chunk_mesh(
-  std::vector<float> vertices,
-  std::vector<unsigned int> faces,
-  const uint32_t cx, const uint32_t cy, const uint32_t cz,
+std::vector<MeshObject> chunk_mesh_accelerated(
+  float* vertices, 
+  const uint64_t num_vertices,
+  unsigned int* faces,
+  const uint64_t num_faces,
+  const float cx, const float cy, const float cz
 ) {
 
   float min_x = INFINITY;
@@ -27,7 +29,7 @@ std::vector<MeshObject> chunk_mesh(
   float max_y = -INFINITY;
   float max_z = -INFINITY;
 
-  for (uint64_t i = 0; i < vertices.size(); i += 3) {
+  for (uint64_t i = 0; i < num_vertices * 3; i += 3) {
     min_x = std::min(min_x, vertices[i]);
     max_x = std::max(max_x, vertices[i]);
 
@@ -38,29 +40,24 @@ std::vector<MeshObject> chunk_mesh(
     max_z = std::max(max_z, vertices[i+2]);
   }
 
-  uint32_t gx = static_cast<uint32_t>(((max_x - min_x) / static_cast<float>(cx)) + 0.5);
-  uint32_t gy = static_cast<uint32_t>(((max_y - min_y) / static_cast<float>(cy)) + 0.5);
-  uint32_t gz = static_cast<uint32_t>(((max_z - min_z) / static_cast<float>(cz)) + 0.5);
+  const uint32_t gx = std::max(static_cast<uint32_t>(((max_x - min_x) / cx) + 0.5), static_cast<uint32_t>(1));
+  const uint32_t gy = std::max(static_cast<uint32_t>(((max_y - min_y) / cy) + 0.5), static_cast<uint32_t>(1));
+  const uint32_t gz = std::max(static_cast<uint32_t>(((max_z - min_z) / cz) + 0.5), static_cast<uint32_t>(1));
 
-  gx = std::max(gx, 1);
-  gy = std::max(gy, 1);
-  gz = std::max(gz, 1);
+  std::vector<uint32_t> zones(num_vertices);
 
-  std::vector<uint32_t> zones(vertices.size() / 3);
-
-  for (uint64_t i = 0, j = 0; i < vertices.size(); i += 3, j++) {
-    zones[j] = (
-      static_cast<int64_t>(vertices[i] - min_x + 0.5)
-      + gx * static_cast<int64_t>(vertices[i+1] - min_y + 0.5)
-      + gx * gy * (static_cast<int64_t>(vertices[i+2] - min_z + 0.5))
-    );
+  for (uint64_t i = 0, j = 0; j < num_vertices; i += 3, j++) {
+    uint32_t ix = static_cast<uint32_t>(static_cast<int64_t>(vertices[i] - min_x + 0.5) / cx);
+    uint32_t iy = static_cast<uint32_t>(static_cast<int64_t>(vertices[i+1] - min_y + 0.5) / cy);
+    uint32_t iz = static_cast<uint32_t>(static_cast<int64_t>(vertices[i+2] - min_z + 0.5) / cz);
+    zones[j] = ix + gx * (iy + gy * iz);
   }
 
   std::vector<MeshObject> mesh_grid(gx * gy * gz);
   std::vector<robin_hood::unordered_flat_map<uint32_t, uint32_t>> 
     face_remap(gx * gy * gz);
 
-  for (uint32_t i = 0; i < zones.size(); i++) {
+  for (uint32_t i = 0; i < num_vertices; i++) {
     uint32_t zone = zones[i];
     MeshObject& obj = mesh_grid[zone];
     obj.points.push_back(vertices[i * 3 + 0]);
@@ -69,7 +66,7 @@ std::vector<MeshObject> chunk_mesh(
     face_remap[zone][i] = obj.points.size() / 3;
   }
 
-  for (uint64_t i = 0; i < faces.size(); i += 3) {
+  for (uint64_t i = 0; i < num_faces * 3; i += 3) {
     auto f1 = faces[i+0];
     auto f2 = faces[i+1];
     auto f3 = faces[i+2];
