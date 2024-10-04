@@ -41,7 +41,7 @@ setuptools.setup(
     setuptools.Extension(
       'zmesh._zmesh',
       sources=[ 'zmesh/_zmesh.pyx' ],
-      depends=[ 'cMesher.hpp' ],
+      depends=[ 'zmesh/cMesher.hpp' ],
       language='c++',
       include_dirs=include_dirs,
       extra_compile_args=extra_compile_args
