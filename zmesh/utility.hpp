@@ -60,10 +60,10 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   for (uint32_t i = 0; i < num_vertices; i++) {
     uint32_t zone = zones[i];
     MeshObject& obj = mesh_grid[zone];
-    obj.points.push_back(vertices[i * 3 + 0]);
-    obj.points.push_back(vertices[i * 3 + 1]);
-    obj.points.push_back(vertices[i * 3 + 2]);
     face_remap[zone][i] = obj.points.size() / 3;
+    obj.points.push_back(vertices[(i * 3) + 0]);
+    obj.points.push_back(vertices[(i * 3) + 1]);
+    obj.points.push_back(vertices[(i * 3) + 2]);
   }
 
   for (uint64_t i = 0; i < num_faces * 3; i += 3) {
