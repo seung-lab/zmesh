@@ -65,8 +65,8 @@ def chunk_mesh(
   chunk_size:List[float,float,float],
 ) -> List[Mesh]:
   
-  cdef cnp.ndarray[float] vertices = mesh.vertices.reshape([mesh.vertices.size], order="F")
-  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order="F")
+  cdef cnp.ndarray[float] vertices = mesh.vertices.reshape([mesh.vertices.size], order="C")
+  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order="C")
 
   cdef vector[MeshObject] objs = chunk_mesh_accelerated(
     <float*>&vertices[0], mesh.vertices.shape[0],
