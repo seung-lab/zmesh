@@ -46,10 +46,17 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
   std::vector<uint32_t> zones(num_vertices);
 
+  const float epsilon = 1e-5;
+
   for (uint64_t i = 0, j = 0; j < num_vertices; i += 3, j++) {
-    uint32_t ix = static_cast<uint32_t>(static_cast<int64_t>(vertices[i] - min_x + 0.5) / cx);
-    uint32_t iy = static_cast<uint32_t>(static_cast<int64_t>(vertices[i+1] - min_y + 0.5) / cy);
-    uint32_t iz = static_cast<uint32_t>(static_cast<int64_t>(vertices[i+2] - min_z + 0.5) / cz);
+    int ix = static_cast<int>((vertices[i] - min_x - epsilon) / cx) ;
+    int iy = static_cast<int>((vertices[i+1] - min_y - epsilon) / cy);
+    int iz = static_cast<int>((vertices[i+2] - min_z - epsilon) / cz);
+
+    ix = std::max(ix, static_cast<int>(0));
+    iy = std::max(iy, static_cast<int>(0));
+    iz = std::max(iz, static_cast<int>(0));
+
     zones[j] = ix + gx * (iy + gy * iz);
   }
 
@@ -60,7 +67,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   for (uint32_t i = 0; i < num_vertices; i++) {
     uint32_t zone = zones[i];
     MeshObject& obj = mesh_grid[zone];
-    face_remap[zone][i] = obj.points.size() / 3;
+    face_remap[zone][i] = face_remap[zone].size();
     obj.points.push_back(vertices[(i * 3) + 0]);
     obj.points.push_back(vertices[(i * 3) + 1]);
     obj.points.push_back(vertices[(i * 3) + 2]);
