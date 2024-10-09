@@ -65,8 +65,11 @@ def chunk_mesh(
   chunk_size:List[float,float,float],
 ) -> List[Mesh]:
   
-  cdef cnp.ndarray[float] vertices = mesh.vertices.reshape([mesh.vertices.size], order="C")
-  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order="C")
+  vert_order = 'C' if mesh.vertices.flags.c_contiguous else 'F'
+  face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
+
+  cdef cnp.ndarray[float] vertices = mesh.vertices.reshape([mesh.vertices.size], order=vert_order)
+  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
 
   cdef vector[MeshObject] objs = chunk_mesh_accelerated(
     <float*>&vertices[0], mesh.vertices.shape[0],
