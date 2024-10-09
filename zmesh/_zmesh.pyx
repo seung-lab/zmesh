@@ -2,7 +2,7 @@
 # distutils: language = c++
 import cython
 
-from typing import List
+from typing import List, Tuple
 
 from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 from libcpp.vector cimport vector
@@ -63,7 +63,7 @@ cdef extern from "cMesher.hpp":
 def chunk_mesh(
   mesh:Mesh,
   chunk_size:List[float,float,float],
-) -> List[Mesh]:
+) -> Dict[Tuple[int,int,int], Mesh]:
   
   vert_order = 'C' if mesh.vertices.flags.c_contiguous else 'F'
   face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
@@ -86,11 +86,21 @@ def chunk_mesh(
     faces = np.array(msh['faces'], dtype=np.uint32).reshape(Nf, 3)
     return Mesh(points, faces, None, id=mesh.id)
   
-  return [
-    m for m in
-    [ norm(obj) for obj in objs ]
-    if not m.is_empty()
-  ]
+  minpt = np.min(mesh.vertices, axis=0)
+  maxpt = np.max(mesh.vertices, axis=0)
+
+  grid_size = (((maxpt - minpt) / np.array(chunk_size)) + 0.5).astype(int)
+  grid_size = np.maximum(grid_size, [1,1,1])
+
+  chunked_meshes = {}
+  i = 0
+  for gz in range(grid_size[2]):
+    for gy in range(grid_size[1]):
+      for gx in range(grid_size[0]):
+        chunked_meshes[(gx,gy,gz)] = norm(objs[i])
+        i += 1
+
+  return chunked_meshes
   
 def _normalize_mesh(mesh, voxel_centered, physical, resolution):
   """Convert a MeshObject into a  zmesh.Mesh."""
