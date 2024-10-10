@@ -45,6 +45,9 @@ class Mesh:
       (None if self.normals is None else self.normals.shape[0])
     )
 
+  def is_empty(self):
+    return self.faces.size == 0 or self.vertices.size == 0
+
   @property
   def nbytes(self) -> int:
     nbytes = self.vertices.nbytes if self.vertices is not None else 0
