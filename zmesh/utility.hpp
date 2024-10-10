@@ -6,8 +6,6 @@
 #include <cmath>
 #include <cstdint>
 
-#include <zi/utility/robin_hood.hpp>
-
 struct MeshObject {
   std::vector<float> points;
   std::vector<float> normals;
@@ -46,28 +44,35 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
   std::vector<uint32_t> zones(num_vertices);
 
-  const float epsilon = 1e-5;
+  const float epsilon = 1e-4;
+
+  const float icx = 1 / cx;
+  const float icy = 1 / cy;
+  const float icz = 1 / cz;
 
   for (uint64_t i = 0, j = 0; j < num_vertices; i += 3, j++) {
-    int ix = static_cast<int>((vertices[i] - min_x - epsilon) / cx) ;
-    int iy = static_cast<int>((vertices[i+1] - min_y - epsilon) / cy);
-    int iz = static_cast<int>((vertices[i+2] - min_z - epsilon) / cz);
+    int ix = static_cast<int>((vertices[i] - min_x - epsilon) * icx) ;
+    int iy = static_cast<int>((vertices[i+1] - min_y - epsilon) * icy);
+    int iz = static_cast<int>((vertices[i+2] - min_z - epsilon) * icz);
 
-    ix = std::max(ix, static_cast<int>(0));
-    iy = std::max(iy, static_cast<int>(0));
-    iz = std::max(iz, static_cast<int>(0));
+    ix = std::min(std::max(ix, static_cast<int>(0)), static_cast<int>(gx - 1));
+    iy = std::min(std::max(iy, static_cast<int>(0)), static_cast<int>(gy - 1));
+    iz = std::min(std::max(iz, static_cast<int>(0)), static_cast<int>(gz - 1));
 
     zones[j] = ix + gx * (iy + gy * iz);
   }
 
   std::vector<MeshObject> mesh_grid(gx * gy * gz);
-  std::vector<robin_hood::unordered_flat_map<uint32_t, uint32_t>> 
-    face_remap(gx * gy * gz);
+  
+  std::vector<uint32_t> zonect(gx * gy * gz);
+  std::vector<uint32_t> face_remap(num_vertices);
 
   for (uint32_t i = 0; i < num_vertices; i++) {
     uint32_t zone = zones[i];
     MeshObject& obj = mesh_grid[zone];
-    face_remap[zone][i] = face_remap[zone].size();
+    face_remap[i] = zonect[zone];
+    zonect[zone]++;
+
     obj.points.push_back(vertices[(i * 3) + 0]);
     obj.points.push_back(vertices[(i * 3) + 1]);
     obj.points.push_back(vertices[(i * 3) + 2]);
@@ -84,10 +89,9 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
     auto zone = zones[f1];
     MeshObject& obj = mesh_grid[zone];
-    auto& remap = face_remap[zone];
-    obj.faces.push_back(remap[f1]);
-    obj.faces.push_back(remap[f2]);
-    obj.faces.push_back(remap[f3]);
+    obj.faces.push_back(face_remap[f1]);
+    obj.faces.push_back(face_remap[f2]);
+    obj.faces.push_back(face_remap[f3]);
   }
 
   return mesh_grid;

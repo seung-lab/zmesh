@@ -2,7 +2,7 @@
 # distutils: language = c++
 import cython
 
-from typing import List, Tuple
+from typing import List, Tuple, Sequence
 
 from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 from libcpp.vector cimport vector
@@ -62,7 +62,7 @@ cdef extern from "cMesher.hpp":
 
 def chunk_mesh(
   mesh:Mesh,
-  chunk_size:List[float,float,float],
+  chunk_size:Sequence[float],
 ) -> Dict[Tuple[int,int,int], Mesh]:
   
   vert_order = 'C' if mesh.vertices.flags.c_contiguous else 'F'
@@ -84,7 +84,10 @@ def chunk_mesh(
 
     points = points.reshape(Nv, 3)
     faces = np.array(msh['faces'], dtype=np.uint32).reshape(Nf, 3)
-    return Mesh(points, faces, None, id=mesh.id)
+    m = Mesh(points, faces, None)
+    if hasattr(msh, 'id'):
+      m.id = msh.id
+    return m
   
   minpt = np.min(mesh.vertices, axis=0)
   maxpt = np.max(mesh.vertices, axis=0)
