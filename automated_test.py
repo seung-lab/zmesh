@@ -301,4 +301,24 @@ def test_min_error_skip(reduction_factor):
     assert abs(factor - reduction_factor) < 1
 
 
+def test_chunk_shape():
+  labels = np.zeros( (10, 10, 10), dtype=np.uint32)
+  labels[1:-1, 1:-1, 1:-1] = 1
+
+  mesher = zmesh.Mesher( (1, 1, 1) )
+  mesher.mesh(labels)
+  mesh = mesher.get_mesh(1, normals=False, simplification_factor=0, max_simplification_error=100)
+
+  meshes = zmesh.chunk_mesh(
+    mesh,
+    [5.,5.,5.],
+  )
+
+  assert len(meshes) == 8
+  assert not any([
+    m.is_empty() for m in meshes.values()
+  ])
+
+
+
 
