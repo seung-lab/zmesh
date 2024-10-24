@@ -7,11 +7,7 @@
 #include <zi/mesh/quadratic_simplifier.hpp>
 #include <zi/vl/vec.hpp>
 
-struct MeshObject {
-  std::vector<float> points;
-  std::vector<float> normals;
-  std::vector<unsigned int> faces;
-};
+#include "utility.hpp" // includes MeshObject def'n
 
 template <typename PositionType, typename LabelType, typename SimplifierType>
 class CMesher {
