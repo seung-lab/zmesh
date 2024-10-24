@@ -141,7 +141,7 @@ public:
   }
 };
 
-void fix_single_outlier(
+void fix_single_outlier_6_connected(
   const float* vertices,
   const Vec3<float> minpt,
   const std::vector<uint32_t>& face_remap,
@@ -310,7 +310,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
     if (!(zones[f1] == zones[f2] && zones[f1] == zones[f3])) {
       if (zones[f1] == zones[f2]) {
-        fix_single_outlier(
+        fix_single_outlier_6_connected(
           vertices, minpt, 
           face_remap, zones, 
           mesh_grid, cs, gs,
@@ -318,7 +318,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
         );
       }
       else if (zones[f1] == zones[f3]) {
-        fix_single_outlier(
+        fix_single_outlier_6_connected(
           vertices, minpt, 
           face_remap, zones, 
           mesh_grid, cs, gs,
@@ -326,7 +326,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
         );
       }
       else if (zones[f2] == zones[f3]) {
-        fix_single_outlier(
+        fix_single_outlier_6_connected(
           vertices, minpt, 
           face_remap, zones, 
           mesh_grid, cs, gs,
