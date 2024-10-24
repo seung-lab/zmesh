@@ -74,7 +74,7 @@ public:
   bool operator==(const Vec3& other) const {
     return x == other.x && y == other.y && z == other.z;
   }
-  T& operator[](const int idx) {
+  T operator[](const int idx) const {
     if (idx == 0) {
       return x;
     }
@@ -159,7 +159,6 @@ void fix_single_outlier(
   Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
 
   auto z1 = zones[f1];
-  // auto z2 = zones[f2];
   auto z3 = zones[f3];
 
   auto zone2grid = [&](uint32_t zone) {
@@ -170,36 +169,27 @@ void fix_single_outlier(
   }; 
 
   Vec3<uint32_t> g1 = zone2grid(z1);
-  // Vec3<uint32_t> g2 = zone2grid(z2);
   Vec3<uint32_t> g3 = zone2grid(z3);
 
-  // g1.print("g1");
-  // g2.print("g2");
-  // g3.print("g3");
-
   auto delta = g3 - g1;
-  // delta.print("delta");
-  // printf("z %d %d %d f %d %d %d\n", z1, z2, z3, f1 ,f2 ,f3);
 
+  int axis = 0;
   if (delta.y != 0) {
-    return;
+    axis = 1;
   }
   else if (delta.z != 0) {
-    return;
+    axis = 2;
   }
 
-  const float plane_x = minpt.x + std::max(g1.x, g3.x) * cs.x;
-  // printf("planex %.2f\n", plane_x);
+  const float plane_offset = minpt[axis] + std::max(g1[axis], g3[axis]) * cs[axis];
+
   auto intersect_x_fn = [&](const Vec3<float> &p, const Vec3<float> &q) {
-    float t = (plane_x - p.x) / (p.x - q.x);
-    return p + (q - p) * t;
+    float t = (plane_offset - p[axis]) / (p[axis] - q[axis]);
+    return p + (p - q) * t;
   };
 
   const Vec3 i13 = intersect_x_fn(v1, v3);
   const Vec3 i23 = intersect_x_fn(v2, v3);
-
-  // i13.print("i13");
-  // i23.print("i23");
 
   MeshObject& m1 = mesh_grid[z1];
   MeshObject& m3 = mesh_grid[z3];
@@ -276,7 +266,6 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   const uint32_t gz = std::max(static_cast<uint32_t>(((max_z - min_z) / cz) + 0.5), static_cast<uint32_t>(1));
 
   const Vec3<uint32_t> gs(gx,gy,gz);
-  // gs.print("gs");
 
   std::vector<uint32_t> zones(num_vertices);
 
@@ -296,7 +285,6 @@ std::vector<MeshObject> chunk_mesh_accelerated(
     iz = std::min(std::max(iz, static_cast<int>(0)), static_cast<int>(gz - 1));
 
     zones[j] = ix + gx * (iy + gy * iz);
-    // printf("ix %d iy %d iz %d z %d vx %.2f minx %.2f j=%d\n", ix, iy, iz, zones[j], vertices[i], min_x, j);
   }
 
   std::vector<MeshObject> mesh_grid(gx * gy * gz);
@@ -321,8 +309,6 @@ std::vector<MeshObject> chunk_mesh_accelerated(
     auto f3 = faces[i+2];
 
     if (!(zones[f1] == zones[f2] && zones[f1] == zones[f3])) {
-      // printf("zones %d %d %d\n", zones[f1], zones[f2], zones[f3]);
-      // printf("vx %.2f %.2f %.2f\n", vertices[f1], vertices[f2], vertices[f3]);
       if (zones[f1] == zones[f2]) {
         fix_single_outlier(
           vertices, minpt, 
@@ -331,18 +317,22 @@ std::vector<MeshObject> chunk_mesh_accelerated(
           f1, f2, f3
         );
       }
-      // else if (zones[f1] == zones[f3]) {
-      //   fix_single_outlier(
-      //     vertices, faces, zones, mesh_grid, cs, gs, 
-      //     f1, f3, f2
-      //   );
-      // }
-      // else if (zones[f2] == zones[f3]) {
-      //   fix_single_outlier(
-      //     vertices, faces, zones, mesh_grid, cs, gs, 
-      //     f2, f3, f1
-      //   );
-      // }
+      else if (zones[f1] == zones[f3]) {
+        fix_single_outlier(
+          vertices, minpt, 
+          face_remap, zones, 
+          mesh_grid, cs, gs,
+          f1, f3, f2
+        );
+      }
+      else if (zones[f2] == zones[f3]) {
+        fix_single_outlier(
+          vertices, minpt, 
+          face_remap, zones, 
+          mesh_grid, cs, gs,
+          f2, f3, f1
+        );
+      }
       // else {
       //   // do nothing
       // }
