@@ -416,9 +416,9 @@ void fix_single_outlier_6_connected(
   const unsigned int f3 // outlier
 ) {
 
-  Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
-  Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
-  Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
+  const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
+  const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
+  const Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
 
   auto z1 = zones[f1];
   auto z3 = zones[f3];
