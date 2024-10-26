@@ -145,7 +145,7 @@ public:
   }
   void print(const std::string &name) const {
     if constexpr (std::is_same<T, float>::value) {
-      printf("%s %.7f, %.3f, %.3f\n",name.c_str(), x, y, z);  
+      printf("%s %.3f, %.3f, %.3f\n",name.c_str(), x, y, z);  
     }
     else {
       printf("%s %d, %d, %d\n",name.c_str(), x, y, z);
