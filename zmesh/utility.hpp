@@ -818,9 +818,9 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
   const Vec3 minpt(min_x, min_y, min_z);
 
-  const int32_t gx = std::max(static_cast<int32_t>(((max_x - min_x) / cx) + 0.5), static_cast<int32_t>(1));
-  const int32_t gy = std::max(static_cast<int32_t>(((max_y - min_y) / cy) + 0.5), static_cast<int32_t>(1));
-  const int32_t gz = std::max(static_cast<int32_t>(((max_z - min_z) / cz) + 0.5), static_cast<int32_t>(1));
+  const int32_t gx = std::max(static_cast<int32_t>(std::ceil((max_x - min_x) / cx)), static_cast<int32_t>(1));
+  const int32_t gy = std::max(static_cast<int32_t>(std::ceil((max_y - min_y) / cy)), static_cast<int32_t>(1));
+  const int32_t gz = std::max(static_cast<int32_t>(std::ceil((max_z - min_z) / cz)), static_cast<int32_t>(1));
 
   const Vec3<int32_t> gs(gx,gy,gz);
 
