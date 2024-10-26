@@ -205,7 +205,7 @@ void fix_all_different(
   unsigned int f3 // outlier
 ) {
 
-  printf("all different\n");
+  // printf("all different\n");
 
   Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
@@ -252,58 +252,53 @@ void fix_all_different(
 
   delta12 = (g2 - g1);
 
-  int axis12 = 0;
+  int xaxis = 0;
   if (delta12.y != 0) {
-    axis12 = 1;
+    xaxis = 1;
   }
   else if (delta12.z != 0) {
-    axis12 = 2;
+    xaxis = 2;
   }
 
   delta13 = (g3 - g1);
 
-  int axis13 = 0;
+  int yaxis = 0;
   if (delta13.y != 0) {
-    axis13 = 1;
+    yaxis = 1;
   }
   else if (delta13.z != 0) {
-    axis13 = 2;
+    yaxis = 2;
   }
 
-  float plane_offset12 = minpt.get(axis12) + std::max(g1[axis12], g2[axis12]) * cs.get(axis12);
-  float plane_offset13 = minpt.get(axis13) + std::max(g1[axis13], g2[axis13]) * cs.get(axis13);
+  float plane_offset_x = minpt.get(xaxis) + std::max(std::max(g1[xaxis], g2[xaxis]), g3[xaxis]) * cs.get(xaxis);
+  float plane_offset_y = minpt.get(yaxis) + std::max(std::max(g1[yaxis], g2[yaxis]), g3[yaxis]) * cs.get(yaxis);
 
   auto intersect_fn = [](int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
     float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
     return p + (p - q) * t;
   };
 
-  printf("axis12 %d axis13 %d\n", axis12, axis13);
+  const Vec3 i23_0 = intersect_fn(xaxis, plane_offset_x, v2, v3);
+  const Vec3 i23_1 = intersect_fn(yaxis, plane_offset_y, v2, v3);
 
-  const Vec3 i23_0 = intersect_fn(axis12, plane_offset12, v2, v3);
-  const Vec3 i23_1 = intersect_fn(axis13, plane_offset13, v2, v3);
-
-  // Vec3 corner = i23_0;
-  // corner[axis12] = plane_offset12;
-  // corner[axis13] = plane_offset13;
-  Vec3 corner(
-    minpt.x + std::max(std::max(g1.x, g2.x), g3.x) * cs.x,
-    minpt.y + std::max(std::max(g1.y, g2.y), g3.y) * cs.y,
-    minpt.z + std::max(std::max(g1.z, g2.z), g3.z) * cs.z
-  );
+  Vec3 corner = i23_0;
+  corner[xaxis] = plane_offset_x;
+  corner[yaxis] = plane_offset_y;
 
   MeshObject& m1 = mesh_grid[z1];
   MeshObject& m2 = mesh_grid[z2];
   MeshObject& m3 = mesh_grid[z3];
-  // MeshObject& m4 = mesh_grid[...];
+    
+  auto g4 = g1;
+  g4[xaxis] += delta12[xaxis];
+  g4[yaxis] += delta13[yaxis];
 
-  const Vec3 i13 = intersect_fn(axis13, plane_offset13, v1, v3);
-  const Vec3 i12 = intersect_fn(axis12, plane_offset12, v1, v2);
+  auto z4 = g4.x + gs.x * (g4.y + gs.y * g4.z);
 
-  unsigned int m3i13 = 0;
-  unsigned int m3i23_0 = 0;
-  unsigned int m3i23_1 = 0;
-  unsigned int m3corner = 0;
+  MeshObject& m4 = mesh_grid[z4];
+
+  const Vec3 i13 = intersect_fn(yaxis, plane_offset_y, v1, v3);
+  const Vec3 i12 = intersect_fn(xaxis, plane_offset_x, v1, v2);
 
   unsigned int m1i12 = 0;
   unsigned int m1i13 = 0;
@@ -316,16 +311,16 @@ void fix_all_different(
   unsigned int m2i23_1 = 0;
   unsigned int m2corner = 0;
 
-  // v1.print("v1");
-  // v2.print("v2");
-  // v3.print("v3");
-  // i13.print("i13");
-  // i23_0.print("i23_0");
-  // i23_1.print("i23_1");
+  unsigned int m3i13 = 0;
+  unsigned int m3i23_0 = 0;
+  unsigned int m3i23_1 = 0;
+  unsigned int m3corner = 0;
+
+  unsigned int m4corner = 0;
+  unsigned int m4i23_0 = 0;
+  unsigned int m4i23_1 = 0;
 
   if (i23_0.close(i23_1)) {
-    printf("close!\n");
-
     m1.add_point(corner);
     m1corner = m1.last_face();
 
@@ -354,70 +349,80 @@ void fix_all_different(
 
     m3.add_triangle(face_remap[f3], m3corner, m3i13);
   }
-  // else if (i23_0.get(axis12) <= plane_offset13) {
-  //   printf("under\n");
-  //   // 5 triangle situation
+  else if (
+    (v3.get(yaxis) > plane_offset_y && i23_0.get(yaxis) <= plane_offset_y)
+    || (v3.get(yaxis) < plane_offset_y && i23_0.get(yaxis) >= plane_offset_y)
+  ) {
+    // 5 triangle situation
 
-  //   m3.add_point(i13);
-  //   m3i13 = m3.last_face();
-  //   m3.add_point(i23_1);
-  //   m3i23_1 = m3.last_face();
-  //   m3.add_triangle(face_remap[f3], m3i13, m3i23_1);
+    m3.add_point(i13);
+    m3i13 = m3.last_face();
+    m3.add_point(i23_1);
+    m3i23_1 = m3.last_face();
+    m3.add_triangle(face_remap[f3], m3i13, m3i23_1);
 
-  //   m1.add_point(i13);
-  //   m1i13 = m1.last_face();
-  //   m1.add_point(i23_1);
-  //   m1i23_1 = m1.last_face();
-  //   m1.add_point(i23_0);
-  //   m1i23_0 = m1.last_face();
-  //   m1.add_point(i12);
-  //   m1i12 = m1.last_face();
+    m1.add_point(i13);
+    m1i13 = m1.last_face();
+    m1.add_point(i23_1);
+    m1i23_1 = m1.last_face();
+    m1.add_point(i23_0);
+    m1i23_0 = m1.last_face();
+    m1.add_point(i12);
+    m1i12 = m1.last_face();
 
-  //   m1.add_triangle(face_remap[f1], m1i13, m1i23_1);
-  //   m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
-  //   m1.add_triangle(face_remap[f1], m1i23_0, m1i12);
+    m1.add_triangle(face_remap[f1], m1i13, m1i23_1);
+    m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
+    m1.add_triangle(face_remap[f1], m1i23_0, m1i12);
 
-  //   m2.add_point(i23_0);
-  //   m2i23_0 = m2.last_face();
-  //   m2.add_point(i12);
-  //   m2i12 = m2.last_face();
+    m2.add_point(i23_0);
+    m2i23_0 = m2.last_face();
+    m2.add_point(i12);
+    m2i12 = m2.last_face();
 
-  //   m2.add_triangle(face_remap[f2], m2i23_0, m2i12);
-  // }
-  // else {
-  //   printf("over\n");
-  //   m3.add_point(corner);
-  //   m3corner = m3.last_face();
-  //   m3.add_point(i13);
-  //   m3i13 = m3.last_face();
-  //   m3.add_point(i23_0);
-  //   m3i23_0 = m3.last_face();
+    m2.add_triangle(face_remap[f2], m2i23_0, m2i12);
+  }
+  else {
+    m3.add_point(corner);
+    m3corner = m3.last_face();
+    m3.add_point(i13);
+    m3i13 = m3.last_face();
+    m3.add_point(i23_0);
+    m3i23_0 = m3.last_face();
 
-  //   m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
-  //   m3.add_triangle(face_remap[f3], m3corner, m3i13);
+    m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
+    m3.add_triangle(m3corner, face_remap[f3], m3i13);
 
-  //   // m4 single triangle
+    m1.add_point(i13);
+    m1i13 = m1.last_face();
+    m1.add_point(corner);
+    m1corner = m1.last_face();
+    m1.add_point(i12);
+    m1i12 = m1.last_face();
 
-  //   m1.add_point(i13);
-  //   m1i13 = m1.last_face();
-  //   m1.add_point(corner);
-  //   m1corner = m1.last_face();
-  //   m1.add_point(i12);
-  //   m1i12 = m1.last_face();
+    m1.add_triangle(face_remap[f1], m1i13, m1corner);
+    m1.add_triangle(face_remap[f1], m1corner, m1i12);
 
-  //   m1.add_triangle(face_remap[f1], m1i13, m1corner);
-  //   m1.add_triangle(face_remap[f1], m1corner, m1i12);
+    m2.add_point(i23_1);
+    m2i23_1 = m2.last_face();
+    m2.add_point(corner);
+    m2corner = m2.last_face();
+    m2.add_point(i12);
+    m2i12 = m2.last_face();
 
-  //   m2.add_point(i23_1);
-  //   m2i23_1 = m2.last_face();
-  //   m2.add_point(corner);
-  //   m2corner = m2.last_face();
-  //   m2.add_point(i12);
-  //   m2i12 = m2.last_face();
+    m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
+    m2.add_triangle(face_remap[f2], m2corner, m2i12);
 
-  //   m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
-  //   m2.add_triangle(face_remap[f2], m2corner, m2i12);
-  // }
+    m4.add_point(corner);
+    m4corner = m4.last_face();
+
+    m4.add_point(i23_0);
+    m4i23_0 = m4.last_face();
+
+    m4.add_point(i23_1);
+    m4i23_1 = m4.last_face();
+
+    m4.add_triangle(m4corner, m4i23_0, m4i23_1);
+  }
 }
 
 void fix_single_outlier_26_connected(
