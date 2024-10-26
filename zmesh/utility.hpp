@@ -270,6 +270,10 @@ void fix_all_different(
     yaxis = 2;
   }
 
+  if (xaxis == yaxis) {
+    throw std::runtime_error("xaxis should not equal yaxis.");
+  }
+
   float plane_offset_x = minpt.get(xaxis) + std::max(std::max(g1[xaxis], g2[xaxis]), g3[xaxis]) * cs.get(xaxis);
   float plane_offset_y = minpt.get(yaxis) + std::max(std::max(g1[yaxis], g2[yaxis]), g3[yaxis]) * cs.get(yaxis);
 
