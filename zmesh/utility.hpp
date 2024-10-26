@@ -205,6 +205,8 @@ void fix_all_different(
   unsigned int f3 // outlier
 ) {
 
+  printf("all different\n");
+
   Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
   Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
@@ -261,10 +263,10 @@ void fix_all_different(
   delta13 = (g3 - g1);
 
   int axis13 = 0;
-  if (delta12.y != 0) {
+  if (delta13.y != 0) {
     axis13 = 1;
   }
-  else if (delta12.z != 0) {
+  else if (delta13.z != 0) {
     axis13 = 2;
   }
 
@@ -276,18 +278,24 @@ void fix_all_different(
     return p + (p - q) * t;
   };
 
+  printf("axis12 %d axis13 %d\n", axis12, axis13);
+
   const Vec3 i23_0 = intersect_fn(axis12, plane_offset12, v2, v3);
   const Vec3 i23_1 = intersect_fn(axis13, plane_offset13, v2, v3);
 
-  Vec3 corner = i23_0;
-  corner[axis12] = plane_offset12;
-  corner[axis13] = plane_offset13;
+  // Vec3 corner = i23_0;
+  // corner[axis12] = plane_offset12;
+  // corner[axis13] = plane_offset13;
+  Vec3 corner(
+    minpt.x + std::max(std::max(g1.x, g2.x), g3.x) * cs.x,
+    minpt.y + std::max(std::max(g1.y, g2.y), g3.y) * cs.y,
+    minpt.z + std::max(std::max(g1.z, g2.z), g3.z) * cs.z
+  );
 
   MeshObject& m1 = mesh_grid[z1];
   MeshObject& m2 = mesh_grid[z2];
   MeshObject& m3 = mesh_grid[z3];
   // MeshObject& m4 = mesh_grid[...];
-
 
   const Vec3 i13 = intersect_fn(axis13, plane_offset13, v1, v3);
   const Vec3 i12 = intersect_fn(axis12, plane_offset12, v1, v2);
@@ -308,68 +316,108 @@ void fix_all_different(
   unsigned int m2i23_1 = 0;
   unsigned int m2corner = 0;
 
-  if (i23_0.get(axis12) <= plane_offset13) {
-    // 5 triangle situation
+  // v1.print("v1");
+  // v2.print("v2");
+  // v3.print("v3");
+  // i13.print("i13");
+  // i23_0.print("i23_0");
+  // i23_1.print("i23_1");
 
-    m3.add_point(i13);
-    m3i13 = m3.last_face();
-    m3.add_point(i23_1);
-    m3i23_1 = m3.last_face();
-    m3.add_triangle(face_remap[f3], m3i13, m3i23_1);
+  if (i23_0.close(i23_1)) {
+    printf("close!\n");
 
-    m1.add_point(i13);
-    m1i13 = m1.last_face();
-    m1.add_point(i23_1);
-    m1i23_1 = m1.last_face();
-    m1.add_point(i23_0);
-    m1i23_0 = m1.last_face();
-    m1.add_point(i12);
-    m1i12 = m1.last_face();
-
-    m1.add_triangle(face_remap[f1], m1i13, m1i23_1);
-    m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
-    m1.add_triangle(face_remap[f1], m1i23_0, m1i12);
-
-    m2.add_point(i23_0);
-    m2i23_0 = m2.last_face();
-    m2.add_point(i12);
-    m2i12 = m2.last_face();
-
-    m2.add_triangle(face_remap[f2], m2i23_0, m2i12);
-  }
-  else {
-    m3.add_point(corner);
-    m3corner = m3.last_face();
-    m3.add_point(i13);
-    m3i13 = m3.last_face();
-    m3.add_point(i23_0);
-    m3i23_0 = m3.last_face();
-
-    m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
-    m3.add_triangle(face_remap[f3], m3corner, m3i13);
-
-    // m4 single triangle
-
-    m1.add_point(i13);
-    m1i13 = m1.last_face();
     m1.add_point(corner);
     m1corner = m1.last_face();
+
+    m1.add_point(i13);
+    m1i13 = m1.last_face();
+
     m1.add_point(i12);
     m1i12 = m1.last_face();
 
-    m1.add_triangle(face_remap[f1], m1i13, m1corner);
-    m1.add_triangle(face_remap[f1], m1corner, m1i12);
+    m1.add_triangle(m1i12, face_remap[f1], m1corner);
+    m1.add_triangle(m1corner, face_remap[f1], m1i13);
 
-    m2.add_point(i23_1);
-    m2i23_1 = m2.last_face();
-    m2.add_point(corner);
-    m2corner = m2.last_face();
     m2.add_point(i12);
     m2i12 = m2.last_face();
 
-    m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
-    m2.add_triangle(face_remap[f2], m2corner, m2i12);
+    m2.add_point(corner);
+    m2corner = m2.last_face();
+
+    m2.add_triangle(face_remap[f2], m2i12, m2corner);
+
+    m3.add_point(corner);
+    m3corner = m3.last_face();
+
+    m3.add_point(i13);
+    m3i13 = m3.last_face();
+
+    m3.add_triangle(face_remap[f3], m3corner, m3i13);
   }
+  // else if (i23_0.get(axis12) <= plane_offset13) {
+  //   printf("under\n");
+  //   // 5 triangle situation
+
+  //   m3.add_point(i13);
+  //   m3i13 = m3.last_face();
+  //   m3.add_point(i23_1);
+  //   m3i23_1 = m3.last_face();
+  //   m3.add_triangle(face_remap[f3], m3i13, m3i23_1);
+
+  //   m1.add_point(i13);
+  //   m1i13 = m1.last_face();
+  //   m1.add_point(i23_1);
+  //   m1i23_1 = m1.last_face();
+  //   m1.add_point(i23_0);
+  //   m1i23_0 = m1.last_face();
+  //   m1.add_point(i12);
+  //   m1i12 = m1.last_face();
+
+  //   m1.add_triangle(face_remap[f1], m1i13, m1i23_1);
+  //   m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
+  //   m1.add_triangle(face_remap[f1], m1i23_0, m1i12);
+
+  //   m2.add_point(i23_0);
+  //   m2i23_0 = m2.last_face();
+  //   m2.add_point(i12);
+  //   m2i12 = m2.last_face();
+
+  //   m2.add_triangle(face_remap[f2], m2i23_0, m2i12);
+  // }
+  // else {
+  //   printf("over\n");
+  //   m3.add_point(corner);
+  //   m3corner = m3.last_face();
+  //   m3.add_point(i13);
+  //   m3i13 = m3.last_face();
+  //   m3.add_point(i23_0);
+  //   m3i23_0 = m3.last_face();
+
+  //   m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
+  //   m3.add_triangle(face_remap[f3], m3corner, m3i13);
+
+  //   // m4 single triangle
+
+  //   m1.add_point(i13);
+  //   m1i13 = m1.last_face();
+  //   m1.add_point(corner);
+  //   m1corner = m1.last_face();
+  //   m1.add_point(i12);
+  //   m1i12 = m1.last_face();
+
+  //   m1.add_triangle(face_remap[f1], m1i13, m1corner);
+  //   m1.add_triangle(face_remap[f1], m1corner, m1i12);
+
+  //   m2.add_point(i23_1);
+  //   m2i23_1 = m2.last_face();
+  //   m2.add_point(corner);
+  //   m2corner = m2.last_face();
+  //   m2.add_point(i12);
+  //   m2i12 = m2.last_face();
+
+  //   m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
+  //   m2.add_triangle(face_remap[f2], m2corner, m2i12);
+  // }
 }
 
 void fix_single_outlier_26_connected(
@@ -400,6 +448,8 @@ void fix_single_outlier_18_connected(
   const unsigned int f2,
   const unsigned int f3 // outlier
 ) {
+
+  printf("18 connected\n");
 
   const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
@@ -833,12 +883,12 @@ std::vector<MeshObject> chunk_mesh_accelerated(
         );
       }
       else {
-        // fix_all_different(
-        //   vertices, minpt, 
-        //   face_remap, zones, 
-        //   mesh_grid, cs, gs,
-        //   f1, f2, f3
-        // );
+        fix_all_different(
+          vertices, minpt, 
+          face_remap, zones, 
+          mesh_grid, cs, gs,
+          f1, f2, f3
+        );
       }
 
       continue;
