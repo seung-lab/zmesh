@@ -454,7 +454,7 @@ void fix_single_outlier_18_connected(
   const unsigned int f3 // outlier
 ) {
 
-  printf("18 connected\n");
+  // printf("18 connected\n");
 
   const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
@@ -496,16 +496,15 @@ void fix_single_outlier_18_connected(
     return p + (p - q) * t;
   };
 
-  const Vec3 corner(
-    minpt.x + std::max(g1.x, g3.x) * cs.x,
-    minpt.y + std::max(g1.y, g3.y) * cs.y,
-    minpt.z + std::max(g1.z, g3.z) * cs.z
-  );
   const Vec3 i13x = intersect_fn(xaxis, plane_offset_x, v1, v3);
   const Vec3 i23x = intersect_fn(xaxis, plane_offset_x, v2, v3);
 
   const Vec3 i13y = intersect_fn(yaxis, plane_offset_y, v1, v3);
   const Vec3 i23y = intersect_fn(yaxis, plane_offset_y, v2, v3);
+
+  Vec3 corner = i13x;
+  corner[xaxis] = plane_offset_x;
+  corner[yaxis] = plane_offset_y;
 
   // three cases, if both points are to one side of the corner (left and right)
   // or if they straddle the corner
