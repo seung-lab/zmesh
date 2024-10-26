@@ -400,7 +400,215 @@ void fix_single_outlier_18_connected(
   const unsigned int f2,
   const unsigned int f3 // outlier
 ) {
-  printf("single outlier 18 connected not implemented!\n");
+
+  const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
+  const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
+  const Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
+
+  auto z1 = zones[f1];
+  auto z3 = zones[f3];
+
+  Vec3<int32_t> g1 = zone2grid(z1, gs);
+  Vec3<int32_t> g3 = zone2grid(z3, gs);
+
+  Vec3<int32_t> delta = g3 - g1;
+
+  if (delta.abs().max() > 1) {
+    throw std::runtime_error("This code only handles differences of a single grid space.");
+  }
+
+  int xaxis = 0;
+  int yaxis = 1;
+
+  if (delta.x) {
+    if (delta.z) {
+      yaxis = 2;
+    }
+  }
+  else if (delta.y) {
+    xaxis = 1;
+    yaxis = 2;
+  }
+  else {
+    throw std::runtime_error("18: Should never happen.");
+  }
+
+  float plane_offset_x = minpt.get(xaxis) + std::max(g1[xaxis], g3[xaxis]) * cs.get(xaxis);
+  float plane_offset_y = minpt.get(yaxis) + std::max(g1[yaxis], g3[yaxis]) * cs.get(yaxis);
+
+  auto intersect_fn = [](int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
+    float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
+    return p + (p - q) * t;
+  };
+
+  const Vec3 corner(
+    minpt.x + std::max(g1.x, g3.x) * cs.x,
+    minpt.y + std::max(g1.y, g3.y) * cs.y,
+    minpt.z + std::max(g1.z, g3.z) * cs.z
+  );
+  const Vec3 i13x = intersect_fn(xaxis, plane_offset_x, v1, v3);
+  const Vec3 i23x = intersect_fn(xaxis, plane_offset_x, v2, v3);
+
+  const Vec3 i13y = intersect_fn(yaxis, plane_offset_y, v1, v3);
+  const Vec3 i23y = intersect_fn(yaxis, plane_offset_y, v2, v3);
+
+  // three cases, if both points are to one side of the corner (left and right)
+  // or if they straddle the corner
+
+  // m1,m3 meshes corresponding to original vertices
+  // m4,m5 meshes corresponding to adjacent zones
+
+  MeshObject& m1 = mesh_grid[z1];
+  MeshObject& m3 = mesh_grid[z3];
+
+  Vec3 g4 = g1;
+  g4[xaxis] += delta[xaxis];
+
+  Vec3 g5 = g1;
+  g5[yaxis] += delta[yaxis];
+
+  auto z4 = g4.x + gs.x * (g4.y + gs.y * g4.z);
+  auto z5 = g5.x + gs.x * (g5.y + gs.y * g5.z);
+
+  MeshObject& m4 = mesh_grid[z4];
+  MeshObject& m5 = mesh_grid[z5];
+
+  unsigned int m1i13x = 0;
+  unsigned int m1i23x = 0;
+  unsigned int m1i13y = 0;
+  unsigned int m1i23y = 0;
+  unsigned int m1corner = 0;
+
+  unsigned int m3i13x = 0;
+  unsigned int m3i23x = 0;
+  unsigned int m3i13y = 0;
+  unsigned int m3i23y = 0;
+  unsigned int m3corner = 0;
+
+  unsigned int m4i13x = 0;
+  unsigned int m4i23x = 0;
+  unsigned int m4i13y = 0;
+  unsigned int m4i23y = 0;
+  unsigned int m4corner = 0;
+
+  unsigned int m5i13x = 0;
+  unsigned int m5i23x = 0;
+  unsigned int m5i13y = 0;
+  unsigned int m5i23y = 0;
+  unsigned int m5corner = 0;
+  
+  if (i13x.get(xaxis) < corner.get(xaxis) && i23x.get(xaxis) < corner.get(xaxis)) {
+    m1.add_point(i13x);
+    m1i13x = m1.last_face();
+    m1.add_point(i23x);
+    m1i23x = m1.last_face();
+
+    m1.add_triangle(face_remap[f1], m1i13x, m1i23x);
+    m1.add_triangle(face_remap[f1], face_remap[f2], m1i23x);
+
+    m4.add_point(i13x);
+    m4i13x = m4.last_face();
+
+    m4.add_point(i23x);
+    m4i23x = m4.last_face();
+
+    m4.add_point(i13y);
+    m4i13y = m4.last_face();
+
+    m4.add_point(i23y);
+    m4i23y = m4.last_face();
+
+    m4.add_triangle(m4i13x, m4i13y, m4i23y);
+    m4.add_triangle(m4i13x, m4i23x, m4i23y);
+
+    m3.add_point(i13y);
+    m3i13y = m3.last_face();
+
+    m3.add_point(i23y);
+    m3i23y = m3.last_face();
+
+    m3.add_triangle(face_remap[f3], m3i13y, m3i23y);
+  }
+  else if (i13x.get(xaxis) > corner.get(xaxis) && i23x.get(xaxis) > corner.get(xaxis)) {
+    m1.add_point(i13y);
+    m1i13y = m1.last_face();
+    m1.add_point(i23y);
+    m1i23y = m1.last_face();
+
+    m1.add_triangle(face_remap[f1], m1i13y, m1i23y);
+    m1.add_triangle(face_remap[f1], face_remap[f2], m1i23y);
+
+    m5.add_point(i13x);
+    m5i13x = m5.last_face();
+
+    m5.add_point(i23x);
+    m5i23x = m5.last_face();
+
+    m5.add_point(i13y);
+    m5i13y = m5.last_face();
+
+    m5.add_point(i23y);
+    m5i23y = m5.last_face();
+
+    m5.add_triangle(m5i13y, m5i13x, m5i23y);
+    m5.add_triangle(m5i23y, m5i13x, m5i23x);
+
+    m3.add_point(i13x);
+    m3i13x = m3.last_face();
+
+    m3.add_point(i23x);
+    m3i23x = m3.last_face();
+
+    m3.add_triangle(face_remap[f3], m3i13x, m3i23x);
+  }
+  else {
+    m1.add_point(i13x);
+    m1i13x = m1.last_face();
+
+    m1.add_point(corner);
+    m1corner = m1.last_face();
+
+    m1.add_point(i23y);
+    m1i23y = m1.last_face();
+
+    m1.add_triangle(face_remap[f1], m1i13x, face_remap[f2]);
+    m1.add_triangle(face_remap[f2], m1i13x, m1i23y);
+    m1.add_triangle(m1i23y, m1i13x, m1corner);
+
+    m4.add_point(i13x);
+    m4i13x = m4.last_face();
+
+    m4.add_point(i13y);
+    m4i13y = m4.last_face();
+
+    m4.add_point(corner);
+    m4corner = m4.last_face();
+
+    m4.add_triangle(m4i13x, m4i13y, m4corner);
+
+    m5.add_point(i23y);
+    m5i23y = m5.last_face();
+
+    m5.add_point(corner);
+    m5corner = m5.last_face();
+
+    m5.add_point(i23x);
+    m5i23x = m5.last_face();
+
+    m5.add_triangle(m5i23y, m5corner, m5i23x);
+
+    m3.add_point(i13x);
+    m3i13x = m3.last_face();
+
+    m3.add_point(corner);
+    m3corner = m3.last_face();
+
+    m3.add_point(i23x);
+    m3i23x = m3.last_face();
+
+    m3.add_triangle(m3i13x, face_remap[f3], m3corner);
+    m3.add_triangle(m3corner, face_remap[f3], m3i23y);
+  }
 }
 
 void fix_single_outlier_6_connected(
