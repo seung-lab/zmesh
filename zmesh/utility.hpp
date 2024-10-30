@@ -204,9 +204,6 @@ void fix_all_different(
   unsigned int f2,
   unsigned int f3 // outlier
 ) {
-
-  // printf("all different\n");
-
   Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
   Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
@@ -227,13 +224,11 @@ void fix_all_different(
     throw std::runtime_error("This code only handles differences of a single 26-connected grid space.");
   }
 
-  if (delta12.num_non_zero_dims() == 3 
-    || delta13.num_non_zero_dims() == 3 
-    || delta23.num_non_zero_dims() == 3) {
+  Vec3<int32_t> is3d = delta12.abs() + delta23.abs() + delta13.abs();
 
-    throw std::runtime_error("3d all different not supported yet.");
+  if (is3d.num_non_zero_dims() == 3) {
+    return;
   }
-
 
   // rearrange vertices so that vertex 1 is in the single 
   // zone difference position for both 2 and 3
@@ -263,7 +258,7 @@ void fix_all_different(
   delta13 = (g3 - g1);
 
   int yaxis = 0;
-  if (delta13.y != 0) {
+  if (delta13.y != 0 && xaxis != 1) {
     yaxis = 1;
   }
   else if (delta13.z != 0) {
@@ -358,7 +353,6 @@ void fix_all_different(
     || (v3.get(yaxis) < plane_offset_y && i23_0.get(yaxis) >= plane_offset_y)
   ) {
     // 5 triangle situation
-
     m3.add_point(i13);
     m3i13 = m3.last_face();
     m3.add_point(i23_1);
@@ -457,8 +451,6 @@ void fix_single_outlier_18_connected(
   const unsigned int f2,
   const unsigned int f3 // outlier
 ) {
-
-  // printf("18 connected\n");
 
   const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
@@ -755,6 +747,7 @@ void fix_single_outlier(
 ) {
 
   auto z1 = zones[f1];
+  auto z2 = zones[f2];
   auto z3 = zones[f3];
 
   Vec3<int32_t> g1 = zone2grid(z1, gs);
@@ -785,6 +778,9 @@ void fix_single_outlier(
       mesh_grid, cs, gs,
       f1, f2, f3
     );
+  }
+  else {
+    throw std::runtime_error("Non-zero delta was not 1,2, or 3.");
   }
 }
 
