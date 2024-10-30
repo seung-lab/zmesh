@@ -826,16 +826,14 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
   std::vector<int32_t> zones(num_vertices);
 
-  const float epsilon = 1e-4;
-
   const float icx = 1 / cx;
   const float icy = 1 / cy;
   const float icz = 1 / cz;
 
   for (uint64_t i = 0, j = 0; j < num_vertices; i += 3, j++) {
-    int ix = static_cast<int>((vertices[i] - min_x - epsilon) * icx) ;
-    int iy = static_cast<int>((vertices[i+1] - min_y - epsilon) * icy);
-    int iz = static_cast<int>((vertices[i+2] - min_z - epsilon) * icz);
+    int ix = static_cast<int>((vertices[i] - min_x) * icx) ;
+    int iy = static_cast<int>((vertices[i+1] - min_y) * icy);
+    int iz = static_cast<int>((vertices[i+2] - min_z) * icz);
 
     ix = std::min(std::max(ix, static_cast<int>(0)), static_cast<int>(gx - 1));
     iy = std::min(std::max(iy, static_cast<int>(0)), static_cast<int>(gy - 1));
