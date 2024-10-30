@@ -192,6 +192,11 @@ Vec3<int32_t> zone2grid(int32_t zone, const Vec3<int32_t>& gs) {
     return Vec3<int32_t>(x,y,z);
 }
 
+Vec3<float> intersect(int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
+  float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
+  return p + (p - q) * t;
+}
+
 void fix_all_different(
   const float* vertices,
   const Vec3<float> minpt,
@@ -272,13 +277,8 @@ void fix_all_different(
   float plane_offset_x = minpt.get(xaxis) + std::max(std::max(g1[xaxis], g2[xaxis]), g3[xaxis]) * cs.get(xaxis);
   float plane_offset_y = minpt.get(yaxis) + std::max(std::max(g1[yaxis], g2[yaxis]), g3[yaxis]) * cs.get(yaxis);
 
-  auto intersect_fn = [](int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
-    float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
-    return p + (p - q) * t;
-  };
-
-  const Vec3 i23_0 = intersect_fn(xaxis, plane_offset_x, v2, v3);
-  const Vec3 i23_1 = intersect_fn(yaxis, plane_offset_y, v2, v3);
+  const Vec3 i23_0 = intersect(xaxis, plane_offset_x, v2, v3);
+  const Vec3 i23_1 = intersect(yaxis, plane_offset_y, v2, v3);
 
   Vec3 corner = i23_0;
   corner[xaxis] = plane_offset_x;
@@ -296,8 +296,8 @@ void fix_all_different(
 
   MeshObject& m4 = mesh_grid[z4];
 
-  const Vec3 i13 = intersect_fn(yaxis, plane_offset_y, v1, v3);
-  const Vec3 i12 = intersect_fn(xaxis, plane_offset_x, v1, v2);
+  const Vec3 i13 = intersect(yaxis, plane_offset_y, v1, v3);
+  const Vec3 i12 = intersect(xaxis, plane_offset_x, v1, v2);
 
   unsigned int m1i12 = 0;
   unsigned int m1i13 = 0;
@@ -487,16 +487,11 @@ void fix_single_outlier_18_connected(
   float plane_offset_x = minpt.get(xaxis) + std::max(g1[xaxis], g3[xaxis]) * cs.get(xaxis);
   float plane_offset_y = minpt.get(yaxis) + std::max(g1[yaxis], g3[yaxis]) * cs.get(yaxis);
 
-  auto intersect_fn = [](int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
-    float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
-    return p + (p - q) * t;
-  };
+  const Vec3 i13x = intersect(xaxis, plane_offset_x, v1, v3);
+  const Vec3 i23x = intersect(xaxis, plane_offset_x, v2, v3);
 
-  const Vec3 i13x = intersect_fn(xaxis, plane_offset_x, v1, v3);
-  const Vec3 i23x = intersect_fn(xaxis, plane_offset_x, v2, v3);
-
-  const Vec3 i13y = intersect_fn(yaxis, plane_offset_y, v1, v3);
-  const Vec3 i23y = intersect_fn(yaxis, plane_offset_y, v2, v3);
+  const Vec3 i13y = intersect(yaxis, plane_offset_y, v1, v3);
+  const Vec3 i23y = intersect(yaxis, plane_offset_y, v2, v3);
 
   Vec3 corner = i13x;
   corner[xaxis] = plane_offset_x;
@@ -700,13 +695,8 @@ void fix_single_outlier_6_connected(
 
   const float plane_offset = minpt.get(axis) + std::max(g1[axis], g3[axis]) * cs.get(axis);
 
-  auto intersect_fn = [&](const Vec3<float> &p, const Vec3<float> &q) {
-    float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
-    return p + (p - q) * t;
-  };
-
-  const Vec3 i13 = intersect_fn(v1, v3);
-  const Vec3 i23 = intersect_fn(v2, v3);
+  const Vec3 i13 = intersect(axis, plane_offset, v1, v3);
+  const Vec3 i23 = intersect(axis, plane_offset, v2, v3);
 
   MeshObject& m1 = mesh_grid[z1];
   MeshObject& m3 = mesh_grid[z3];
