@@ -271,7 +271,7 @@ end_header
     render_window_interactor.SetRenderWindow(render_window)
 
     render_window.SetSize(1024, 1024)
-
+      
     renderer.AddActor(actor)
     renderer.SetBackground(0.1, 0.2, 0.3)  # Background color
 
