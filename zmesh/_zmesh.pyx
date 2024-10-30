@@ -26,7 +26,7 @@ cdef extern from "utility.hpp":
     float* vertices, uint64_t num_vertices,
     unsigned int* faces, uint64_t num_faces,
     float cx, float cy, float cz
-  )
+  ) except +
 
 cdef extern from "cMesher.hpp":
   cdef cppclass CMesher[P,L,S]:
