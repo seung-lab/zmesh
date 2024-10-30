@@ -72,6 +72,43 @@ class Mesh:
     return tris
 
   @classmethod
+  def concatenate(cls, *meshes, id=None):
+    vertex_ct = np.zeros(len(meshes) + 1, np.uint32)
+    vertex_ct[1:] = np.cumsum([ len(mesh) for mesh in meshes ])
+
+    vertices = np.concatenate([ mesh.vertices for mesh in meshes ])
+    
+    faces = np.concatenate([ 
+      mesh.faces + vertex_ct[i] for i, mesh in enumerate(meshes) 
+    ])
+
+    # normals = np.concatenate([ mesh.normals for mesh in meshes ])
+
+    return Mesh(vertices, faces, None, id=id)
+
+  def consolidate(self):
+    """Remove duplicate vertices and faces. Returns a new mesh object."""
+    if self.empty():
+      return Mesh([], [], normals=None)
+
+    vertices = self.vertices
+    faces = self.faces
+    normals = self.normals
+
+    eff_verts, uniq_idx, idx_representative = np.unique(
+      vertices, axis=0, return_index=True, return_inverse=True
+    )
+
+    face_vector_map = np.vectorize(lambda x: idx_representative[x])
+    eff_faces = face_vector_map(faces)
+    eff_faces = np.unique(eff_faces, axis=0)
+
+    # normal_vector_map = np.vectorize(lambda idx: normals[idx])
+    # eff_normals = normal_vector_map(uniq_idx)
+
+    return Mesh(eff_verts, eff_faces, None, id=self.id)
+
+  @classmethod
   def from_precomputed(self, binary):
     """
     Mesh from_precomputed(self, binary)
