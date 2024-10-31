@@ -153,6 +153,12 @@ public:
   }
 };
 
+struct Triangle {
+    Vec3<float> v1, v2, v3;
+
+    Triangle(const Vec3<float>& v1, const Vec3<float>& v2, const Vec3<float>& v3) : v1(v1), v2(v2), v3(v3) {} 
+};
+
 struct MeshObject {
   std::vector<float> points;
   std::vector<float> normals;
@@ -180,6 +186,26 @@ struct MeshObject {
     faces.push_back(face.z);
   }
 
+  void add_triangle(const Triangle& tri) {
+    unsigned int i = last_face();
+
+    points.push_back(tri.v1.x);
+    points.push_back(tri.v1.y);
+    points.push_back(tri.v1.z);
+
+    points.push_back(tri.v2.x);
+    points.push_back(tri.v2.y);
+    points.push_back(tri.v2.z);
+
+    points.push_back(tri.v3.x);
+    points.push_back(tri.v3.y);
+    points.push_back(tri.v3.z);
+
+    faces.push_back(i + 1);
+    faces.push_back(i + 2);
+    faces.push_back(i + 3);
+  }
+
   unsigned int last_face() const {
     return (points.size() - 1) / 3;
   }
@@ -195,6 +221,140 @@ Vec3<int32_t> zone2grid(int32_t zone, const Vec3<int32_t>& gs) {
 Vec3<float> intersect(int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
   float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
   return p + (p - q) * t;
+}
+
+std::vector<Triangle> divideTriangle(
+  const int axis,
+  const float plane_value,
+  const Vec3<float>& v1,
+  const Vec3<float>& v2,
+  const Vec3<float>& v3
+) {
+    Vec3<float> aboveVertices[3] = {v1, v2, v3};
+    Vec3<float> belowVertices[3] = {v1, v2, v3};
+    int aboveCount = 0, belowCount = 0;
+
+    for (const auto& vertex : {v1, v2, v3}) {
+        if (vertex.get(axis) > plane_value) {
+            aboveVertices[aboveCount++] = vertex;
+        } else {
+            belowVertices[belowCount++] = vertex;
+        }
+    }
+
+    std::vector<Triangle> result;
+    Vec3 i1, i2;
+
+    if (aboveCount == 3 || belowCount == 3) {
+      result.emplace_back(v1, v2, v3);
+    }
+    else if (aboveCount == 2 && belowCount == 1) {
+      i1 = intersect(axis, plane_value, aboveVertices[0], belowVertices[0]);
+      i2 = intersect(axis, plane_value, aboveVertices[1], belowVertices[0]);
+
+      result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
+      result.emplace_back(belowVertices[0], i1, i2);
+      result.emplace_back(aboveVertices[1], i1, i2);
+    } 
+    else { // belowCount == 2, aboveCount == 1
+      i1 = intersect(axis, plane_value, belowVertices[0], aboveVertices[0]);
+      i2 = intersect(axis, plane_value, belowVertices[1], aboveVertices[0]);
+
+      result.emplace_back(belowVertices[0], belowVertices[1], i1);
+      result.emplace_back(aboveVertices[0], i1, i2);
+      result.emplace_back(belowVertices[1], i1, i2);
+    }
+
+    return result;
+}
+
+auto divideTriangle(  
+  const int axis,
+  const float plane_value,
+  const Triangle& tri
+) {
+  return divideTriangle(axis, plane_value, tri.v1, tri.v2, tri.v3);
+}
+
+std::vector<Triangle> intersectWithPlanes(
+  const Vec3<float>& v1, const Vec3<float>& v2, const Vec3<float>& v3,
+  const Vec3<float>& planes
+) {
+    std::vector<Triangle> first_triangles = divideTriangle(0, planes.x, v1, v2, v3);
+
+    std::vector<Triangle> second_triangles;
+
+    for (const auto& t : first_triangles) {
+        auto second_tris = divideTriangle(1, planes.y, t);
+        second_triangles.insert(second_triangles.end(), second_tris.begin(), second_tris.end());
+    }
+
+    std::vector<Triangle> output_triangles;
+
+    for (const auto& t : second_triangles) {
+        auto out = divideTriangle(2, planes.z, t);
+        output_triangles.insert(output_triangles.end(), out.begin(), out.end());
+    }
+
+    return output_triangles;
+}
+
+// more elegant algorithmically, but not the fastest or simpliest
+// division of the triangle into subtriangles
+void resect_triangle_iterative(
+  const float* vertices,
+  const Vec3<float> minpt,
+  const std::vector<int32_t>& zones,
+  std::vector<MeshObject>& mesh_grid,
+  const Vec3<float>& cs,
+  const Vec3<int32_t>& gs,
+  const unsigned int f1,
+  const unsigned int f2,
+  const unsigned int f3
+) {
+  const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
+  const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
+  const Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
+
+  auto z1 = zones[f1];
+  auto z2 = zones[f2];
+  auto z3 = zones[f3];
+
+  Vec3<int32_t> g1 = zone2grid(z1, gs);
+  Vec3<int32_t> g2 = zone2grid(z2, gs);
+  Vec3<int32_t> g3 = zone2grid(z3, gs);
+
+  Vec3<float> planes;
+
+  planes.x = minpt.x + std::max(std::max(g1.x, g2.x), g3.x) * cs.x;
+  planes.y = minpt.y + std::max(std::max(g1.y, g2.y), g3.y) * cs.y;
+  planes.z = minpt.z + std::max(std::max(g1.z, g2.z), g3.z) * cs.z;
+
+  const float icx = 1 / cs.x;
+  const float icy = 1 / cs.y;
+  const float icz = 1 / cs.z;
+
+  std::vector<Triangle> tris = intersectWithPlanes(v1, v2, v3, planes);
+
+  for (const auto& tri : tris) {
+    const Vec3<float>& pt = tri.v1; // v1 guaranteed to not be a border point (unless the triangle is degenerate)
+
+    pt.print("pt");
+
+    int ix = static_cast<int>((pt.x - minpt.x) * icx);
+    int iy = static_cast<int>((pt.y - minpt.y) * icy);
+    int iz = static_cast<int>((pt.z - minpt.z) * icz);
+
+    ix = std::min(std::max(ix, static_cast<int>(0)), static_cast<int>(gs.x - 1));
+    iy = std::min(std::max(iy, static_cast<int>(0)), static_cast<int>(gs.y - 1));
+    iz = std::min(std::max(iz, static_cast<int>(0)), static_cast<int>(gs.z - 1));
+
+    unsigned int zone = ix + gs.x * (iy + gs.y * iz);
+
+    printf("zone %d", zone);
+
+    mesh_grid[zone].add_triangle(tri);
+  }
 }
 
 void fix_all_different(
@@ -232,6 +392,12 @@ void fix_all_different(
   Vec3<int32_t> is3d = delta12.abs() + delta23.abs() + delta13.abs();
 
   if (is3d.num_non_zero_dims() == 3) {
+    resect_triangle_iterative(
+      vertices, minpt, 
+      zones,
+      mesh_grid, cs, gs,
+      f1, f2, f3
+    );
     return;
   }
 
@@ -421,22 +587,6 @@ void fix_all_different(
 
     m4.add_triangle(m4corner, m4i23_0, m4i23_1);
   }
-}
-
-void fix_single_outlier_26_connected(
-  const float* vertices,
-  const Vec3<float> minpt,
-  const std::vector<uint32_t>& face_remap,
-  const std::vector<int32_t>& zones,
-  std::vector<MeshObject>& mesh_grid,
-  const Vec3<float>& cs,
-  const Vec3<int32_t>& gs,
-  const unsigned int f1, // f1 and f2 should match on zone
-  const unsigned int f2,
-  const unsigned int f3 // outlier
-) {
-
-  printf("single outlier 26 connected not implemented!\n");
 }
 
 void fix_single_outlier_18_connected(
@@ -737,7 +887,6 @@ void fix_single_outlier(
 ) {
 
   auto z1 = zones[f1];
-  auto z2 = zones[f2];
   auto z3 = zones[f3];
 
   Vec3<int32_t> g1 = zone2grid(z1, gs);
@@ -762,9 +911,10 @@ void fix_single_outlier(
     );
   }
   else if (delta.num_non_zero_dims() == 3) {
-    fix_single_outlier_26_connected(
+    // 26 connected
+    resect_triangle_iterative(
       vertices, minpt, 
-      face_remap, zones, 
+      zones,
       mesh_grid, cs, gs,
       f1, f2, f3
     );
