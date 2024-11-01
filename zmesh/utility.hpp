@@ -156,7 +156,15 @@ public:
 struct Triangle {
     Vec3<float> v1, v2, v3;
 
-    Triangle(const Vec3<float>& v1, const Vec3<float>& v2, const Vec3<float>& v3) : v1(v1), v2(v2), v3(v3) {} 
+    Triangle(const Vec3<float>& v1, const Vec3<float>& v2, const Vec3<float>& v3) : v1(v1), v2(v2), v3(v3) {}
+
+    void print() const {
+      printf("tri\n v1 %.1f %.1f %.1f\n v2 %.1f %.1f %.1f\n v3 %.1f %.1f %.1f\n",
+        v1.x, v1.y, v1.z,
+        v2.x, v2.y, v2.z,
+        v3.x, v3.y, v3.z
+      );
+    }
 };
 
 struct MeshObject {
@@ -207,7 +215,9 @@ struct MeshObject {
   }
 
   unsigned int last_face() const {
-    return (points.size() - 1) / 3;
+    return (points.size() > 0) 
+      ? ((points.size() - 1) / 3)
+      : 0;
   }
 };
 
