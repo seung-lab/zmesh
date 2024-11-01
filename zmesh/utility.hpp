@@ -390,7 +390,7 @@ void fix_all_different(
   Vec3<int32_t> delta23 = (g2 - g3).abs();
 
   if (delta12.max() > 1 || delta13.max() > 1 || delta23.max() > 1) {
-    throw std::runtime_error("This code only handles differences of a single 26-connected grid space.");
+    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: This code only handles differences of a single 26-connected grid space. Try increasing the chunk size.");
   }
 
   Vec3<int32_t> is3d = delta12.abs() + delta23.abs() + delta13.abs();
@@ -441,7 +441,7 @@ void fix_all_different(
   }
 
   if (xaxis == yaxis) {
-    throw std::runtime_error("xaxis should not equal yaxis.");
+    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: xaxis should not equal yaxis.");
   }
 
   float plane_offset_x = minpt.get(xaxis) + std::max(std::max(g1[xaxis], g2[xaxis]), g3[xaxis]) * cs.get(xaxis);
@@ -619,7 +619,7 @@ void fix_single_outlier_18_connected(
   Vec3<int32_t> delta = g3 - g1;
 
   if (delta.abs().max() > 1) {
-    throw std::runtime_error("This code only handles differences of a single grid space.");
+    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: This code only handles differences of a single grid space.");
   }
 
   int xaxis = 0;
@@ -635,7 +635,7 @@ void fix_single_outlier_18_connected(
     yaxis = 2;
   }
   else {
-    throw std::runtime_error("18: Should never happen.");
+    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated::fix_single_outlier_18_connected: Should never happen.");
   }
 
   float plane_offset_x = minpt.get(xaxis) + std::max(g1[xaxis], g3[xaxis]) * cs.get(xaxis);
@@ -835,7 +835,7 @@ void fix_single_outlier_6_connected(
   Vec3<int32_t> delta = g3 - g1;
 
   if (delta.abs().max() > 1) {
-    throw std::runtime_error("This code only handles differences of a single grid space.");
+    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: This code only handles differences of a single grid space.");
   } 
 
   int axis = 0;
@@ -922,7 +922,7 @@ void fix_single_outlier(
     );
   }
   else {
-    throw std::runtime_error("Non-zero delta was not 1,2, or 3.");
+    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: Non-zero delta was not 1,2, or 3.");
   }
 }
 
