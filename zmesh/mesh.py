@@ -88,7 +88,7 @@ class Mesh:
 
   def consolidate(self):
     """Remove duplicate vertices and faces. Returns a new mesh object."""
-    if self.empty():
+    if self.is_empty():
       return Mesh([], [], normals=None)
 
     vertices = self.vertices
