@@ -291,19 +291,17 @@ std::vector<Triangle> intersectWithPlanes(
   const Vec3<float>& planes
 ) {
     std::vector<Triangle> first_triangles = divideTriangle(0, planes.x, v1, v2, v3);
-
     std::vector<Triangle> second_triangles;
-
-    for (const auto& t : first_triangles) {
-        auto second_tris = divideTriangle(1, planes.y, t);
-        second_triangles.insert(second_triangles.end(), second_tris.begin(), second_tris.end());
-    }
-
     std::vector<Triangle> output_triangles;
 
+    for (const auto& t : first_triangles) {
+      auto second_tris = divideTriangle(1, planes.y, t);
+      second_triangles.insert(second_triangles.end(), second_tris.begin(), second_tris.end());
+    }
+
     for (const auto& t : second_triangles) {
-        auto out = divideTriangle(2, planes.z, t);
-        output_triangles.insert(output_triangles.end(), out.begin(), out.end());
+      auto out = divideTriangle(2, planes.z, t);
+      output_triangles.insert(output_triangles.end(), out.begin(), out.end());
     }
 
     return output_triangles;
@@ -349,8 +347,6 @@ void resect_triangle_iterative(
   for (const auto& tri : tris) {
     const Vec3<float>& pt = tri.v1; // v1 guaranteed to not be a border point (unless the triangle is degenerate)
 
-    pt.print("pt");
-
     int ix = static_cast<int>((pt.x - minpt.x) * icx);
     int iy = static_cast<int>((pt.y - minpt.y) * icy);
     int iz = static_cast<int>((pt.z - minpt.z) * icz);
@@ -360,8 +356,6 @@ void resect_triangle_iterative(
     iz = std::min(std::max(iz, static_cast<int>(0)), static_cast<int>(gs.z - 1));
 
     unsigned int zone = ix + gs.x * (iy + gs.y * iz);
-
-    printf("zone %d", zone);
 
     mesh_grid[zone].add_triangle(tri);
   }
@@ -828,7 +822,6 @@ void fix_single_outlier_6_connected(
   const unsigned int f2,
   const unsigned int f3 // outlier
 ) {
-
   const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
   const Vec3 v3(vertices[3*f3+0], vertices[3*f3+1], vertices[3*f3+2]);
@@ -895,7 +888,6 @@ void fix_single_outlier(
   const unsigned int f2,
   const unsigned int f3 // outlier
 ) {
-
   auto z1 = zones[f1];
   auto z3 = zones[f3];
 
