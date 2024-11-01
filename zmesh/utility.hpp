@@ -796,8 +796,8 @@ void fix_single_outlier_18_connected(
 
     m5.add_triangle(m5i23y, m5corner, m5i23x);
 
-    m3.add_point(i13x);
-    m3i13x = m3.last_face();
+    m3.add_point(i13y);
+    m3i13y = m3.last_face();
 
     m3.add_point(corner);
     m3corner = m3.last_face();
@@ -805,8 +805,8 @@ void fix_single_outlier_18_connected(
     m3.add_point(i23x);
     m3i23x = m3.last_face();
 
-    m3.add_triangle(m3i13x, face_remap[f3], m3corner);
-    m3.add_triangle(m3corner, face_remap[f3], m3i23y);
+    m3.add_triangle(m3i13y, face_remap[f3], m3corner);
+    m3.add_triangle(m3corner, face_remap[f3], m3i23x);
   }
 }
 
