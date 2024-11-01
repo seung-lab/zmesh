@@ -92,7 +92,7 @@ def chunk_mesh(
   minpt = np.min(mesh.vertices, axis=0)
   maxpt = np.max(mesh.vertices, axis=0)
 
-  grid_size = (((maxpt - minpt) / np.array(chunk_size)) + 0.5).astype(int)
+  grid_size = np.ceil((maxpt - minpt) / np.array(chunk_size)).astype(int)
   grid_size = np.maximum(grid_size, [1,1,1])
 
   chunked_meshes = {}
