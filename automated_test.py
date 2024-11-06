@@ -319,6 +319,41 @@ def test_chunk_shape():
     m.is_empty() for m in meshes.values()
   ])
 
+def test_chunk_mesh_triangle():
+  vertices = [
+    [0,0,0],
+    [0,1,0],
+    [1,0,0],
+  ]
+  faces = [[0,1,2]]
+
+  mesh = zmesh.Mesh(vertices=vertices, faces=faces, normals=None)
+
+  meshes = zmesh.chunk_mesh(mesh, [.5,.5,.5])
+
+  meshes = [ m for m in meshes.values() if not m.is_empty() ]
+
+  assert len(meshes) == 3
+
+  m = zmesh.Mesh.concatenate(*meshes).consolidate()
+
+  assert m.vertices.shape[0] == 6
+
+  assert [0,0,0] in m.vertices
+  assert [1,0,0] in m.vertices
+  assert [0,1,0] in m.vertices
+  assert [0,0.5,0] in m.vertices
+  assert [0.5,0,0] in m.vertices
+  assert [0.5,0.5,0] in m.vertices
+
+  
+
+
+
+
+
+
+
 
 
 
