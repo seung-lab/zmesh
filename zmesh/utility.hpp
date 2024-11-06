@@ -405,6 +405,8 @@ void fix_all_different(
     return;
   }
 
+  int ordering = 1;
+
   // rearrange vertices so that vertex 1 is in the single 
   // zone difference position for both 2 and 3
   if (delta12.num_non_zero_dims() == 1 && delta13.num_non_zero_dims() != 1) {
@@ -412,12 +414,14 @@ void fix_all_different(
     std::swap(f1, f2);
     std::swap(g1, g2);
     std::swap(z1, z2);
+    ordering = 2;
   }
   else if (delta12.num_non_zero_dims() != 1 && delta13.num_non_zero_dims() == 1) {
     std::swap(v1, v3);
     std::swap(f1, f3);
     std::swap(g1, g3);
     std::swap(z1, z3);
+    ordering = 3;
   }
 
   delta12 = (g2 - g1);
@@ -499,16 +503,11 @@ void fix_all_different(
     m1.add_point(i12);
     m1i12 = m1.last_face();
 
-    m1.add_triangle(m1i12, face_remap[f1], m1corner);
-    m1.add_triangle(m1corner, face_remap[f1], m1i13);
-
     m2.add_point(i12);
     m2i12 = m2.last_face();
 
     m2.add_point(corner);
     m2corner = m2.last_face();
-
-    m2.add_triangle(face_remap[f2], m2i12, m2corner);
 
     m3.add_point(corner);
     m3corner = m3.last_face();
@@ -516,6 +515,9 @@ void fix_all_different(
     m3.add_point(i13);
     m3i13 = m3.last_face();
 
+    m1.add_triangle(m1i12, face_remap[f1], m1corner);
+    m1.add_triangle(m1corner, face_remap[f1], m1i13);
+    m2.add_triangle(face_remap[f2], m2i12, m2corner);
     m3.add_triangle(face_remap[f3], m3corner, m3i13);
   }
   else if (
@@ -527,7 +529,6 @@ void fix_all_different(
     m3i13 = m3.last_face();
     m3.add_point(i23_1);
     m3i23_1 = m3.last_face();
-    m3.add_triangle(face_remap[f3], m3i13, m3i23_1);
 
     m1.add_point(i13);
     m1i13 = m1.last_face();
@@ -538,16 +539,25 @@ void fix_all_different(
     m1.add_point(i12);
     m1i12 = m1.last_face();
 
-    m1.add_triangle(face_remap[f1], m1i13, m1i23_1);
-    m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
-    m1.add_triangle(face_remap[f1], m1i23_0, m1i12);
-
     m2.add_point(i23_0);
     m2i23_0 = m2.last_face();
     m2.add_point(i12);
     m2i12 = m2.last_face();
 
-    m2.add_triangle(face_remap[f2], m2i23_0, m2i12);
+    if (ordering == 1) {
+      m3.add_triangle(face_remap[f3], m3i13  , m3i23_1);
+      m1.add_triangle(face_remap[f1], m1i23_1, m1i13);
+      m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
+      m1.add_triangle(face_remap[f1], m1i12,   m1i23_0  );
+      m2.add_triangle(face_remap[f2], m2i23_0, m2i12  );
+    }
+    else {
+      m3.add_triangle(face_remap[f3], m3i23_1, m3i13  );
+      m1.add_triangle(face_remap[f1], m1i13  , m1i23_1);
+      m1.add_triangle(face_remap[f1], m1i23_0, m1i23_1);
+      m1.add_triangle(face_remap[f1], m1i23_0, m1i12  );
+      m2.add_triangle(face_remap[f2], m2i12  , m2i23_0);
+    }
   }
   else {
     m3.add_point(corner);
@@ -557,9 +567,6 @@ void fix_all_different(
     m3.add_point(i23_0);
     m3i23_0 = m3.last_face();
 
-    m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
-    m3.add_triangle(m3corner, face_remap[f3], m3i13);
-
     m1.add_point(i13);
     m1i13 = m1.last_face();
     m1.add_point(corner);
@@ -567,18 +574,12 @@ void fix_all_different(
     m1.add_point(i12);
     m1i12 = m1.last_face();
 
-    m1.add_triangle(face_remap[f1], m1i13, m1corner);
-    m1.add_triangle(face_remap[f1], m1corner, m1i12);
-
     m2.add_point(i23_1);
     m2i23_1 = m2.last_face();
     m2.add_point(corner);
     m2corner = m2.last_face();
     m2.add_point(i12);
     m2i12 = m2.last_face();
-
-    m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
-    m2.add_triangle(face_remap[f2], m2corner, m2i12);
 
     m4.add_point(corner);
     m4corner = m4.last_face();
@@ -589,6 +590,12 @@ void fix_all_different(
     m4.add_point(i23_1);
     m4i23_1 = m4.last_face();
 
+    m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
+    m3.add_triangle(m3corner, face_remap[f3], m3i13);
+    m1.add_triangle(face_remap[f1], m1i13, m1corner);
+    m1.add_triangle(face_remap[f1], m1corner, m1i12);
+    m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
+    m2.add_triangle(face_remap[f2], m2corner, m2i12);
     m4.add_triangle(m4corner, m4i23_0, m4i23_1);
   }
 }
@@ -862,11 +869,9 @@ void fix_single_outlier_6_connected(
   const unsigned int m1f23 = m1f13 + 1;
 
   m3.add_point(i13);
-  
   const unsigned int m3f13 = m3.last_face();
 
   m3.add_point(i23);
-
   const unsigned int m3f23 = m3f13 + 1;
 
   if (ordering & 1) { // 1 or 3
