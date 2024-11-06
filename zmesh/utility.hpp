@@ -820,7 +820,8 @@ void fix_single_outlier_6_connected(
   const Vec3<int32_t>& gs,
   const unsigned int f1, // f1 and f2 should match on zone
   const unsigned int f2,
-  const unsigned int f3 // outlier
+  const unsigned int f3, // outlier
+  const int ordering
 ) {
   const Vec3 v1(vertices[3*f1+0], vertices[3*f1+1], vertices[3*f1+2]);
   const Vec3 v2(vertices[3*f2+0], vertices[3*f2+1], vertices[3*f2+2]);
@@ -862,8 +863,6 @@ void fix_single_outlier_6_connected(
 
   const unsigned int m1f23 = m1.last_face();
 
-  m1.add_triangle(face_remap[f1], m1f13, m1f23);
-  m1.add_triangle(face_remap[f1], face_remap[f2], m1f23);
 
   m3.add_point(i13);
   
@@ -873,7 +872,16 @@ void fix_single_outlier_6_connected(
 
   const unsigned int m3f23 = m3.last_face();
 
-  m3.add_triangle(face_remap[f3], m3f13, m3f23);
+  if (ordering & 1) { // 1 or 3
+    m1.add_triangle(face_remap[f1], m1f23, m1f13);
+    m1.add_triangle(face_remap[f1], face_remap[f2], m1f23);
+    m3.add_triangle(face_remap[f3], m3f13, m3f23);
+  }
+  else {
+    m1.add_triangle(face_remap[f1], m1f13, m1f23);
+    m1.add_triangle(face_remap[f1], m1f23, face_remap[f2]);
+    m3.add_triangle(face_remap[f3], m3f23, m3f13);
+  }
 }
 
 void fix_single_outlier(
@@ -886,7 +894,8 @@ void fix_single_outlier(
   const Vec3<int32_t>& gs,
   const unsigned int f1, // f1 and f2 should match on zone
   const unsigned int f2,
-  const unsigned int f3 // outlier
+  const unsigned int f3, // outlier
+  const int ordering
 ) {
   auto z1 = zones[f1];
   auto z3 = zones[f3];
@@ -901,7 +910,7 @@ void fix_single_outlier(
       vertices, minpt, 
       face_remap, zones, 
       mesh_grid, cs, gs,
-      f1, f2, f3
+      f1, f2, f3, ordering
     );
   }
   else if (delta.num_non_zero_dims() == 2) {
@@ -1007,7 +1016,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
           vertices, minpt, 
           face_remap, zones, 
           mesh_grid, cs, gs,
-          f1, f2, f3
+          f1, f2, f3, 1
         );
       }
       else if (zones[f1] == zones[f3]) {
@@ -1015,7 +1024,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
           vertices, minpt, 
           face_remap, zones, 
           mesh_grid, cs, gs,
-          f1, f3, f2
+          f1, f3, f2, 2
         );
       }
       else if (zones[f2] == zones[f3]) {
@@ -1023,7 +1032,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
           vertices, minpt, 
           face_remap, zones, 
           mesh_grid, cs, gs,
-          f2, f3, f1
+          f2, f3, f1, 3
         );
       }
       else {
