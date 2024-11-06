@@ -856,13 +856,10 @@ void fix_single_outlier_6_connected(
   MeshObject& m3 = mesh_grid[z3];
 
   m1.add_point(i13);
-
   const unsigned int m1f13 = m1.last_face();
 
   m1.add_point(i23);
-
-  const unsigned int m1f23 = m1.last_face();
-
+  const unsigned int m1f23 = m1f13 + 1;
 
   m3.add_point(i13);
   
@@ -870,7 +867,7 @@ void fix_single_outlier_6_connected(
 
   m3.add_point(i23);
 
-  const unsigned int m3f23 = m3.last_face();
+  const unsigned int m3f23 = m3f13 + 1;
 
   if (ordering & 1) { // 1 or 3
     m1.add_triangle(face_remap[f1], m1f23, m1f13);
