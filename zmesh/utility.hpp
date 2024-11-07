@@ -546,9 +546,9 @@ void fix_all_different(
 
     if (ordering == 1) {
       m3.add_triangle(face_remap[f3], m3i13  , m3i23_1);
-      m1.add_triangle(face_remap[f1], m1i23_1, m1i13);
+      m1.add_triangle(face_remap[f1], m1i23_1, m1i13  );
       m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
-      m1.add_triangle(face_remap[f1], m1i12,   m1i23_0  );
+      m1.add_triangle(face_remap[f1], m1i12,   m1i23_0);
       m2.add_triangle(face_remap[f2], m2i23_0, m2i12  );
     }
     else {
@@ -590,13 +590,24 @@ void fix_all_different(
     m4.add_point(i23_1);
     m4i23_1 = m4.last_face();
 
-    m3.add_triangle(face_remap[f3], m3corner, m3i23_0);
-    m3.add_triangle(m3corner, face_remap[f3], m3i13);
-    m1.add_triangle(face_remap[f1], m1i13, m1corner);
-    m1.add_triangle(face_remap[f1], m1corner, m1i12);
-    m2.add_triangle(face_remap[f2], m2corner, m2i23_1);
-    m2.add_triangle(face_remap[f2], m2corner, m2i12);
-    m4.add_triangle(m4corner, m4i23_0, m4i23_1);
+    if (ordering == 1) {
+      m1.add_triangle(face_remap[f1], m1corner,       m1i13);
+      m1.add_triangle(face_remap[f1], m1i12,          m1corner);
+      m2.add_triangle(face_remap[f2], m2corner,       m2i12);
+      m2.add_triangle(face_remap[f2], m2i23_1,        m2corner);
+      m3.add_triangle(face_remap[f3], m3i23_0,        m3corner);
+      m3.add_triangle(m3corner,       face_remap[f3], m3i13);
+      m4.add_triangle(m4corner,       m4i23_1,        m4i23_0);
+    }
+    else {
+      m1.add_triangle(face_remap[f1], m1i13,    m1corner);     
+      m1.add_triangle(face_remap[f1], m1corner, m1i12);        
+      m2.add_triangle(face_remap[f2], m2i12,    m2corner);     
+      m2.add_triangle(face_remap[f2], m2corner, m2i23_1);      
+      m3.add_triangle(face_remap[f3], m3corner, m3i23_0);      
+      m3.add_triangle(m3corner,       m3i13,    face_remap[f3]);
+      m4.add_triangle(m4corner,       m4i23_0,  m4i23_1);      
+    }
   }
 }
 
@@ -709,9 +720,6 @@ void fix_single_outlier_18_connected(
     m1.add_point(i23x);
     m1i23x = m1.last_face();
 
-    m1.add_triangle(face_remap[f1], m1i13x, m1i23x);
-    m1.add_triangle(face_remap[f1], face_remap[f2], m1i23x);
-
     m4.add_point(i13x);
     m4i13x = m4.last_face();
 
@@ -724,15 +732,16 @@ void fix_single_outlier_18_connected(
     m4.add_point(i23y);
     m4i23y = m4.last_face();
 
-    m4.add_triangle(m4i13x, m4i13y, m4i23y);
-    m4.add_triangle(m4i13x, m4i23x, m4i23y);
-
     m3.add_point(i13y);
     m3i13y = m3.last_face();
 
     m3.add_point(i23y);
     m3i23y = m3.last_face();
 
+    m1.add_triangle(face_remap[f1], m1i23x, m1i13x);
+    m1.add_triangle(face_remap[f1], face_remap[f2], m1i23x);
+    m4.add_triangle(m4i13x, m4i23y, m4i13y);
+    m4.add_triangle(m4i13x, m4i23x, m4i23y);
     m3.add_triangle(face_remap[f3], m3i13y, m3i23y);
   }
   else if (i13x.get(xaxis) > corner.get(xaxis) && i23x.get(xaxis) > corner.get(xaxis)) {
@@ -740,9 +749,6 @@ void fix_single_outlier_18_connected(
     m1i13y = m1.last_face();
     m1.add_point(i23y);
     m1i23y = m1.last_face();
-
-    m1.add_triangle(face_remap[f1], m1i13y, m1i23y);
-    m1.add_triangle(face_remap[f1], face_remap[f2], m1i23y);
 
     m5.add_point(i13x);
     m5i13x = m5.last_face();
@@ -756,16 +762,19 @@ void fix_single_outlier_18_connected(
     m5.add_point(i23y);
     m5i23y = m5.last_face();
 
-    m5.add_triangle(m5i13y, m5i13x, m5i23y);
-    m5.add_triangle(m5i23y, m5i13x, m5i23x);
-
     m3.add_point(i13x);
     m3i13x = m3.last_face();
 
     m3.add_point(i23x);
     m3i23x = m3.last_face();
 
+    m1.add_triangle(face_remap[f1], m1i23y, m1i13y);
+    m1.add_triangle(face_remap[f1], face_remap[f2], m1i23y);
+
     m3.add_triangle(face_remap[f3], m3i13x, m3i23x);
+
+    m5.add_triangle(m5i23y, m5i13y, m5i13x);
+    m5.add_triangle(m5i23y, m5i23x, m5i13x);
   }
   else {
     m1.add_point(i13x);
@@ -777,10 +786,6 @@ void fix_single_outlier_18_connected(
     m1.add_point(i23y);
     m1i23y = m1.last_face();
 
-    m1.add_triangle(face_remap[f1], m1i13x, face_remap[f2]);
-    m1.add_triangle(face_remap[f2], m1i13x, m1i23y);
-    m1.add_triangle(m1i23y, m1i13x, m1corner);
-
     m4.add_point(i13x);
     m4i13x = m4.last_face();
 
@@ -789,8 +794,6 @@ void fix_single_outlier_18_connected(
 
     m4.add_point(corner);
     m4corner = m4.last_face();
-
-    m4.add_triangle(m4i13x, m4i13y, m4corner);
 
     m5.add_point(i23y);
     m5i23y = m5.last_face();
@@ -801,8 +804,6 @@ void fix_single_outlier_18_connected(
     m5.add_point(i23x);
     m5i23x = m5.last_face();
 
-    m5.add_triangle(m5i23y, m5corner, m5i23x);
-
     m3.add_point(i13y);
     m3i13y = m3.last_face();
 
@@ -812,8 +813,16 @@ void fix_single_outlier_18_connected(
     m3.add_point(i23x);
     m3i23x = m3.last_face();
 
+    m1.add_triangle(face_remap[f1], m1i13x, face_remap[f2]);
+    m1.add_triangle(face_remap[f2], m1i13x, m1i23y);
+    m1.add_triangle(m1i23y, m1i13x, m1corner);
+
     m3.add_triangle(m3i13y, face_remap[f3], m3corner);
     m3.add_triangle(m3corner, face_remap[f3], m3i23x);
+
+    m4.add_triangle(m4i13x, m4i13y, m4corner);
+
+    m5.add_triangle(m5i23y, m5corner, m5i23x);
   }
 }
 
