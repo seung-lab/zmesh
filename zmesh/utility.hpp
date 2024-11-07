@@ -603,18 +603,18 @@ void fix_all_different(
       m1.add_triangle(face_remap[f1], m1i12,          m1corner);
       m2.add_triangle(face_remap[f2], m2corner,       m2i12);
       m2.add_triangle(face_remap[f2], m2i23_1,        m2corner);
-      m3.add_triangle(face_remap[f3], m3i23_0,        m3corner);
+      m3.add_triangle(face_remap[f3], m3corner,       m3i23_0);
       m3.add_triangle(m3corner,       face_remap[f3], m3i13);
       m4.add_triangle(m4corner,       m4i23_1,        m4i23_0);
     }
     else {
-      m1.add_triangle(face_remap[f1], m1i13,    m1corner);     
-      m1.add_triangle(face_remap[f1], m1corner, m1i12);        
-      m2.add_triangle(face_remap[f2], m2i12,    m2corner);     
-      m2.add_triangle(face_remap[f2], m2corner, m2i23_1);      
-      m3.add_triangle(face_remap[f3], m3corner, m3i23_0);      
-      m3.add_triangle(m3corner,       m3i13,    face_remap[f3]);
-      m4.add_triangle(m4corner,       m4i23_0,  m4i23_1);      
+      m1.add_triangle(face_remap[f1], m1i13,          m1corner);
+      m1.add_triangle(face_remap[f1], m1corner,       m1i12);
+      m2.add_triangle(face_remap[f2], m2i12,          m2corner);
+      m2.add_triangle(face_remap[f2], m2corner,       m2i23_1);
+      m3.add_triangle(face_remap[f3], m3i23_0,        m3corner);
+      m3.add_triangle(m3corner,       m3i13,          face_remap[f3]);
+      m4.add_triangle(m4corner,       m4i23_0,        m4i23_1);
     }
   }
 }
