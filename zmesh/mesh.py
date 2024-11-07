@@ -14,9 +14,14 @@ class Mesh:
 
   """
   def __init__(self, vertices, faces, normals, id=None):
-    self.vertices = vertices
-    self.faces = faces
-    self.normals = normals
+    self.vertices = np.asarray(vertices, dtype=np.float32)
+    self.faces = np.asarray(faces, dtype=np.uint32)
+
+    if normals is None:
+      self.normals = normals
+    else:
+      self.normals = np.asarray(normals, dtype=np.float32)
+
     self.id = id
 
   def __len__(self):
