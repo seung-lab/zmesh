@@ -71,6 +71,12 @@ def chunk_mesh(
   cdef cnp.ndarray[float] vertices = mesh.vertices.reshape([mesh.vertices.size], order=vert_order)
   cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
 
+  if vertices.size % 3 != 0:
+    raise ValueError(f"Invalid vertex array. Must be a multiple of 3. Got: {vertices.size}")
+
+  if faces.size % 3 != 0:
+    raise ValueError(f"Invalid faces array. Must be a multiple of 3. Got: {faces.size}")
+
   cdef vector[MeshObject] objs = chunk_mesh_accelerated(
     <float*>&vertices[0], mesh.vertices.shape[0],
     <unsigned int*>&faces[0], mesh.faces.shape[0],
