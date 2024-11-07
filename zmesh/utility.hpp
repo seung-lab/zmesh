@@ -555,14 +555,14 @@ void fix_all_different(
     if (ordering == 1) {
       m3.add_triangle(face_remap[f3], m3i13  , m3i23_1);
       m1.add_triangle(face_remap[f1], m1i23_1, m1i13  );
-      m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
+      m1.add_triangle(face_remap[f1], m1i23_0, m1i23_1);
       m1.add_triangle(face_remap[f1], m1i12,   m1i23_0);
       m2.add_triangle(face_remap[f2], m2i23_0, m2i12  );
     }
     else {
       m3.add_triangle(face_remap[f3], m3i23_1, m3i13  );
       m1.add_triangle(face_remap[f1], m1i13  , m1i23_1);
-      m1.add_triangle(face_remap[f1], m1i23_0, m1i23_1);
+      m1.add_triangle(face_remap[f1], m1i23_1, m1i23_0);
       m1.add_triangle(face_remap[f1], m1i23_0, m1i12  );
       m2.add_triangle(face_remap[f2], m2i12  , m2i23_0);
     }
