@@ -515,10 +515,18 @@ void fix_all_different(
     m3.add_point(i13);
     m3i13 = m3.last_face();
 
-    m1.add_triangle(m1i12, face_remap[f1], m1corner);
-    m1.add_triangle(m1corner, face_remap[f1], m1i13);
-    m2.add_triangle(face_remap[f2], m2i12, m2corner);
-    m3.add_triangle(face_remap[f3], m3corner, m3i13);
+    if (ordering == 1) {
+      m1.add_triangle(m1i12, m1corner, face_remap[f1]);
+      m1.add_triangle(m1corner, m1i13, face_remap[f1]);
+      m2.add_triangle(face_remap[f2], m2corner, m2i12);
+      m3.add_triangle(face_remap[f3], m3i13, m3corner);      
+    }
+    else {
+      m1.add_triangle(m1i12, face_remap[f1], m1corner);
+      m1.add_triangle(m1corner, face_remap[f1], m1i13);
+      m2.add_triangle(face_remap[f2], m2i12, m2corner);
+      m3.add_triangle(face_remap[f3], m3corner, m3i13);
+    }
   }
   else if (
     (v3.get(yaxis) > plane_offset_y && i23_0.get(yaxis) <= plane_offset_y)
