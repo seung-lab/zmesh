@@ -258,21 +258,23 @@ std::vector<Triangle> divideTriangle(
     if (aboveCount == 3 || belowCount == 3) {
       result.emplace_back(v1, v2, v3);
     }
-    else if (aboveCount == 2 && belowCount == 1) {
+    else {
+      if (belowCount == 2 && aboveCount == 1) {
+        std::swap(aboveVertices, belowVertices);
+      }
+
       i1 = intersect(axis, plane_value, aboveVertices[0], belowVertices[0]);
       i2 = intersect(axis, plane_value, aboveVertices[1], belowVertices[0]);
 
-      result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
+      if (i1.get(axis) < i2.get(axis)) {
+        result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
+        result.emplace_back(aboveVertices[1], i1, i2);
+      }
+      else {
+        result.emplace_back(aboveVertices[0], i1, i2);
+        result.emplace_back(aboveVertices[0], aboveVertices[1], i2);
+      }
       result.emplace_back(belowVertices[0], i1, i2);
-      result.emplace_back(aboveVertices[1], i1, i2);
-    } 
-    else { // belowCount == 2, aboveCount == 1
-      i1 = intersect(axis, plane_value, belowVertices[0], aboveVertices[0]);
-      i2 = intersect(axis, plane_value, belowVertices[1], aboveVertices[0]);
-
-      result.emplace_back(belowVertices[0], belowVertices[1], i1);
-      result.emplace_back(aboveVertices[0], i1, i2);
-      result.emplace_back(belowVertices[1], i1, i2);
     }
 
     return result;
