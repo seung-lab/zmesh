@@ -286,27 +286,6 @@ auto divideTriangle(
   return divideTriangle(axis, plane_value, tri.v1, tri.v2, tri.v3);
 }
 
-std::vector<Triangle> intersectWithPlanes(
-  const Vec3<float>& v1, const Vec3<float>& v2, const Vec3<float>& v3,
-  const Vec3<float>& planes
-) {
-    std::vector<Triangle> first_triangles = divideTriangle(0, planes.x, v1, v2, v3);
-    std::vector<Triangle> second_triangles;
-    std::vector<Triangle> output_triangles;
-
-    for (const auto& t : first_triangles) {
-      auto second_tris = divideTriangle(1, planes.y, t);
-      second_triangles.insert(second_triangles.end(), second_tris.begin(), second_tris.end());
-    }
-
-    for (const auto& t : second_triangles) {
-      auto out = divideTriangle(2, planes.z, t);
-      output_triangles.insert(output_triangles.end(), out.begin(), out.end());
-    }
-
-    return output_triangles;
-}
-
 // more elegant algorithmically, but not the fastest or simpliest
 // division of the triangle into subtriangles
 void resect_triangle_iterative(
@@ -334,17 +313,55 @@ void resect_triangle_iterative(
 
   Vec3<float> planes;
 
-  planes.x = minpt.x + std::max(std::max(g1.x, g2.x), g3.x) * cs.x;
-  planes.y = minpt.y + std::max(std::max(g1.y, g2.y), g3.y) * cs.y;
-  planes.z = minpt.z + std::max(std::max(g1.z, g2.z), g3.z) * cs.z;
+  uint32_t gxs = std::min(std::min(g1.x, g2.x), g3.x);
+  uint32_t gxe = std::max(std::max(g1.x, g2.x), g3.x);
+
+  uint32_t gys = std::min(std::min(g1.y, g2.y), g3.y);
+  uint32_t gye = std::max(std::max(g1.y, g2.y), g3.y);
+
+  uint32_t gzs = std::min(std::min(g1.z, g2.z), g3.z);
+  uint32_t gze = std::max(std::max(g1.z, g2.z), g3.z);
+
+  std::vector<Triangle> cur_tris;
+  std::vector<Triangle> next_tris;
+  
+  cur_tris.emplace_back(v1, v2, v3);
+
+  for (uint32_t x = gxs; x <= gxe; x++) {
+    float xplane = minpt.x + x * cs.x;
+    for (auto tri : cur_tris) {
+      auto new_tris = divideTriangle(0, xplane, tri);
+      next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
+    }
+    std::swap(cur_tris, next_tris);
+    next_tris.clear();
+  }
+
+  for (uint32_t y = gys; y <= gye; y++) {
+    float yplane = minpt.y + y * cs.y;
+    for (auto tri : cur_tris) {
+      auto new_tris = divideTriangle(1, yplane, tri);
+      next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
+    }
+    std::swap(cur_tris, next_tris);
+    next_tris.clear();
+  }
+
+  for (uint32_t z = gzs; z <= gze; z++) {
+    float zplane = minpt.z + z * cs.z;
+    for (auto tri : cur_tris) {
+      auto new_tris = divideTriangle(2, zplane, tri);
+      next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
+    }
+    std::swap(cur_tris, next_tris);
+    next_tris.clear();
+  }
 
   const float icx = 1 / cs.x;
   const float icy = 1 / cs.y;
   const float icz = 1 / cs.z;
 
-  std::vector<Triangle> tris = intersectWithPlanes(v1, v2, v3, planes);
-
-  for (const auto& tri : tris) {
+  for (const auto& tri : cur_tris) {
     const Vec3<float>& pt = tri.v1; // v1 guaranteed to not be a border point (unless the triangle is degenerate)
 
     int ix = static_cast<int>((pt.x - minpt.x) * icx);
@@ -390,7 +407,13 @@ void fix_all_different(
   Vec3<int32_t> delta23 = (g2 - g3).abs();
 
   if (delta12.max() > 1 || delta13.max() > 1 || delta23.max() > 1) {
-    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: This code only handles differences of a single 26-connected grid space. Try increasing the chunk size.");
+    resect_triangle_iterative(
+      vertices, minpt, 
+      zones,
+      mesh_grid, cs, gs,
+      f1, f2, f3
+    );
+    return;
   }
 
   Vec3<int32_t> is3d = delta12.abs() + delta23.abs() + delta13.abs();
@@ -645,7 +668,13 @@ void fix_single_outlier_18_connected(
   Vec3<int32_t> delta = g3 - g1;
 
   if (delta.abs().max() > 1) {
-    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: This code only handles differences of a single grid space.");
+    resect_triangle_iterative(
+      vertices, minpt, 
+      zones,
+      mesh_grid, cs, gs,
+      f1, f2, f3
+    );
+    return;
   }
 
   int xaxis = 0;
@@ -860,7 +889,13 @@ void fix_single_outlier_6_connected(
   Vec3<int32_t> delta = g3 - g1;
 
   if (delta.abs().max() > 1) {
-    throw std::runtime_error("zmesh::utility::chunk_mesh_accelerated: This code only handles differences of a single grid space.");
+    resect_triangle_iterative(
+      vertices, minpt, 
+      zones,
+      mesh_grid, cs, gs,
+      f1, f2, f3
+    );
+    return;
   } 
 
   int axis = 0;
