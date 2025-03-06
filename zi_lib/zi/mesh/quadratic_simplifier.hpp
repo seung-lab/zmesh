@@ -23,7 +23,7 @@
 
 #include <zi/bits/shared_ptr.hpp>
 #include <zi/bits/unordered_map.hpp>
-#include <zi/bits/unordered_set.hpp>
+#include <zi/utility/robin_hood.hpp>
 #include <zi/utility/static_assert.hpp>
 
 #include <zi/heap/binary_heap.hpp>
@@ -70,7 +70,7 @@ private:
     std::vector<coord_t> normals_;
 
     std::vector<quadratic_t> quadratic_;
-    unordered_set<uint64_t>  invalid_;
+    robin_hood::unordered_flat_set<uint64_t>  invalid_;
 
     struct heap_entry
     {
@@ -468,7 +468,7 @@ public:
 
         // double no_faces = static_cast< double >( mesh_.face_count() );
 
-        std::size_t bad = 0;
+        // std::size_t bad = 0;
         while (heap_.size())
         {
             if (((mesh_.face_count() <= target_faces) &&
@@ -477,10 +477,13 @@ public:
             {
                 break;
             }
-            if (!iterate())
-            {
-                ++bad;
-            }
+
+            iterate();
+
+            // if (!iterate())
+            // {
+            //     ++bad;
+            // }
         }
 
         // generate_normals();
