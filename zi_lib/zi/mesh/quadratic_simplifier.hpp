@@ -23,7 +23,7 @@
 
 #include <zi/bits/shared_ptr.hpp>
 #include <zi/bits/unordered_map.hpp>
-#include <zi/bits/unordered_set.hpp>
+#include <zi/utility/robin_hood.hpp>
 #include <zi/utility/static_assert.hpp>
 
 #include <zi/heap/binary_heap.hpp>
@@ -70,7 +70,7 @@ private:
     std::vector<coord_t> normals_;
 
     std::vector<quadratic_t> quadratic_;
-    unordered_set<uint64_t>  invalid_;
+    robin_hood::unordered_flat_set<uint64_t>  invalid_;
 
     struct heap_entry
     {
