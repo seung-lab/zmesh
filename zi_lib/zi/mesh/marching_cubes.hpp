@@ -309,8 +309,6 @@ private:
 
         auto strides = get_strides(sx, sy, sz, order_tag);
 
-        static_network_sorter<8> network_sort;
-
         mc_nested_loops(
             sx, sy, sz,
             [&](std::size_t x, std::size_t y, std::size_t z, std::size_t ind)
@@ -340,7 +338,7 @@ private:
                 // addressing + chaining which is inefficient for our
                 // case.
                 std::array<LabelType, 8> ulabels = labels;
-                network_sort(ulabels);
+                zi::mesh::sort_8(ulabels);
 
                 for (int i = 7; i >= 0; i--)
                 {
