@@ -12,6 +12,7 @@
 # simplification (connectomics.npy): 434.549s, 0.31 MVx/sec, N=1
 
 import numpy as np
+import crackle
 
 import zmesh
 import time
@@ -41,7 +42,7 @@ def test_zmesh_marching_cubes():
     end = time.time()
     result("marching cubes (filled)", end - start, labels, N=N)
 
-    labels = np.load("./connectomics.npy")
+    labels = crackle.load("./connectomics.npy.ckl.gz")
     labels = np.ascontiguousarray(labels)
     mesher = zmesh.Mesher((1,1,1))
 
