@@ -12,10 +12,6 @@ class NumpyImport:
 
   __fspath__ = __repr__
 
-
-# NOTE: If zmesh.cpp does not exist, you must run
-# cython --cplus -I./zi_lib/ zmesh.pyx
-
 extra_compile_args = []
 if sys.platform == 'win32':
   extra_compile_args += [
