@@ -14,9 +14,14 @@ class Mesh:
 
   """
   def __init__(self, vertices, faces, normals, id=None):
-    self.vertices = vertices
-    self.faces = faces
-    self.normals = normals
+    self.vertices = np.asarray(vertices, dtype=np.float32)
+    self.faces = np.asarray(faces, dtype=np.uint32)
+
+    if normals is None:
+      self.normals = normals
+    else:
+      self.normals = np.asarray(normals, dtype=np.float32)
+
     self.id = id
 
   def __len__(self):
@@ -45,6 +50,9 @@ class Mesh:
       (None if self.normals is None else self.normals.shape[0])
     )
 
+  def is_empty(self):
+    return self.faces.size == 0 or self.vertices.size == 0
+
   @property
   def nbytes(self) -> int:
     nbytes = self.vertices.nbytes if self.vertices is not None else 0
@@ -58,15 +66,46 @@ class Mesh:
     else:
       return Mesh(np.copy(self.vertices), np.copy(self.faces), np.copy(self.normals))
 
-  def triangles(self):
-    Nf = self.faces.shape[0]
-    tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
+  def triangles(self) -> np.ndarray:
+    """Returns vertex triples representing triangluar faces."""
+    return self.vertices[self.faces]
 
-    for i in range(Nf):
-      for j in range(3):
-        tris[i,j,:] = self.vertices[ self.faces[i,j] ]
+  @classmethod
+  def concatenate(cls, *meshes, id=None):
+    vertex_ct = np.zeros(len(meshes) + 1, np.uint32)
+    vertex_ct[1:] = np.cumsum([ len(mesh) for mesh in meshes ])
 
-    return tris
+    vertices = np.concatenate([ mesh.vertices for mesh in meshes ])
+    
+    faces = np.concatenate([ 
+      mesh.faces + vertex_ct[i] for i, mesh in enumerate(meshes) 
+    ])
+
+    # normals = np.concatenate([ mesh.normals for mesh in meshes ])
+
+    return Mesh(vertices, faces, None, id=id)
+
+  def consolidate(self):
+    """Remove duplicate vertices and faces. Returns a new mesh object."""
+    if self.is_empty():
+      return Mesh([], [], normals=None)
+
+    vertices = self.vertices
+    faces = self.faces
+    normals = self.normals
+
+    eff_verts, uniq_idx, idx_representative = np.unique(
+      vertices, axis=0, return_index=True, return_inverse=True
+    )
+
+    face_vector_map = np.vectorize(lambda x: idx_representative[x])
+    eff_faces = face_vector_map(faces)
+    eff_faces = np.unique(eff_faces, axis=0)
+
+    # normal_vector_map = np.vectorize(lambda idx: normals[idx])
+    # eff_normals = normal_vector_map(uniq_idx)
+
+    return Mesh(eff_verts, eff_faces, None, id=self.id)
 
   @classmethod
   def from_precomputed(self, binary):
@@ -231,7 +270,7 @@ end_header
     render_window_interactor.SetRenderWindow(render_window)
 
     render_window.SetSize(1024, 1024)
-
+      
     renderer.AddActor(actor)
     renderer.SetBackground(0.1, 0.2, 0.3)  # Background color
 
