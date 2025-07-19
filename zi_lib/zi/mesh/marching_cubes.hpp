@@ -288,6 +288,8 @@ private:
                 std::size_t const sy, std::size_t const sz,
                 Tag const& order_tag)
     {
+        meshes_.reserve(sx * sy);
+
         constexpr std::array<PositionType, 8> cube_corners = {
             pack_coords(0, 0, 0), pack_coords(2, 0, 0), pack_coords(2, 0, 2),
             pack_coords(0, 0, 2), pack_coords(0, 2, 0), pack_coords(2, 2, 0),
