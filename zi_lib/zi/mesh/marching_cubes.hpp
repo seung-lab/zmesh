@@ -369,12 +369,14 @@ private:
                          (z * mask_traits::unit_z))
                         << 1;
 
+                    auto& face_list = meshes_[label];
+
                     for (std::size_t n = 0;
                          mc_triangle_table[c][n] != mc_triangle_table_end;
                          n += 3)
                     {
                         ++num_faces_;
-                        meshes_[label].emplace_back(
+                        face_list.emplace_back(
                             edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
                             edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
                             edge_midpoints[mc_triangle_table[c][n]] + cur);
