@@ -23,6 +23,9 @@ else:
     '-DNDEBUG',
   ]
 
+if sys.platform == 'darwin':
+  extra_compile_args += [ '-stdlib=libc++', '-mmacosx-version-min=10.9' ]
+
 include_dirs = [ str(NumpyImport()), 'zi_lib/', './' ]
 
 setuptools.setup(
