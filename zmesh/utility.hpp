@@ -7,6 +7,8 @@
 #include <cmath>
 #include <cstdint>
 
+namespace zmesh::utility {
+
 template <typename T = float>
 class Vec3 {
 public:
@@ -1113,5 +1115,6 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   return mesh_grid;
 }
 
+};
 
 #endif

@@ -16,7 +16,7 @@ cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
 
-cdef extern from "utility.hpp":
+cdef extern from "utility.hpp" namespace "zmesh::utility":
   cdef struct MeshObject:
     vector[float] points
     vector[float] normals
@@ -28,7 +28,7 @@ cdef extern from "utility.hpp":
     float cx, float cy, float cz
   ) except +
 
-cdef extern from "cMesher.hpp":
+cdef extern from "cMesher.hpp" namespace "zmesh":
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
     void mesh(

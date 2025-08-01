@@ -9,6 +9,8 @@
 
 #include "utility.hpp" // includes MeshObject def'n
 
+namespace zmesh {
+
 template <typename PositionType, typename LabelType, typename SimplifierType>
 class CMesher {
  private:
@@ -45,7 +47,7 @@ class CMesher {
     return marchingcubes_.pack_coords(x,y,z);
   }
 
-  MeshObject get_mesh(
+  zmesh::utility::MeshObject get_mesh(
     LabelType segid, 
     bool generate_normals,
     int simplification_factor,
@@ -56,7 +58,7 @@ class CMesher {
 
     // MC produces no triangles if either
     // none or all voxels were labeled.
-    MeshObject empty_obj;
+    zmesh::utility::MeshObject empty_obj;
     if (marchingcubes_.count(segid) == 0) { 
       return empty_obj;
     }
@@ -73,7 +75,7 @@ class CMesher {
     );
   }
 
-  MeshObject simplify(      
+  zmesh::utility::MeshObject simplify(      
       const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
       bool generate_normals,
       int simplification_factor,
@@ -85,7 +87,7 @@ class CMesher {
       bool transpose = true 
     ) {
 
-    MeshObject obj;
+    zmesh::utility::MeshObject obj;
 
     zi::mesh::int_mesh<PositionType, LabelType> im;
     im.add(triangles);
@@ -173,7 +175,7 @@ class CMesher {
     return obj;
   }
 
-  MeshObject simplify_points(
+  zmesh::utility::MeshObject simplify_points(
     const uint64_t* points,
     const size_t Nv,
     bool generate_normals,
@@ -215,5 +217,6 @@ class CMesher {
   }
 };
 
+};
 
 #endif
