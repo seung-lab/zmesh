@@ -235,15 +235,15 @@ Vec3<float> intersect(int axis, float plane_offset, const Vec3<float> &p, const 
   return p + (p - q) * t;
 }
 
-std::vector<Triangle> divideTriangle(
+std::vector<Triangle> divide_triangle(
   const int axis,
   const float plane_value,
   const Vec3<float>& v1,
   const Vec3<float>& v2,
   const Vec3<float>& v3
 ) {
-    Vec3<float> aboveVertices[3] = {v1, v2, v3};
-    Vec3<float> belowVertices[3] = {v1, v2, v3};
+    Vec3<float> aboveVertices[3] = {};
+    Vec3<float> belowVertices[3] = {};
     int aboveCount = 0, belowCount = 0;
 
     for (const auto& vertex : {v1, v2, v3}) {
@@ -266,28 +266,52 @@ std::vector<Triangle> divideTriangle(
       }
 
       i1 = intersect(axis, plane_value, aboveVertices[0], belowVertices[0]);
+
+      bool i1_degenerate = (
+        i1.get(axis) == aboveVertices[0].get(axis) 
+        || i1.get(axis) == belowVertices[0].get(axis)
+      );
+
       i2 = intersect(axis, plane_value, aboveVertices[1], belowVertices[0]);
 
-      if (i1.get(axis) < i2.get(axis)) {
+      bool i2_degenerate = (
+        i2.get(axis) == aboveVertices[1].get(axis) 
+        || i2.get(axis) == belowVertices[0].get(axis)
+      );
+
+      if (i1_degenerate && i2_degenerate) {
+        result.emplace_back(v1, v2, v3);
+      }
+      else if (i1_degenerate) {
         result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
-        result.emplace_back(aboveVertices[1], i1, i2);
+        result.emplace_back(belowVertices[0], i1, i2);
+      }
+      else if (i2_degenerate) {
+        result.emplace_back(aboveVertices[0], aboveVertices[1], i2);
+        result.emplace_back(belowVertices[0], i1, i2);
       }
       else {
-        result.emplace_back(aboveVertices[0], i1, i2);
-        result.emplace_back(aboveVertices[0], aboveVertices[1], i2);
+        if (i1.get(axis) < i2.get(axis)) {
+          result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
+          result.emplace_back(aboveVertices[1], i1, i2);
+        }
+        else {
+          result.emplace_back(aboveVertices[0], i1, i2);
+          result.emplace_back(aboveVertices[0], aboveVertices[1], i2);
+        }
+        result.emplace_back(belowVertices[0], i1, i2);
       }
-      result.emplace_back(belowVertices[0], i1, i2);
     }
 
     return result;
 }
 
-auto divideTriangle(  
+auto divide_triangle(  
   const int axis,
   const float plane_value,
   const Triangle& tri
 ) {
-  return divideTriangle(axis, plane_value, tri.v1, tri.v2, tri.v3);
+  return divide_triangle(axis, plane_value, tri.v1, tri.v2, tri.v3);
 }
 
 // more elegant algorithmically, but not the fastest or simpliest
@@ -334,7 +358,7 @@ void resect_triangle_iterative(
   for (uint32_t x = gxs; x <= gxe; x++) {
     float xplane = minpt.x + x * cs.x;
     for (auto tri : cur_tris) {
-      auto new_tris = divideTriangle(0, xplane, tri);
+      auto new_tris = divide_triangle(0, xplane, tri);
       next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
     }
     std::swap(cur_tris, next_tris);
@@ -344,7 +368,7 @@ void resect_triangle_iterative(
   for (uint32_t y = gys; y <= gye; y++) {
     float yplane = minpt.y + y * cs.y;
     for (auto tri : cur_tris) {
-      auto new_tris = divideTriangle(1, yplane, tri);
+      auto new_tris = divide_triangle(1, yplane, tri);
       next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
     }
     std::swap(cur_tris, next_tris);
@@ -354,7 +378,7 @@ void resect_triangle_iterative(
   for (uint32_t z = gzs; z <= gze; z++) {
     float zplane = minpt.z + z * cs.z;
     for (auto tri : cur_tris) {
-      auto new_tris = divideTriangle(2, zplane, tri);
+      auto new_tris = divide_triangle(2, zplane, tri);
       next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
     }
     std::swap(cur_tris, next_tris);
