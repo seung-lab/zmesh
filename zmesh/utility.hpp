@@ -993,6 +993,7 @@ void fix_single_outlier(
   }
 }
 
+// cx = chunk size x, etc
 std::vector<MeshObject> chunk_mesh_accelerated(
   const float* vertices, 
   const uint64_t num_vertices,
@@ -1000,6 +1001,10 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   const uint64_t num_faces,
   const float cx, const float cy, const float cz
 ) {
+
+  if (cx <= 0 || cy <= 0 || cz <= 0) {
+    throw std::runtime_error("Chunk size must have a positive non-zero volume.");
+  }
 
   const Vec3 cs(cx,cy,cz);
 
