@@ -242,65 +242,73 @@ std::vector<Triangle> divide_triangle(
   const Vec3<float>& v2,
   const Vec3<float>& v3
 ) {
-    Vec3<float> aboveVertices[3] = {};
-    Vec3<float> belowVertices[3] = {};
-    int aboveCount = 0, belowCount = 0;
+    Vec3<float> above_verts[3] = {};
+    Vec3<float> below_verts[3] = {};
+    Vec3<float> equal_verts[3] = {};
+
+    constexpr float epsilon = 1e-5;
+    int aboveCount = 0, belowCount = 0, equalCount = 0;
 
     for (const auto& vertex : {v1, v2, v3}) {
-        if (vertex.get(axis) > plane_value) {
-            aboveVertices[aboveCount++] = vertex;
-        } else {
-            belowVertices[belowCount++] = vertex;
-        }
+      const float dist = vertex.get(axis) - plane_value;
+
+      if (std::abs(dist) < epsilon) {
+        equal_verts[equalCount++] = vertex;
+      }
+      else if (dist > 0) {
+        above_verts[aboveCount++] = vertex;
+      } 
+      else {
+        below_verts[belowCount++] = vertex;
+      }
     }
 
     std::vector<Triangle> result;
     Vec3 i1, i2;
 
-    if (aboveCount == 3 || belowCount == 3) {
+    // note: if plane slices very close to a vertex but not within epsilon,
+    // an ugly thin triangle will result. fix this later by setting some 
+    // threshold for drawing two triangles.
+    if (
+         aboveCount == 3 
+      || belowCount == 3 
+      || equalCount >= 2 
+      || (equalCount == 1 && (aboveCount == 2 || belowCount == 2))
+    ) {
       result.emplace_back(v1, v2, v3);
     }
+    else if (equalCount == 1) {
+      i1 = intersect(axis, plane_value, above_verts[0], below_verts[0]);
+
+      result.emplace_back(equal_verts[0], i1, above_verts[0]);
+      result.emplace_back(below_verts[0], i1, below_verts[0]);
+    }
+    else if (aboveCount == 2) {
+      i1 = intersect(axis, plane_value, above_verts[0], below_verts[0]);
+      i2 = intersect(axis, plane_value, above_verts[1], below_verts[0]);
+
+      if (i1.get(axis) > i2.get(axis)) {
+
+        std::swap(i1, i2);
+        std::swap(above_verts[0], above_verts[1]);
+      }
+
+      result.emplace_back(i1, i2, below_verts[0]);
+      result.emplace_back(i1, above_verts[0], i2);
+      result.emplace_back(i2, above_verts[0], above_verts[1]);
+    }
     else {
-      if (belowCount == 2 && aboveCount == 1) {
-        std::swap(aboveVertices, belowVertices);
+      i1 = intersect(axis, plane_value, below_verts[0], above_verts[0]);
+      i2 = intersect(axis, plane_value, below_verts[1], above_verts[0]);
+
+      if (i1.get(axis) > i2.get(axis)) {
+        std::swap(i1, i2);
+        std::swap(below_verts[0], below_verts[1]);
       }
 
-      i1 = intersect(axis, plane_value, aboveVertices[0], belowVertices[0]);
-
-      bool i1_degenerate = (
-        i1.get(axis) == aboveVertices[0].get(axis) 
-        || i1.get(axis) == belowVertices[0].get(axis)
-      );
-
-      i2 = intersect(axis, plane_value, aboveVertices[1], belowVertices[0]);
-
-      bool i2_degenerate = (
-        i2.get(axis) == aboveVertices[1].get(axis) 
-        || i2.get(axis) == belowVertices[0].get(axis)
-      );
-
-      if (i1_degenerate && i2_degenerate) {
-        result.emplace_back(v1, v2, v3);
-      }
-      else if (i1_degenerate) {
-        result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
-        result.emplace_back(belowVertices[0], i1, i2);
-      }
-      else if (i2_degenerate) {
-        result.emplace_back(aboveVertices[0], aboveVertices[1], i2);
-        result.emplace_back(belowVertices[0], i1, i2);
-      }
-      else {
-        if (i1.get(axis) < i2.get(axis)) {
-          result.emplace_back(aboveVertices[0], aboveVertices[1], i1);
-          result.emplace_back(aboveVertices[1], i1, i2);
-        }
-        else {
-          result.emplace_back(aboveVertices[0], i1, i2);
-          result.emplace_back(aboveVertices[0], aboveVertices[1], i2);
-        }
-        result.emplace_back(belowVertices[0], i1, i2);
-      }
+      result.emplace_back(i1, i2, below_verts[0]);
+      result.emplace_back(i2, below_verts[1], below_verts[0]);
+      result.emplace_back(i2, i1, above_verts[0]);
     }
 
     return result;
