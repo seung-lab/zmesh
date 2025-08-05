@@ -242,29 +242,36 @@ std::vector<Triangle> divide_triangle(
   const Vec3<float>& v2,
   const Vec3<float>& v3
 ) {
-    Vec3<float> above_verts[3] = {};
-    Vec3<float> below_verts[3] = {};
-    Vec3<float> equal_verts[3] = {};
+    static thread_local uint8_t above[3] = {};
+    static thread_local uint8_t below[3] = {};
+    static thread_local uint8_t equal[3] = {};
+    const Vec3<float> verts[3] = { v1, v2, v3 };
 
     constexpr float epsilon = 1e-5;
     int aboveCount = 0, belowCount = 0, equalCount = 0;
 
-    for (const auto& vertex : {v1, v2, v3}) {
+    uint8_t i = 0;
+    for (const auto& vertex : verts) {
       const float dist = vertex.get(axis) - plane_value;
 
       if (std::abs(dist) < epsilon) {
-        equal_verts[equalCount++] = vertex;
+        equal[equalCount++] = i;
       }
       else if (dist > 0) {
-        above_verts[aboveCount++] = vertex;
+        above[aboveCount++] = i;
       } 
       else {
-        below_verts[belowCount++] = vertex;
+        below[belowCount++] = i;
       }
+      i++;
     }
 
     std::vector<Triangle> result;
     Vec3 i1, i2;
+
+    // note: we are exploting the fact that zmesh gives us consistent winding
+    // from the start. if the mesh is not consistent already, it will not be 
+    // made consistent by this procedure.
 
     // note: if plane slices very close to a vertex but not within epsilon,
     // an ugly thin triangle will result. fix this later by setting some 
@@ -278,37 +285,47 @@ std::vector<Triangle> divide_triangle(
       result.emplace_back(v1, v2, v3);
     }
     else if (equalCount == 1) {
-      i1 = intersect(axis, plane_value, above_verts[0], below_verts[0]);
+      int v1i, v2i, v3i;
 
-      result.emplace_back(equal_verts[0], i1, above_verts[0]);
-      result.emplace_back(below_verts[0], i1, below_verts[0]);
+      if (equal[0] == 0) {
+        v1i = 0; v2i = 1; v3i = 2;
+      } else if (equal[0] == 1) {
+        v1i = 1; v2i = 2; v3i = 0;
+      } else {
+        v1i = 2; v2i = 0; v3i = 1;
+      }
+
+      const Vec3<float>& a = verts[v1i];
+      const Vec3<float>& b = verts[v2i];
+      const Vec3<float>& c = verts[v3i];
+
+      i1 = intersect(axis, plane_value, b, c);
+      result.emplace_back(a, b, i1);
+      result.emplace_back(a, i1, c);
     }
     else if (aboveCount == 2) {
-      i1 = intersect(axis, plane_value, above_verts[0], below_verts[0]);
-      i2 = intersect(axis, plane_value, above_verts[1], below_verts[0]);
+      const Vec3<float>& a = verts[below[0]];
+      const Vec3<float>& b = verts[above[0]];
+      const Vec3<float>& c = verts[above[1]];
 
-      if (i1.get(axis) > i2.get(axis)) {
+      i1 = intersect(axis, plane_value, a, b);
+      i2 = intersect(axis, plane_value, a, c);
 
-        std::swap(i1, i2);
-        std::swap(above_verts[0], above_verts[1]);
-      }
-
-      result.emplace_back(i1, i2, below_verts[0]);
-      result.emplace_back(i1, above_verts[0], i2);
-      result.emplace_back(i2, above_verts[0], above_verts[1]);
+      result.emplace_back(a, i1, i2);
+      result.emplace_back(i1, i2, b);
+      result.emplace_back(b, i2, c);
     }
     else {
-      i1 = intersect(axis, plane_value, below_verts[0], above_verts[0]);
-      i2 = intersect(axis, plane_value, below_verts[1], above_verts[0]);
+      const Vec3<float>& a = verts[above[0]];
+      const Vec3<float>& b = verts[below[0]];
+      const Vec3<float>& c = verts[below[1]];
 
-      if (i1.get(axis) > i2.get(axis)) {
-        std::swap(i1, i2);
-        std::swap(below_verts[0], below_verts[1]);
-      }
+      i1 = intersect(axis, plane_value, a, b);
+      i2 = intersect(axis, plane_value, a, c);
 
-      result.emplace_back(i1, i2, below_verts[0]);
-      result.emplace_back(i2, below_verts[1], below_verts[0]);
-      result.emplace_back(i2, i1, above_verts[0]);
+      result.emplace_back(a, i1, i2);
+      result.emplace_back(i1, i2, b);
+      result.emplace_back(b, i2, c);
     }
 
     return result;
