@@ -242,9 +242,9 @@ std::vector<Triangle> divide_triangle(
   const Vec3<float>& v2,
   const Vec3<float>& v3
 ) {
-    static thread_local uint8_t above[3] = {};
-    static thread_local uint8_t below[3] = {};
-    static thread_local uint8_t equal[3] = {};
+    uint8_t above[3] = {};
+    uint8_t below[3] = {};
+    uint8_t equal[3] = {};
     const Vec3<float> verts[3] = { v1, v2, v3 };
 
     constexpr float epsilon = 1e-5;
@@ -312,8 +312,8 @@ std::vector<Triangle> divide_triangle(
       i2 = intersect(axis, plane_value, a, c);
 
       result.emplace_back(a, i1, i2);
-      result.emplace_back(i1, i2, b);
-      result.emplace_back(b, i2, c);
+      result.emplace_back(i1, b, i2);
+      result.emplace_back(i2, b, c);
     }
     else {
       const Vec3<float>& a = verts[above[0]];
