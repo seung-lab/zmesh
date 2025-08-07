@@ -311,9 +311,21 @@ std::vector<Triangle> divide_triangle(
       i1 = intersect(axis, plane_value, a, b);
       i2 = intersect(axis, plane_value, a, c);
 
-      result.emplace_back(a, i1, i2);
-      result.emplace_back(i1, b, i2);
-      result.emplace_back(i2, b, c);
+      const int next = (below[0] == 2) 
+        ? 0 
+        : below[0] + 1;
+      const bool ccw = (above[0] == next);
+
+      if (ccw) {
+        result.emplace_back(a, i1, i2);
+        result.emplace_back(i1, b, i2);
+        result.emplace_back(i2, b, c);        
+      }
+      else {
+        result.emplace_back(a, i2, i1);
+        result.emplace_back(i2, b, i1);
+        result.emplace_back(c, b, i2);
+      }
     }
     else {
       const Vec3<float>& a = verts[above[0]];
@@ -323,9 +335,21 @@ std::vector<Triangle> divide_triangle(
       i1 = intersect(axis, plane_value, a, b);
       i2 = intersect(axis, plane_value, a, c);
 
-      result.emplace_back(i1, a, i2);
-      result.emplace_back(i1, i2, b);
-      result.emplace_back(b, i2, c);
+      const int next = (above[0] == 2) 
+        ? 0 
+        : above[0] + 1;
+      const bool ccw = (below[0] == next);
+
+      if (ccw) {
+        result.emplace_back(i1, a, i2);
+        result.emplace_back(i1, i2, b);
+        result.emplace_back(b, i2, c);
+      }
+      else {
+        result.emplace_back(a, i2, i1);
+        result.emplace_back(i1, i2, b);
+        result.emplace_back(c, b, i2);
+      }
     }
 
     return result;
