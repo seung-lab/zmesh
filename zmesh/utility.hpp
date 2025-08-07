@@ -219,7 +219,7 @@ struct MeshObject {
   unsigned int last_face() const {
     return (points.size() > 0) 
       ? ((points.size() - 1) / 3)
-      : 0;
+      : -1;
   }
 };
 
