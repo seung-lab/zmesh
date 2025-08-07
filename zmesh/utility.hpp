@@ -231,8 +231,8 @@ Vec3<int32_t> zone2grid(int32_t zone, const Vec3<int32_t>& gs) {
 }
 
 Vec3<float> intersect(int axis, float plane_offset, const Vec3<float> &p, const Vec3<float> &q) {
-  float t = (plane_offset - p.get(axis)) / (p.get(axis) - q.get(axis));
-  return p + (p - q) * t;
+  float t = (plane_offset - p.get(axis)) / (q.get(axis) - p.get(axis));
+  return p + (q - p) * t;
 }
 
 std::vector<Triangle> divide_triangle(
@@ -323,7 +323,7 @@ std::vector<Triangle> divide_triangle(
       i1 = intersect(axis, plane_value, a, b);
       i2 = intersect(axis, plane_value, a, c);
 
-      result.emplace_back(a, i1, i2);
+      result.emplace_back(i1, a, i2);
       result.emplace_back(i1, i2, b);
       result.emplace_back(b, i2, c);
     }
