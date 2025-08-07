@@ -22,6 +22,12 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
     vector[float] normals
     vector[unsigned int] faces
 
+  cdef vector[MeshObject] chunk_mesh_accelerated_simplified(
+    float* vertices, uint64_t num_vertices,
+    unsigned int* faces, uint64_t num_faces,
+    float cx, float cy, float cz
+  ) except +
+
   cdef vector[MeshObject] chunk_mesh_accelerated(
     float* vertices, uint64_t num_vertices,
     unsigned int* faces, uint64_t num_faces,
@@ -77,7 +83,7 @@ def chunk_mesh(
   if faces.size % 3 != 0:
     raise ValueError(f"Invalid faces array. Must be a multiple of 3. Got: {faces.size}")
 
-  cdef vector[MeshObject] objs = chunk_mesh_accelerated(
+  cdef vector[MeshObject] objs = chunk_mesh_accelerated_simplified(
     <float*>&vertices[0], mesh.vertices.shape[0],
     <unsigned int*>&faces[0], mesh.faces.shape[0],
     chunk_size[0], chunk_size[1], chunk_size[2]  

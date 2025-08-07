@@ -1043,6 +1043,84 @@ void fix_single_outlier(
 }
 
 // cx = chunk size x, etc
+std::vector<MeshObject> chunk_mesh_accelerated_simplified(
+  const float* vertices, 
+  const uint64_t num_vertices,
+  const unsigned int* faces,
+  const uint64_t num_faces,
+  const float cx, const float cy, const float cz
+) {
+
+  if (cx <= 0 || cy <= 0 || cz <= 0) {
+    throw std::runtime_error("Chunk size must have a positive non-zero volume.");
+  }
+
+  const Vec3 cs(cx,cy,cz);
+
+  float min_x = INFINITY;
+  float min_y = INFINITY;
+  float min_z = INFINITY;
+  float max_x = -INFINITY;
+  float max_y = -INFINITY;
+  float max_z = -INFINITY;
+
+  for (uint64_t i = 0; i < num_vertices * 3; i += 3) {
+    min_x = std::min(min_x, vertices[i]);
+    max_x = std::max(max_x, vertices[i]);
+
+    min_y = std::min(min_y, vertices[i+1]);
+    max_y = std::max(max_y, vertices[i+1]);
+
+    min_z = std::min(min_z, vertices[i+2]);
+    max_z = std::max(max_z, vertices[i+2]);
+  }
+
+  const Vec3 minpt(min_x, min_y, min_z);
+
+  const int32_t gx = std::max(static_cast<int32_t>(std::ceil((max_x - min_x) / cx)), static_cast<int32_t>(1));
+  const int32_t gy = std::max(static_cast<int32_t>(std::ceil((max_y - min_y) / cy)), static_cast<int32_t>(1));
+  const int32_t gz = std::max(static_cast<int32_t>(std::ceil((max_z - min_z) / cz)), static_cast<int32_t>(1));
+
+  const Vec3<int32_t> gs(gx,gy,gz);
+
+  std::vector<int32_t> zones(num_vertices);
+
+  const float icx = 1 / cx;
+  const float icy = 1 / cy;
+  const float icz = 1 / cz;
+
+  for (uint64_t i = 0, j = 0; j < num_vertices; i += 3, j++) {
+    int ix = static_cast<int>((vertices[i] - min_x) * icx) ;
+    int iy = static_cast<int>((vertices[i+1] - min_y) * icy);
+    int iz = static_cast<int>((vertices[i+2] - min_z) * icz);
+
+    ix = std::min(std::max(ix, static_cast<int>(0)), static_cast<int>(gx - 1));
+    iy = std::min(std::max(iy, static_cast<int>(0)), static_cast<int>(gy - 1));
+    iz = std::min(std::max(iz, static_cast<int>(0)), static_cast<int>(gz - 1));
+
+    zones[j] = ix + gx * (iy + gy * iz);
+  }
+
+  std::vector<MeshObject> mesh_grid(gx * gy * gz);
+  
+  for (uint64_t i = 0; i < num_faces * 3; i += 3) {
+    auto f1 = faces[i+0];
+    auto f2 = faces[i+1];
+    auto f3 = faces[i+2];
+
+    resect_triangle_iterative(
+      vertices, minpt, 
+      zones,
+      mesh_grid, cs, gs,
+      f1, f2, f3
+    );
+  }
+
+  return mesh_grid;
+}
+
+
+// cx = chunk size x, etc
 std::vector<MeshObject> chunk_mesh_accelerated(
   const float* vertices, 
   const uint64_t num_vertices,
@@ -1122,48 +1200,52 @@ std::vector<MeshObject> chunk_mesh_accelerated(
     auto f2 = faces[i+1];
     auto f3 = faces[i+2];
 
-    if (!(zones[f1] == zones[f2] && zones[f1] == zones[f3])) {
-      if (zones[f1] == zones[f2]) {
-        fix_single_outlier(
-          vertices, minpt, 
-          face_remap, zones, 
-          mesh_grid, cs, gs,
-          f1, f2, f3, 1
-        );
-      }
-      else if (zones[f1] == zones[f3]) {
-        fix_single_outlier(
-          vertices, minpt, 
-          face_remap, zones, 
-          mesh_grid, cs, gs,
-          f1, f3, f2, 2
-        );
-      }
-      else if (zones[f2] == zones[f3]) {
-        fix_single_outlier(
-          vertices, minpt, 
-          face_remap, zones, 
-          mesh_grid, cs, gs,
-          f2, f3, f1, 3
-        );
-      }
-      else {
-        fix_all_different(
-          vertices, minpt, 
-          face_remap, zones, 
-          mesh_grid, cs, gs,
-          f1, f2, f3
-        );
-      }
-
+    if (zones[f1] == zones[f2] && zones[f1] == zones[f3]) {
+      printf("HERE\n");
+      auto zone = zones[f1];
+      MeshObject& obj = mesh_grid[zone];
+      obj.faces.push_back(face_remap[f1]);
+      obj.faces.push_back(face_remap[f2]);
+      obj.faces.push_back(face_remap[f3]);
       continue;
     }
-
-    auto zone = zones[f1];
-    MeshObject& obj = mesh_grid[zone];
-    obj.faces.push_back(face_remap[f1]);
-    obj.faces.push_back(face_remap[f2]);
-    obj.faces.push_back(face_remap[f3]);
+    
+    if (zones[f1] == zones[f2]) {
+      printf("HERE 1\n");
+      fix_single_outlier(
+        vertices, minpt, 
+        face_remap, zones, 
+        mesh_grid, cs, gs,
+        f1, f2, f3, 1
+      );
+    }
+    else if (zones[f1] == zones[f3]) {
+      printf("HERE 2\n");
+      fix_single_outlier(
+        vertices, minpt, 
+        face_remap, zones, 
+        mesh_grid, cs, gs,
+        f1, f3, f2, 2
+      );
+    }
+    else if (zones[f2] == zones[f3]) {
+      printf("HERE 3\n");
+      fix_single_outlier(
+        vertices, minpt, 
+        face_remap, zones, 
+        mesh_grid, cs, gs,
+        f2, f3, f1, 3
+      );
+    }
+    else {
+      printf("HERE 4\n");
+      fix_all_different(
+        vertices, minpt, 
+        face_remap, zones, 
+        mesh_grid, cs, gs,
+        f1, f2, f3
+      );
+    }
   }
 
   return mesh_grid;
