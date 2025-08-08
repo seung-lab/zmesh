@@ -117,14 +117,25 @@ public:
   T min() const {
     return std::min(x,std::min(y,z));
   }
-  float norm() const {
+  float len() const {
     return sqrt(x*x + y*y + z*z);
   }
-  float norm2() const {
+  float len2() const {
     return x*x + y*y + z*z;
   }
+  Vec3 hat() {
+    float l = len();
+    Vec3 ret(x,y,z);
+    if (l == 1) {
+      return ret;
+    }
+    ret.x /= l;
+    ret.y /= l;
+    ret.z /= l;
+    return ret;
+  }
   bool close(const Vec3& o) const {
-    return (*this - o).norm2() < 1e-4;
+    return (*this - o).len2() < 1e-4;
   }
   Vec3 cross(const Vec3& o) const {
     return Vec3(
