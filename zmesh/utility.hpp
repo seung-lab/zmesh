@@ -266,8 +266,6 @@ std::vector<Triangle> divide_triangle(
       i++;
     }
 
-    const Vec3<float> normal = (v2 - v1).cross(v3 - v1);
-
     std::vector<Triangle> result;
     Vec3 i1, i2;
 
@@ -313,7 +311,8 @@ std::vector<Triangle> divide_triangle(
       i1 = intersect(axis, plane_value, a, b);
       i2 = intersect(axis, plane_value, a, c);
 
-      Vec3<float> subnormal = (b - a).cross(c - a);
+      const Vec3<float> normal = (v2 - v1).cross(v3 - v1);
+      const Vec3<float> subnormal = (b - a).cross(c - a);
       const bool ccw = (subnormal.dot(normal) > 0);
 
       // const int next = (below[0] == 2) 
@@ -340,7 +339,8 @@ std::vector<Triangle> divide_triangle(
       i1 = intersect(axis, plane_value, a, b);
       i2 = intersect(axis, plane_value, a, c);
 
-      Vec3<float> subnormal = (b - a).cross(c - a);
+      const Vec3<float> normal = (v2 - v1).cross(v3 - v1);
+      const Vec3<float> subnormal = (b - a).cross(c - a);
       const bool ccw = (subnormal.dot(normal) > 0);
 
       if (ccw) {
