@@ -326,11 +326,6 @@ std::vector<Triangle> divide_triangle(
       const Vec3<float> subnormal = (b - a).cross(c - a);
       const bool ccw = (subnormal.dot(normal) > 0);
 
-      // const int next = (below[0] == 2) 
-      //   ? 0 
-      //   : below[0] + 1;
-      // const bool ccw = (above[0] == next);
-
       if (ccw) {
         result.emplace_back(a, i1, i2);
         result.emplace_back(i1, b, i2);
