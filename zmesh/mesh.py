@@ -93,6 +93,8 @@ class Mesh:
     uniq_f = set(fastremap.unique(self.faces))
     all_f = set(np.arange(len(self.vertices)))
     unreferenced_f = sorted(all_f - uniq_f)
+    del uniq_f
+    del all_f
 
     faces = self.faces.copy()
     for f in unreferenced_f:
