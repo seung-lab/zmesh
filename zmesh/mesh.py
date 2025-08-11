@@ -115,17 +115,18 @@ class Mesh:
     if self.is_empty():
       return Mesh([], [], normals=None)
 
-    uniq_f = set(fastremap.unique(self.faces))
-    all_f = set(np.arange(len(self.vertices)))
-    unreferenced_f = sorted(all_f - uniq_f)
-    del uniq_f
-    del all_f
-
-    faces = self.faces.copy()
-    for f in unreferenced_f:
-      faces[faces > f] -= 1
+    visited_faces = np.zeros([len(self.vertices)], dtype=bool)
+    visited_faces[self.faces] = True
+    unreferenced_f = np.where(visited_faces == False)[0]
 
     verts = np.delete(self.vertices, unreferenced_f, axis=0)
+
+    mapping = np.cumsum(visited_faces)
+    mapping -= 1
+
+    faces = self.faces.copy()
+    faces = mapping[faces]
+
     return Mesh(verts, faces, None)
 
   def remove_degenerate_faces(self) -> "Mesh":
