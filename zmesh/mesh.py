@@ -1,7 +1,6 @@
 import numpy as np
 import re
 import struct
-import fastremap
 
 class Mesh:
   """
@@ -85,6 +84,32 @@ class Mesh:
     # normals = np.concatenate([ mesh.normals for mesh in meshes ])
 
     return Mesh(vertices, faces, None, id=id)
+
+  def merge_close_vertices(self, radius:float = 1e-5) -> "Mesh":
+    """Merge vertices that are closer to each other than radius."""
+    from scipy.spatial import cKDTree as KDTree
+
+    if radius is None:
+      radius = np.inf
+
+    if radius is not None and radius <= 0:
+      raise ValueError("radius must be greater than zero: " + str(radius))
+
+    mesh = self.consolidate()
+
+    tree = KDTree(mesh.vertices)
+    pairs = tree.query_pairs(
+      r=radius,
+      p=2, # euclidean distance
+      eps=0, # approximate search
+      output_type='ndarray',
+    )
+
+    remap = np.arange(len(mesh.vertices), dtype=np.uint32)
+    remap[pairs[:,1]] = pairs[:,0]
+
+    mesh.faces = remap[mesh.faces]
+    return mesh.consolidate()
 
   def remove_unreferenced_vertices(self) -> "Mesh":
     if self.is_empty():
