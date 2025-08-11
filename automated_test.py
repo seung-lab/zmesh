@@ -319,6 +319,29 @@ def test_chunk_shape():
     m.is_empty() for m in meshes.values()
   ])
 
+def test_delete_unreference_vertices():
+  vertices = [
+    [0,0,0],
+    [0,1,0],
+    [1,0,0],
+    [5,5,5],
+    [7,7,7],
+    [8,7,7],
+    [7,8,8],
+  ]
+  faces = [[0,1,2],[4,5,6]]
+
+  mesh = zmesh.Mesh(vertices=vertices, faces=faces, normals=None)
+  res = mesh.remove_unreferenced_vertices()
+
+  ans_verts = vertices[:3] + vertices[4:]
+  ans_faces = [[0,1,2],[3,4,5]]
+
+  assert res.vertices.shape == (6,3)
+  assert res.faces.shape == (2,3)
+  assert np.all(res.vertices == np.array(ans_verts))
+  assert np.all(res.faces == np.array(ans_faces))
+
 def test_chunk_mesh_triangle():
   vertices = [
     [0,0,0],
