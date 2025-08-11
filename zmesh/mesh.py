@@ -102,6 +102,7 @@ class Mesh:
     return Mesh(verts, faces, None)
 
   def remove_degenerate_faces(self) -> "Mesh":
+    """Remove faces that reference the same vertex two or three times."""
     if self.is_empty():
       return Mesh([], [], normals=None)
 
