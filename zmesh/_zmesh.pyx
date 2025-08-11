@@ -25,13 +25,8 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
   cdef vector[MeshObject] chunk_mesh_accelerated(
     float* vertices, uint64_t num_vertices,
     unsigned int* faces, uint64_t num_faces,
-    float cx, float cy, float cz
-  ) except +
-
-  cdef vector[MeshObject] chunk_mesh_accelerated(
-    float* vertices, uint64_t num_vertices,
-    unsigned int* faces, uint64_t num_faces,
-    float cx, float cy, float cz
+    float cx, float cy, float cz,
+    float ox, float oy, float oz
   ) except +
 
 cdef extern from "cMesher.hpp" namespace "zmesh":
@@ -69,6 +64,7 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
 def chunk_mesh(
   mesh:Mesh,
   chunk_size:Sequence[float],
+  grid_origin:Optional[tuple[float,float,float]] = None,
 ) -> Dict[Tuple[int,int,int], Mesh]:
   
   vert_order = 'C' if mesh.vertices.flags.c_contiguous else 'F'
@@ -83,10 +79,17 @@ def chunk_mesh(
   if faces.size % 3 != 0:
     raise ValueError(f"Invalid faces array. Must be a multiple of 3. Got: {faces.size}")
 
+  minpt = np.min(mesh.vertices, axis=0)
+  maxpt = np.max(mesh.vertices, axis=0)
+
+  if grid_origin is None:
+    grid_origin = minpt
+
   cdef vector[MeshObject] objs = chunk_mesh_accelerated(
     <float*>&vertices[0], mesh.vertices.shape[0],
     <unsigned int*>&faces[0], mesh.faces.shape[0],
-    chunk_size[0], chunk_size[1], chunk_size[2]  
+    chunk_size[0], chunk_size[1], chunk_size[2],
+    grid_origin[0], grid_origin[1], grid_origin[2]
   )
 
   def norm(msh):
@@ -101,10 +104,7 @@ def chunk_mesh(
       m.id = msh.id
     return m
   
-  minpt = np.min(mesh.vertices, axis=0)
-  maxpt = np.max(mesh.vertices, axis=0)
-
-  grid_size = np.ceil((maxpt - minpt) / np.array(chunk_size)).astype(int)
+  grid_size = np.ceil((maxpt - grid_origin) / np.array(chunk_size)).astype(int)
   grid_size = np.maximum(grid_size, [1,1,1])
 
   chunked_meshes = {}

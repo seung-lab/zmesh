@@ -2,10 +2,11 @@
 #define __ZMESH_UTILITY_HPP__
 
 #include <algorithm>
-#include <vector>
-#include <limits>
 #include <cmath>
 #include <cstdint>
+#include <limits>
+#include <optional>
+#include <vector>
 
 namespace zmesh::utility {
 
@@ -470,7 +471,10 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   const uint64_t num_vertices,
   const unsigned int* faces,
   const uint64_t num_faces,
-  const float cx, const float cy, const float cz
+  const float cx, const float cy, const float cz,
+  const std::optional<float> origin_x = std::nullopt, 
+  const std::optional<float> origin_y = std::nullopt, 
+  const std::optional<float> origin_z = std::nullopt
 ) {
 
   if (cx <= 0 || cy <= 0 || cz <= 0) {
@@ -495,6 +499,16 @@ std::vector<MeshObject> chunk_mesh_accelerated(
 
     min_z = std::min(min_z, vertices[i+2]);
     max_z = std::max(max_z, vertices[i+2]);
+  }
+
+  if (origin_x.has_value()) {
+    min_x = *origin_x;
+  }
+  if (origin_y.has_value()) {
+    min_y = *origin_y;
+  }
+  if (origin_z.has_value()) {
+    min_z = *origin_z;
   }
 
   const Vec3 minpt(min_x, min_y, min_z);
