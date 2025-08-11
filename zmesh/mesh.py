@@ -85,8 +85,19 @@ class Mesh:
 
     return Mesh(vertices, faces, None, id=id)
 
-  def consolidate(self):
-    """Remove duplicate vertices and faces. Returns a new mesh object."""
+  def remove_degenerate_faces(self) -> "Mesh":
+    if self.is_empty():
+      return Mesh([], [], normals=None)
+
+    # find degenerate faces
+    f = self.faces
+    index = np.where((f[:,0] == f[:,1]) | (f[:,1] == f[:,2]) | (f[:,0] == f[:,2]))
+    f = np.delete(f, index, axis=0)
+
+    return Mesh(self.vertices, f, self.normals, id=self.id)
+
+  def consolidate(self) -> "Mesh":
+    """Remove duplicate vertices and faces and degenerate faces. Returns a new mesh object."""
     if self.is_empty():
       return Mesh([], [], normals=None)
 
@@ -102,17 +113,14 @@ class Mesh:
     eff_faces = face_vector_map(faces)
     eff_faces = np.unique(eff_faces, axis=0)
 
-    # find degenerate faces
-    f = eff_faces
-    index = np.where((f[:,0] == f[:,1]) | (f[:,1] == f[:,2]) | (f[:,0] == f[:,2]))
-    del f
+    eff_normals = None
+    if normals:
+      normal_vector_map = np.vectorize(lambda idx: normals[idx])
+      eff_normals = normal_vector_map(uniq_idx)
 
-    eff_faces = np.delete(eff_faces, index, axis=0)
+    mesh = Mesh(eff_verts, eff_faces, eff_normals, id=self.id)
 
-    # normal_vector_map = np.vectorize(lambda idx: normals[idx])
-    # eff_normals = normal_vector_map(uniq_idx)
-
-    return Mesh(eff_verts, eff_faces, None, id=self.id)
+    return mesh.remove_degenerate_faces()
 
   @classmethod
   def from_precomputed(self, binary):
