@@ -1,6 +1,7 @@
 import numpy as np
 import re
 import struct
+import fastremap
 
 class Mesh:
   """
@@ -84,6 +85,21 @@ class Mesh:
     # normals = np.concatenate([ mesh.normals for mesh in meshes ])
 
     return Mesh(vertices, faces, None, id=id)
+
+  def remove_unreferenced_vertices(self) -> "Mesh":
+    if self.is_empty():
+      return Mesh([], [], normals=None)
+
+    uniq_f = set(fastremap.unique(self.faces))
+    all_f = set(np.arange(len(self.vertices)))
+    unreferenced_f = sorted(all_f - uniq_f)
+
+    faces = self.faces.copy()
+    for f in unreferenced_f:
+      faces[faces > f] -= 1
+
+    verts = np.delete(self.vertices, unreferenced_f, axis=0)
+    return Mesh(verts, faces, None)
 
   def remove_degenerate_faces(self) -> "Mesh":
     if self.is_empty():
