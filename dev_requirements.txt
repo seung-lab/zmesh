@@ -1,4 +1,5 @@
 cython
+fastremap
 pytest
 Jinja2
 tox
