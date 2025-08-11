@@ -102,6 +102,13 @@ class Mesh:
     eff_faces = face_vector_map(faces)
     eff_faces = np.unique(eff_faces, axis=0)
 
+    # find degenerate faces
+    f = eff_faces
+    index = np.where((f[:,0] == f[:,1]) | (f[:,1] == f[:,2]) | (f[:,0] == f[:,2]))
+    del f
+
+    eff_faces = np.delete(eff_faces, index, axis=0)
+
     # normal_vector_map = np.vectorize(lambda idx: normals[idx])
     # eff_normals = normal_vector_map(uniq_idx)
 
