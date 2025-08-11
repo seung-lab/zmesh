@@ -2,6 +2,8 @@
 # distutils: language = c++
 import cython
 
+from typing import List, Tuple, Sequence
+
 from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
 from libcpp.vector cimport vector
 from libcpp cimport bool
@@ -14,12 +16,25 @@ cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
 
-cdef extern from "cMesher.hpp":
+cdef extern from "utility.hpp" namespace "zmesh::utility":
   cdef struct MeshObject:
     vector[float] points
     vector[float] normals
     vector[unsigned int] faces
 
+  cdef vector[MeshObject] chunk_mesh_accelerated(
+    float* vertices, uint64_t num_vertices,
+    unsigned int* faces, uint64_t num_faces,
+    float cx, float cy, float cz
+  ) except +
+
+  cdef vector[MeshObject] chunk_mesh_accelerated(
+    float* vertices, uint64_t num_vertices,
+    unsigned int* faces, uint64_t num_faces,
+    float cx, float cy, float cz
+  ) except +
+
+cdef extern from "cMesher.hpp" namespace "zmesh":
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
     void mesh(
@@ -50,6 +65,78 @@ cdef extern from "cMesher.hpp":
     bool erase(L segid)
     void clear()
     P pack_coords(P x, P y, P z)
+
+def chunk_mesh(
+  mesh:Mesh,
+  chunk_size:Sequence[float],
+) -> Dict[Tuple[int,int,int], Mesh]:
+  
+  vert_order = 'C' if mesh.vertices.flags.c_contiguous else 'F'
+  face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
+
+  cdef cnp.ndarray[float] vertices = mesh.vertices.reshape([mesh.vertices.size], order=vert_order)
+  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
+
+  if vertices.size % 3 != 0:
+    raise ValueError(f"Invalid vertex array. Must be a multiple of 3. Got: {vertices.size}")
+
+  if faces.size % 3 != 0:
+    raise ValueError(f"Invalid faces array. Must be a multiple of 3. Got: {faces.size}")
+
+  cdef vector[MeshObject] objs = chunk_mesh_accelerated(
+    <float*>&vertices[0], mesh.vertices.shape[0],
+    <unsigned int*>&faces[0], mesh.faces.shape[0],
+    chunk_size[0], chunk_size[1], chunk_size[2]  
+  )
+
+  def norm(msh):
+    points = np.array(msh['points'], dtype=np.float32)
+    Nv = points.size // 3
+    Nf = len(msh['faces']) // 3
+
+    points = points.reshape(Nv, 3)
+    faces = np.array(msh['faces'], dtype=np.uint32).reshape(Nf, 3)
+    m = Mesh(points, faces, None)
+    if hasattr(msh, 'id'):
+      m.id = msh.id
+    return m
+  
+  minpt = np.min(mesh.vertices, axis=0)
+  maxpt = np.max(mesh.vertices, axis=0)
+
+  grid_size = np.ceil((maxpt - minpt) / np.array(chunk_size)).astype(int)
+  grid_size = np.maximum(grid_size, [1,1,1])
+
+  chunked_meshes = {}
+  i = 0
+  for gz in range(grid_size[2]):
+    for gy in range(grid_size[1]):
+      for gx in range(grid_size[0]):
+        chunked_meshes[(gx,gy,gz)] = norm(objs[i])
+        i += 1
+
+  return chunked_meshes
+  
+def _normalize_mesh(mesh, voxel_centered, physical, resolution):
+  """Convert a MeshObject into a  zmesh.Mesh."""
+  points = np.array(mesh['points'], dtype=np.float32)
+  Nv = points.size // 3
+  Nf = len(mesh['faces']) // 3
+
+  points = points.reshape(Nv, 3)
+  if not physical:
+    points *= resolution
+
+  if voxel_centered:
+    points += resolution
+  points /= 2.0
+  faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
+  
+  normals = None
+  if mesh['normals']:
+    normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
+
+  return Mesh(points, faces, normals)
 
 class Mesher:
   """
@@ -150,7 +237,7 @@ class Mesher:
       transpose=True
     )
 
-    return self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+    return _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
 
   @cython.binding(True)
   def get(
@@ -183,29 +270,9 @@ class Mesher:
       transpose=False
     )
 
-    mesh = self._normalize_simplified_mesh(mesh, voxel_centered, physical=True)
+    mesh = _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
     mesh.id = int(label)
     return mesh
-
-  def _normalize_simplified_mesh(self, mesh, voxel_centered, physical):
-    points = np.array(mesh['points'], dtype=np.float32)
-    Nv = points.size // 3
-    Nf = len(mesh['faces']) // 3
-
-    points = points.reshape(Nv, 3)
-    if not physical:
-      points *= self.voxel_res
-
-    if voxel_centered:
-      points += self.voxel_res
-    points /= 2.0
-    faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
-    
-    normals = None
-    if mesh['normals']:
-      normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
-
-    return Mesh(points, faces, normals)
 
   @cython.binding(True)
   def compute_normals(self, mesh):
@@ -305,7 +372,7 @@ class Mesher:
       for i in range(len(result.points)):
         result.points[i] += min_vertex
 
-    return self._normalize_simplified_mesh(result, voxel_centered, physical=False)
+    return _normalize_mesh(result, voxel_centered, physical=False, resolution=self.voxel_res)
   
   def clear(self):
     self._mesher.clear()

@@ -14,9 +14,14 @@ class Mesh:
 
   """
   def __init__(self, vertices, faces, normals, id=None):
-    self.vertices = vertices
-    self.faces = faces
-    self.normals = normals
+    self.vertices = np.asarray(vertices, dtype=np.float32)
+    self.faces = np.asarray(faces, dtype=np.uint32)
+
+    if normals is None:
+      self.normals = normals
+    else:
+      self.normals = np.asarray(normals, dtype=np.float32)
+
     self.id = id
 
   def __len__(self):
@@ -45,6 +50,9 @@ class Mesh:
       (None if self.normals is None else self.normals.shape[0])
     )
 
+  def is_empty(self):
+    return self.faces.size == 0 or self.vertices.size == 0
+
   @property
   def nbytes(self) -> int:
     nbytes = self.vertices.nbytes if self.vertices is not None else 0
@@ -58,15 +66,104 @@ class Mesh:
     else:
       return Mesh(np.copy(self.vertices), np.copy(self.faces), np.copy(self.normals))
 
-  def triangles(self):
-    Nf = self.faces.shape[0]
-    tris = np.zeros( (Nf, 3, 3), dtype=np.float32, order='C' ) # triangle, vertices, (x,y,z)
+  def triangles(self) -> np.ndarray:
+    """Returns vertex triples representing triangluar faces."""
+    return self.vertices[self.faces]
 
-    for i in range(Nf):
-      for j in range(3):
-        tris[i,j,:] = self.vertices[ self.faces[i,j] ]
+  @classmethod
+  def concatenate(cls, *meshes, id=None):
+    vertex_ct = np.zeros(len(meshes) + 1, np.uint32)
+    vertex_ct[1:] = np.cumsum([ len(mesh) for mesh in meshes ])
 
-    return tris
+    vertices = np.concatenate([ mesh.vertices for mesh in meshes ])
+    
+    faces = np.concatenate([ 
+      mesh.faces + vertex_ct[i] for i, mesh in enumerate(meshes) 
+    ])
+
+    # normals = np.concatenate([ mesh.normals for mesh in meshes ])
+
+    return Mesh(vertices, faces, None, id=id)
+
+  def merge_close_vertices(self, radius:float = 1e-5) -> "Mesh":
+    """Merge vertices that are closer to each other than radius."""
+    from scipy.spatial import cKDTree as KDTree
+
+    if radius is None:
+      radius = np.inf
+
+    if radius is not None and radius <= 0:
+      raise ValueError("radius must be greater than zero: " + str(radius))
+
+    mesh = self.consolidate()
+
+    tree = KDTree(mesh.vertices)
+    pairs = tree.query_pairs(
+      r=radius,
+      p=2, # euclidean distance
+      eps=0, # approximate search
+      output_type='ndarray',
+    )
+
+    remap = np.arange(len(mesh.vertices), dtype=np.uint32)
+    remap[pairs[:,1]] = pairs[:,0]
+
+    mesh.faces = remap[mesh.faces]
+    return mesh.consolidate()
+
+  def remove_unreferenced_vertices(self) -> "Mesh":
+    if self.is_empty():
+      return Mesh([], [], normals=None)
+
+    visited_faces = np.zeros([len(self.vertices)], dtype=bool)
+    visited_faces[self.faces] = True
+    unreferenced_f = np.where(visited_faces == False)[0]
+
+    verts = np.delete(self.vertices, unreferenced_f, axis=0)
+
+    mapping = np.cumsum(visited_faces)
+    mapping -= 1
+
+    faces = self.faces.copy()
+    faces = mapping[faces]
+
+    return Mesh(verts, faces, None)
+
+  def remove_degenerate_faces(self) -> "Mesh":
+    """Remove faces that reference the same vertex two or three times."""
+    if self.is_empty():
+      return Mesh([], [], normals=None)
+
+    # find degenerate faces
+    f = self.faces
+    index = np.where((f[:,0] == f[:,1]) | (f[:,1] == f[:,2]) | (f[:,0] == f[:,2]))
+    f = np.delete(f, index, axis=0)
+
+    return Mesh(self.vertices, f, self.normals, id=self.id)
+
+  def consolidate(self) -> "Mesh":
+    """Remove duplicate vertices and faces and degenerate faces. Returns a new mesh object."""
+    if self.is_empty():
+      return Mesh([], [], normals=None)
+
+    vertices = self.vertices
+    faces = self.faces
+    normals = self.normals
+
+    eff_verts, uniq_idx, idx_representative = np.unique(
+      vertices, axis=0, return_index=True, return_inverse=True
+    )
+
+    eff_faces = idx_representative[faces]
+    eff_faces = np.unique(eff_faces, axis=0)
+
+    eff_normals = None
+    if normals:
+      eff_normals = normals[uniq_idx]
+
+    mesh = Mesh(eff_verts, eff_faces, eff_normals, id=self.id)
+    mesh = mesh.remove_degenerate_faces()
+    return mesh.remove_unreferenced_vertices()
 
   @classmethod
   def from_precomputed(self, binary):
@@ -231,7 +328,7 @@ end_header
     render_window_interactor.SetRenderWindow(render_window)
 
     render_window.SetSize(1024, 1024)
-
+      
     renderer.AddActor(actor)
     renderer.SetBackground(0.1, 0.2, 0.3)  # Background color
 

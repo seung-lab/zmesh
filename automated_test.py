@@ -301,4 +301,82 @@ def test_min_error_skip(reduction_factor):
     assert abs(factor - reduction_factor) < 1
 
 
+def test_chunk_shape():
+  labels = np.zeros( (10, 10, 10), dtype=np.uint32)
+  labels[1:-1, 1:-1, 1:-1] = 1
+
+  mesher = zmesh.Mesher( (1, 1, 1) )
+  mesher.mesh(labels)
+  mesh = mesher.get_mesh(1, normals=False, simplification_factor=0, max_simplification_error=100)
+
+  meshes = zmesh.chunk_mesh(
+    mesh,
+    [5.,5.,5.],
+  )
+
+  assert len(meshes) == 8
+  assert not any([
+    m.is_empty() for m in meshes.values()
+  ])
+
+def test_delete_unreference_vertices():
+  vertices = [
+    [0,0,0],
+    [0,1,0],
+    [1,0,0],
+    [5,5,5],
+    [7,7,7],
+    [8,7,7],
+    [7,8,8],
+  ]
+  faces = [[0,1,2],[4,5,6]]
+
+  mesh = zmesh.Mesh(vertices=vertices, faces=faces, normals=None)
+  res = mesh.remove_unreferenced_vertices()
+
+  ans_verts = vertices[:3] + vertices[4:]
+  ans_faces = [[0,1,2],[3,4,5]]
+
+  assert res.vertices.shape == (6,3)
+  assert res.faces.shape == (2,3)
+  assert np.all(res.vertices == np.array(ans_verts))
+  assert np.all(res.faces == np.array(ans_faces))
+
+def test_chunk_mesh_triangle():
+  vertices = [
+    [0,0,0],
+    [0,1,0],
+    [1,0,0],
+  ]
+  faces = [[0,1,2]]
+
+  mesh = zmesh.Mesh(vertices=vertices, faces=faces, normals=None)
+
+  meshes = zmesh.chunk_mesh(mesh, [.5,.5,.5])
+
+  meshes = [ m for m in meshes.values() if not m.is_empty() ]
+
+  assert len(meshes) == 3
+
+  m = zmesh.Mesh.concatenate(*meshes).consolidate()
+
+  assert m.vertices.shape[0] == 6
+
+  assert [0,0,0] in m.vertices
+  assert [1,0,0] in m.vertices
+  assert [0,1,0] in m.vertices
+  assert [0,0.5,0] in m.vertices
+  assert [0.5,0,0] in m.vertices
+  assert [0.5,0.5,0] in m.vertices
+
+  
+
+
+
+
+
+
+
+
+
 
