@@ -159,8 +159,7 @@ class Mesh:
 
     eff_normals = None
     if normals:
-      normal_vector_map = np.vectorize(lambda idx: normals[idx])
-      eff_normals = normal_vector_map(uniq_idx)
+      eff_normals = normals[uniq_idx]
 
     mesh = Mesh(eff_verts, eff_faces, eff_normals, id=self.id)
     mesh = mesh.remove_degenerate_faces()
