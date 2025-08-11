@@ -136,8 +136,8 @@ class Mesh:
       eff_normals = normal_vector_map(uniq_idx)
 
     mesh = Mesh(eff_verts, eff_faces, eff_normals, id=self.id)
-
-    return mesh.remove_degenerate_faces()
+    mesh = mesh.remove_degenerate_faces()
+    return mesh.remove_unreferenced_vertices()
 
   @classmethod
   def from_precomputed(self, binary):
