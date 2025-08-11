@@ -154,8 +154,7 @@ class Mesh:
       vertices, axis=0, return_index=True, return_inverse=True
     )
 
-    face_vector_map = np.vectorize(lambda x: idx_representative[x])
-    eff_faces = face_vector_map(faces)
+    eff_faces = idx_representative[faces]
     eff_faces = np.unique(eff_faces, axis=0)
 
     eff_normals = None
