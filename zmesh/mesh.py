@@ -351,6 +351,34 @@ end_header
     render_window.Render()
     render_window_interactor.Start()
 
+  def save(self, filename:str):
+    """
+    Open supported file formats. 
+    By default assumes the file is a Wavefront OBJ 
+    unless the file extension says otherwise.
+
+    Supported: obj, ply
+    """
+    with open(filename, "wb") as f:
+      if filename.endswith(".ply"):
+        f.write(self.to_ply())
+      else:
+        f.write(self.to_obj())
+
+  def load(self, filename:str):
+    """
+    Save supported file formats. 
+    By default assumes the file is a Wavefront OBJ 
+    unless the file extension says otherwise.
+
+    Supported: obj, ply
+    """
+    with open(filename, "rb") as f:
+      if filename.endswith(".ply"):
+        return Mesh.from_ply(f.read())
+      else:
+        return Mesh.from_obj(f.read())
+
 def _create_vtk_mesh(vertices, faces):
   import vtk
   from vtk.util.numpy_support import numpy_to_vtk, numpy_to_vtkIdTypeArray
