@@ -237,10 +237,13 @@ class Mesher:
     Returns: Mesh
     """
     mesh = self._mesher.get_mesh(
-      mesh_id, normals, 
+      mesh_id, False, 
       simplification_factor, max_simplification_error, 
       transpose=True
     )
+
+    if normals:
+      mesh = self.compute_normals(mesh)
 
     return _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
 
@@ -270,10 +273,13 @@ class Mesher:
       max_error = self.voxel_res.max()
 
     mesh = self._mesher.get_mesh(
-      label, normals, 
+      label, False, 
       reduction_factor, max_error,
       transpose=False
     )
+
+    if normals:
+      mesh = self.compute_normals(mesh)
 
     mesh = _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
     mesh.id = int(label)
