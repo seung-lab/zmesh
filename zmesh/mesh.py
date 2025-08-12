@@ -50,7 +50,7 @@ class Mesh:
       (None if self.normals is None else self.normals.shape[0])
     )
 
-  def is_empty(self):
+  def empty(self):
     return self.faces.size == 0 or self.vertices.size == 0
 
   @property
@@ -112,7 +112,7 @@ class Mesh:
     return mesh.consolidate()
 
   def remove_unreferenced_vertices(self) -> "Mesh":
-    if self.is_empty():
+    if self.empty():
       return Mesh([], [], normals=None)
 
     visited_faces = np.zeros([len(self.vertices)], dtype=bool)
@@ -131,7 +131,7 @@ class Mesh:
 
   def remove_degenerate_faces(self) -> "Mesh":
     """Remove faces that reference the same vertex two or three times."""
-    if self.is_empty():
+    if self.empty():
       return Mesh([], [], normals=None)
 
     # find degenerate faces
@@ -143,7 +143,7 @@ class Mesh:
 
   def consolidate(self) -> "Mesh":
     """Remove duplicate vertices and faces and degenerate faces. Returns a new mesh object."""
-    if self.is_empty():
+    if self.empty():
       return Mesh([], [], normals=None)
 
     vertices = self.vertices

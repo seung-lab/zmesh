@@ -325,6 +325,9 @@ class Mesher:
 
     Returns: Mesh
     """
+    if mesh.empty():
+      return Mesh()
+
     mesher = new CMesher[uint64_t, uint64_t, float]((1,1,1))
 
     cdef size_t ti = 0

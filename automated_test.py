@@ -316,7 +316,7 @@ def test_chunk_shape():
 
   assert len(meshes) == 8
   assert not any([
-    m.is_empty() for m in meshes.values()
+    m.empty() for m in meshes.values()
   ])
 
 def test_delete_unreference_vertices():
@@ -354,7 +354,7 @@ def test_chunk_mesh_triangle():
 
   meshes = zmesh.chunk_mesh(mesh, [.5,.5,.5])
 
-  meshes = [ m for m in meshes.values() if not m.is_empty() ]
+  meshes = [ m for m in meshes.values() if not m.empty() ]
 
   assert len(meshes) == 3
 
