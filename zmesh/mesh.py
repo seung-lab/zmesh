@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Iterator, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -40,10 +40,10 @@ class Mesh:
 
     self.id = id
 
-  def __len__(self):
+  def __len__(self) -> int:
     return self.vertices.shape[0]
 
-  def __eq__(self, other):
+  def __eq__(self, other) -> bool:
     """Tests strict equality between two meshes."""
 
     no_self_normals = self.normals is None or self.normals.size == 0
@@ -60,13 +60,13 @@ class Mesh:
 
     return (equality and np.all(self.normals == other.normals))
 
-  def __repr__(self):
+  def __repr__(self) -> str:
     return "Mesh(vertices<{}>, faces<{}>, normals<{}>)".format(
       self.vertices.shape[0], self.faces.shape[0], 
       (None if self.normals is None else self.normals.shape[0])
     )
 
-  def empty(self):
+  def empty(self) -> bool:
     return self.faces.size == 0 or self.vertices.size == 0
 
   @property
@@ -82,12 +82,12 @@ class Mesh:
     else:
       return Mesh(np.copy(self.vertices), np.copy(self.faces), np.copy(self.normals))
 
-  def triangles(self) -> np.ndarray:
+  def triangles(self) -> npt.NDArray[np.float32]:
     """Returns vertex triples representing triangluar faces."""
     return self.vertices[self.faces]
 
   @classmethod
-  def concatenate(cls, *meshes, id=None):
+  def concatenate(cls, *meshes, id:Optional[int] = None) -> "Mesh":
     vertex_ct = np.zeros(len(meshes) + 1, np.uint32)
     vertex_ct[1:] = np.cumsum([ len(mesh) for mesh in meshes ])
 
@@ -182,7 +182,7 @@ class Mesh:
     return mesh.remove_unreferenced_vertices()
 
   @classmethod
-  def from_precomputed(self, binary):
+  def from_precomputed(self, binary:bytes) -> "Mesh":
     """
     Mesh from_precomputed(self, binary)
 
@@ -210,7 +210,7 @@ class Mesh:
 
     return Mesh(vertices, faces, normals=None)
 
-  def to_precomputed(self):
+  def to_precomputed(self) -> bytes:
     """
     bytes to_precomputed(self)
 
@@ -225,14 +225,14 @@ class Mesh:
     return b''.join([ array.tobytes('C') for array in vertex_index_format ])
 
   @classmethod
-  def from_obj(self, text):
+  def from_obj(self, text:Union[str,bytes]):
     """Given a string representing a Wavefront OBJ file, decode to a zmesh.Mesh."""
 
     vertices = []
     faces = []
     normals = []
 
-    if type(text) is bytes:
+    if isinstance(text, bytes):
       text = text.decode('utf8')
 
     for line in text.split('\n'):
@@ -268,7 +268,7 @@ class Mesh:
 
     return Mesh(vertices, faces - 1, normals)
 
-  def to_obj(self):
+  def to_obj(self) -> bytes:
     """Return a string representing a .obj file."""
     objdata = []
     objdata += [ 'v {:.5f} {:.5f} {:.5f}'.format(*vertex) for vertex in self.vertices ]
@@ -277,7 +277,7 @@ class Mesh:
     return objdata.encode('utf8')
 
   @classmethod
-  def from_ply(self, plydata):
+  def from_ply(self, plydata:bytes) -> "Mesh":
     """
     Read from a binary representation formated as ply
     Note that this code is limited to parse the ply file saved by to_ply function
@@ -295,7 +295,7 @@ class Mesh:
     faces = np.frombuffer(data, dtype=np.uint32, offset=vertexct*3*4).reshape(trianglect, 4)[:, 1:]
     return Mesh(vertices, faces, normals=None) 
 
-  def to_ply(self):
+  def to_ply(self) -> bytes:
     """
     Return a bytearray in .ply format, 
     a more compact format than .obj that's still widely readable.
