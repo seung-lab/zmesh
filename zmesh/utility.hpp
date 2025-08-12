@@ -124,8 +124,8 @@ public:
   float len2() const {
     return x*x + y*y + z*z;
   }
-  Vec3 hat() {
-    float l = len();
+  Vec3 hat() const {
+    const float l = len();
     Vec3 ret(x,y,z);
     if (l == 1) {
       return ret;
