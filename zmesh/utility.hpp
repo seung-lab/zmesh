@@ -555,6 +555,44 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   return mesh_grid;
 }
 
+std::vector<float> compute_normals_from_faces(
+  const float* vertices,
+  const uint64_t Nv,
+  const uint32_t* faces,
+  const uint64_t Nf
+) {
+
+  std::vector<Vec3<float>> normals(Nv);
+
+  for (uint64_t i = 0; i < Nf; i += 3) {
+    const uint32_t f0 = faces[i];
+    const uint32_t f1 = faces[i+1];
+    const uint32_t f2 = faces[i+2];
+
+    const Vec3<float> v0(vertices[3*f0], vertices[3*f0 + 1], vertices[3*f0 + 2]);
+    const Vec3<float> v1(vertices[3*f1], vertices[3*f1 + 1], vertices[3*f1 + 2]);
+    const Vec3<float> v2(vertices[3*f2], vertices[3*f2 + 1], vertices[3*f2 + 2]);
+
+    const Vec3<float> center = (v0 + v1 + v2) / 3;
+    const Vec3<float> nhat = (v1 - v0).cross(v2 - v0).hat();
+
+    normals[f0] += nhat * (v0 - center).len();
+    normals[f1] += nhat * (v1 - center).len();
+    normals[f2] += nhat * (v2 - center).len();
+  }
+
+  std::vector<float> normals_linear(Nv * 3);
+  for (uint64_t i = 0; i < Nv; i++) {
+    normals[i] = normals[i].hat();
+
+    normals_linear[i*3+0] = normals[i].x;
+    normals_linear[i*3+1] = normals[i].y;
+    normals_linear[i*3+2] = normals[i].z;
+  }
+
+  return normals_linear;
+}
+
 };
 
 #endif

@@ -29,6 +29,11 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
     float ox, float oy, float oz
   ) except +
 
+  cdef vector[float] compute_normals_from_faces(
+    float* vertices, uint64_t Nv,
+    uint32_t* faces, uint64_t Nf
+  )
+
 cdef extern from "cMesher.hpp" namespace "zmesh":
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
@@ -275,11 +280,20 @@ class Mesher:
     return mesh
 
   @cython.binding(True)
-  def compute_normals(self, mesh):
+  def compute_normals(self, mesh:Mesh) -> Mesh:
     """
     Returns: Mesh with normals computed
     """
-    return self.simplify(mesh, reduction_factor=0, max_error=0, compute_normals=True)
+    cdef unsigned int Nv = mesh.vertices.shape[0]
+    cdef cnp.ndarray[float, ndim=2] verts = mesh.vertices
+    cdef cnp.ndarray[unsigned int, ndim=2] faces = mesh.faces
+
+    cdef vector[float] normals = compute_normals_from_faces(
+      &verts[0,0], Nv,
+      &faces[0,0], mesh.faces.size,
+    )
+    mesh.normals = np.array(normals).reshape((Nv, 3), order="C")
+    return mesh
 
   # adding this causes a cython compilation error as of 3.0.10
   # @cython.binding(True)
