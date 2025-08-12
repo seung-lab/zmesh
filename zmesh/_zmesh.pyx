@@ -66,12 +66,32 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
     void clear()
     P pack_coords(P x, P y, P z)
 
+
+@cython.binding(True)
+def compute_normals(mesh:Mesh) -> Mesh:
+  """
+  Returns: Mesh with normals computed
+  """
+  cdef unsigned int Nv = mesh.vertices.shape[0]
+  cdef cnp.ndarray[float, ndim=2] verts = mesh.vertices
+  cdef cnp.ndarray[unsigned int, ndim=2] faces = mesh.faces
+
+  cdef vector[float] normals = compute_vertex_normals_from_faces(
+    &verts[0,0], Nv,
+    &faces[0,0], mesh.faces.size,
+  )
+  mesh.normals = np.array(normals).reshape((Nv, 3), order="C")
+  return mesh
+
+@cython.binding(True)
 def chunk_mesh(
   mesh:Mesh,
   chunk_size:Sequence[float],
   grid_origin:Optional[tuple[float,float,float]] = None,
 ) -> Dict[Tuple[int,int,int], Mesh]:
-  
+  """
+  Cut a mesh into a regular grid of meshes.
+  """
   vert_order = 'C' if mesh.vertices.flags.c_contiguous else 'F'
   face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
 
@@ -243,7 +263,7 @@ class Mesher:
     )
 
     if normals:
-      mesh = self.compute_normals(mesh)
+      mesh = compute_normals(mesh)
 
     return _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
 
@@ -279,7 +299,7 @@ class Mesher:
     )
 
     if normals:
-      mesh = self.compute_normals(mesh)
+      mesh = compute_normals(mesh)
 
     mesh = _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
     mesh.id = int(label)
@@ -290,16 +310,7 @@ class Mesher:
     """
     Returns: Mesh with normals computed
     """
-    cdef unsigned int Nv = mesh.vertices.shape[0]
-    cdef cnp.ndarray[float, ndim=2] verts = mesh.vertices
-    cdef cnp.ndarray[unsigned int, ndim=2] faces = mesh.faces
-
-    cdef vector[float] normals = compute_vertex_normals_from_faces(
-      &verts[0,0], Nv,
-      &faces[0,0], mesh.faces.size,
-    )
-    mesh.normals = np.array(normals).reshape((Nv, 3), order="C")
-    return mesh
+    return compute_normals(mesh)
 
   # adding this causes a cython compilation error as of 3.0.10
   # @cython.binding(True)
