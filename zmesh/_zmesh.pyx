@@ -154,9 +154,14 @@ def chunk_mesh(
   for gz in range(grid_size[2]):
     for gy in range(grid_size[1]):
       for gx in range(grid_size[0]):
-        chunked_meshes[(gx,gy,gz)] = norm(objs[i])
+        submesh = norm(objs[i])
         i += 1
 
+        if submesh.empty():
+          continue
+        
+        chunked_meshes[(gx,gy,gz)] = submesh
+  
   return chunked_meshes
   
 def _normalize_mesh(mesh, voxel_centered, physical, resolution):
