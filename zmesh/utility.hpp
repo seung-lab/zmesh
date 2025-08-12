@@ -555,7 +555,7 @@ std::vector<MeshObject> chunk_mesh_accelerated(
   return mesh_grid;
 }
 
-std::vector<float> compute_normals_from_faces(
+std::vector<float> compute_vertex_normals_from_faces(
   const float* vertices,
   const uint64_t Nv,
   const uint32_t* faces,

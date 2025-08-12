@@ -29,7 +29,7 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
     float ox, float oy, float oz
   ) except +
 
-  cdef vector[float] compute_normals_from_faces(
+  cdef vector[float] compute_vertex_normals_from_faces(
     float* vertices, uint64_t Nv,
     uint32_t* faces, uint64_t Nf
   )
@@ -288,7 +288,7 @@ class Mesher:
     cdef cnp.ndarray[float, ndim=2] verts = mesh.vertices
     cdef cnp.ndarray[unsigned int, ndim=2] faces = mesh.faces
 
-    cdef vector[float] normals = compute_normals_from_faces(
+    cdef vector[float] normals = compute_vertex_normals_from_faces(
       &verts[0,0], Nv,
       &faces[0,0], mesh.faces.size,
     )
