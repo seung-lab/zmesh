@@ -1,4 +1,7 @@
+from typing import Optional
+
 import numpy as np
+import numpy.typing as npt
 import re
 import struct
 
@@ -13,9 +16,22 @@ class Mesh:
     ndarray[float32, ndim=2] self.normals:  [ [nx,ny,nz], ... ]
 
   """
-  def __init__(self, vertices, faces, normals, id=None):
-    self.vertices = np.asarray(vertices, dtype=np.float32)
-    self.faces = np.asarray(faces, dtype=np.uint32)
+  def __init__(
+    self, 
+    vertices:Optional[npt.NDArray[np.float32]] = None, 
+    faces:Optional[npt.NDArray[np.uint32]] = None, 
+    normals:Optional[npt.NDArray[np.float32]] = None, 
+    id:int = None,
+  ):
+    if vertices is None:
+      self.vertices = np.zeros([0,3], dtype=np.float32)
+    else:
+      self.vertices = np.asarray(vertices, dtype=np.float32)
+    
+    if faces is None:
+      self.faces = np.zeros([0,3], dtype=np.uint32)
+    else:
+      self.faces = np.asarray(faces, dtype=np.uint32)
 
     if normals is None:
       self.normals = normals
