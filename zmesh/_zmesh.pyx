@@ -84,6 +84,23 @@ def compute_normals(mesh:Mesh) -> Mesh:
   return mesh
 
 @cython.binding(True)
+def compute_normals_meshobj(mesh:dict) -> Mesh:
+  """
+  Returns: Mesh with normals computed
+  """
+  cdef unsigned int Nv = len(mesh["points"]) // 3
+  cdef unsigned int Nf = len(mesh["faces"]) // 3
+  cdef cnp.ndarray[float] verts = np.array(mesh["points"], dtype=np.float32)
+  cdef cnp.ndarray[unsigned int] faces = np.array(mesh["faces"], dtype=np.uint32)
+
+  cdef vector[float] normals = compute_vertex_normals_from_faces(
+    &verts[0], Nv,
+    &faces[0], Nf,
+  )
+  mesh["normals"] = np.array(normals).reshape((Nv, 3), order="C")
+  return mesh
+
+@cython.binding(True)
 def chunk_mesh(
   mesh:Mesh,
   chunk_size:Sequence[float],
@@ -155,11 +172,11 @@ def _normalize_mesh(mesh, voxel_centered, physical, resolution):
   if voxel_centered:
     points += resolution
   points /= 2.0
-  faces = np.array(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
+  faces = np.asarray(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
   
   normals = None
-  if mesh['normals']:
-    normals = np.array(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
+  if mesh.get('normals', None) is not None and len(mesh['normals']) > 0:
+    normals = np.asarray(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
 
   return Mesh(points, faces, normals)
 
@@ -263,7 +280,7 @@ class Mesher:
     )
 
     if normals:
-      mesh = compute_normals(mesh)
+      mesh = compute_normals_meshobj(mesh)
 
     return _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
 
@@ -299,7 +316,7 @@ class Mesher:
     )
 
     if normals:
-      mesh = compute_normals(mesh)
+      mesh = compute_normals_meshobj(mesh)
 
     mesh = _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
     mesh.id = int(label)
