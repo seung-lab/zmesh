@@ -40,6 +40,14 @@ class Mesh:
 
     self.id = id
 
+  @property
+  def segid(self):
+    return self.id
+
+  @segid.setter
+  def segid(self, val:int):
+    self.id = val
+
   def __len__(self) -> int:
     return self.vertices.shape[0]
 
