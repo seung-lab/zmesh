@@ -583,6 +583,9 @@ std::vector<float> compute_normals_from_faces(
 
   std::vector<float> normals_linear(Nv * 3);
   for (uint64_t i = 0; i < Nv; i++) {
+    // Note: No need to average because the hat
+    // operator takes care of that. The proof is
+    // left as an exercise to the reader.
     normals[i] = normals[i].hat();
 
     normals_linear[i*3+0] = normals[i].x;
