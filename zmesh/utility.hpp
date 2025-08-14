@@ -448,18 +448,26 @@ void resect_triangle_iterative(
   const float icy = 1 / cs.y;
   const float icz = 1 / cs.z;
 
+  auto zonefn = [&](const Vec3<float>& pt) {
+    unsigned int ix = static_cast<unsigned int>((pt.x - minpt.x) * icx);
+    unsigned int iy = static_cast<unsigned int>((pt.y - minpt.y) * icy);
+    unsigned int iz = static_cast<unsigned int>((pt.z - minpt.z) * icz);
+
+    ix = std::min(std::max(ix, static_cast<unsigned int>(0)), static_cast<unsigned int>(gs.x - 1));
+    iy = std::min(std::max(iy, static_cast<unsigned int>(0)), static_cast<unsigned int>(gs.y - 1));
+    iz = std::min(std::max(iz, static_cast<unsigned int>(0)), static_cast<unsigned int>(gs.z - 1));
+
+    return ix + gs.x * (iy + gs.y * iz);
+  };
+
   for (const auto& tri : cur_tris) {
     const Vec3<float>& pt = tri.v1; // v1 guaranteed to not be a border point (unless the triangle is degenerate)
 
-    int ix = static_cast<int>((pt.x - minpt.x) * icx);
-    int iy = static_cast<int>((pt.y - minpt.y) * icy);
-    int iz = static_cast<int>((pt.z - minpt.z) * icz);
+    unsigned int z1 = zonefn(tri.v1);
+    unsigned int z2 = zonefn(tri.v2);
+    unsigned int z3 = zonefn(tri.v3);
 
-    ix = std::min(std::max(ix, static_cast<int>(0)), static_cast<int>(gs.x - 1));
-    iy = std::min(std::max(iy, static_cast<int>(0)), static_cast<int>(gs.y - 1));
-    iz = std::min(std::max(iz, static_cast<int>(0)), static_cast<int>(gs.z - 1));
-
-    unsigned int zone = ix + gs.x * (iy + gs.y * iz);
+    unsigned int zone = std::min(std::min(z1,z2), z3);
 
     mesh_grid[zone].add_triangle(tri);
   }
