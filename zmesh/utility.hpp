@@ -461,8 +461,7 @@ void resect_triangle_iterative(
   };
 
   for (const auto& tri : cur_tris) {
-    const Vec3<float>& pt = tri.v1; // v1 guaranteed to not be a border point (unless the triangle is degenerate)
-
+    // v1 guaranteed to not be a border point (unless the triangle is degenerate)
     unsigned int z1 = zonefn(tri.v1);
     unsigned int z2 = zonefn(tri.v2);
     unsigned int z3 = zonefn(tri.v3);
