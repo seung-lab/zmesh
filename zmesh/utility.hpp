@@ -398,8 +398,6 @@ void resect_triangle_iterative(
   Vec3<int32_t> g2 = zone2grid(z2, gs);
   Vec3<int32_t> g3 = zone2grid(z3, gs);
 
-  Vec3<float> planes;
-
   uint32_t gxs = std::min(std::min(g1.x, g2.x), g3.x);
   uint32_t gxe = std::max(std::max(g1.x, g2.x), g3.x);
 
@@ -416,7 +414,7 @@ void resect_triangle_iterative(
 
   for (uint32_t x = gxs; x <= gxe; x++) {
     float xplane = minpt.x + x * cs.x;
-    for (auto tri : cur_tris) {
+    for (const auto& tri : cur_tris) {
       auto new_tris = divide_triangle(0, xplane, tri);
       next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
     }
@@ -426,7 +424,7 @@ void resect_triangle_iterative(
 
   for (uint32_t y = gys; y <= gye; y++) {
     float yplane = minpt.y + y * cs.y;
-    for (auto tri : cur_tris) {
+    for (const auto& tri : cur_tris) {
       auto new_tris = divide_triangle(1, yplane, tri);
       next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
     }
@@ -436,7 +434,7 @@ void resect_triangle_iterative(
 
   for (uint32_t z = gzs; z <= gze; z++) {
     float zplane = minpt.z + z * cs.z;
-    for (auto tri : cur_tris) {
+    for (const auto& tri : cur_tris) {
       auto new_tris = divide_triangle(2, zplane, tri);
       next_tris.insert(next_tris.end(), new_tris.begin(), new_tris.end());
     }
