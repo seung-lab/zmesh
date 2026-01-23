@@ -163,6 +163,11 @@ class Mesh:
     index = np.where((f[:,0] == f[:,1]) | (f[:,1] == f[:,2]) | (f[:,0] == f[:,2]))
     f = np.delete(f, index, axis=0)
 
+    # find duplicate faces e.g. f1,f2,f3  ; f1,f3,f2 which won't be found without sorting
+    f_sorted = np.sort(f, axis=1)
+    _, unique_indices = np.unique(f_sorted, axis=0, return_index=True)
+    f = f[unique_indices]
+
     return Mesh(self.vertices, f, self.normals, id=self.id)
 
   def consolidate(self) -> "Mesh":
