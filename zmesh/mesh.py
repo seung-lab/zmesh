@@ -393,7 +393,7 @@ end_header
       else:
         f.write(self.to_obj())
 
-  def load(self, filename:str):
+  def load(self, filename:str) -> "Mesh":
     """
     Save supported file formats. 
     By default assumes the file is a Wavefront OBJ 
