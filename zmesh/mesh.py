@@ -379,6 +379,10 @@ end_header
       validate=validate,
     )
 
+  @classmethod
+  def from_trimesh(kls, tmesh) -> "Mesh":
+    return kls(vertices=tmesh.vertices, faces=tmesh.faces, normals=tmesh.vertex_normals)
+
   def save(self, filename:str):
     """
     Open supported file formats. 
