@@ -34,6 +34,11 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
     uint32_t* faces, uint64_t Nf
   )
 
+cdef extern from "ccl.hpp" namespace "zmesh::ccl":
+  cdef vector[vector[unsigned int]] vertex_connected_components_mask(
+    unsigned int* faces, uint64_t N
+  )
+
 cdef extern from "cMesher.hpp" namespace "zmesh":
   cdef cppclass CMesher[P,L,S]:
     CMesher(vector[float] voxel_res) except +
@@ -164,6 +169,38 @@ def chunk_mesh(
   
   return chunked_meshes
   
+def connected_components(mesh:Mesh) -> list[Mesh]:
+  """Split a mesh into its components."""
+
+  face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
+  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
+
+  cdef vector[vector[unsigned int]] vertex_masks = vertex_connected_components_mask(
+    <unsigned int*>&faces[0], mesh.faces.shape[0]
+  )
+
+  cdef unsigned int[:] mask_view
+
+  ccls = []
+  for mask in vertex_masks:
+    if len(mask) == 0:
+      continue
+
+    mask_view = <unsigned int[:mask.size()]> &mask[0]
+    mask_np = np.frombuffer(
+      mask_view,
+      dtype=np.uint32,
+      count=mask.size()
+    )
+    uniq, remapped_faces = np.unique(mask_np, return_index=True)
+    verts = mesh.vertices[uniq]
+
+    ccls.append(
+      Mesh(verts, remapped_faces)
+    )
+
+  return ccls
+
 def _normalize_mesh(mesh, voxel_centered, physical, resolution):
   """Convert a MeshObject into a  zmesh.Mesh."""
   points = np.array(mesh['points'], dtype=np.float32)
