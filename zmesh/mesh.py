@@ -380,7 +380,7 @@ end_header
     )
 
   @classmethod
-  def from_trimesh(kls, tmesh) -> "Mesh":
+  def from_trimesh(kls, tmesh:"trimesh.Trimesh") -> "Mesh":
     return kls(vertices=tmesh.vertices, faces=tmesh.faces, normals=tmesh.vertex_normals)
 
   def save(self, filename:str):
