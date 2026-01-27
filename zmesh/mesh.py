@@ -364,6 +364,21 @@ end_header
     render_window.Render()
     render_window_interactor.Start()
 
+  def trimesh(
+    self,
+    process:bool = False,
+    validate:bool = False,
+  ) -> "trimesh.Trimesh":
+    """Convert zmesh.Mesh to a trimesh mesh."""
+    import trimesh
+    return trimesh.Trimesh(
+      vertices=self.vertices,
+      faces=self.faces,
+      vertex_normals=(self.normals if hasattr(self, "normals") else None),
+      process=process,
+      validate=validate,
+    )
+
   def save(self, filename:str):
     """
     Open supported file formats. 
