@@ -36,7 +36,7 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
 
 cdef extern from "ccl.hpp" namespace "zmesh::ccl":
   cdef vector[vector[unsigned int]] vertex_connected_components_mask(
-    unsigned int* faces, uint64_t N
+    unsigned int* faces, uint64_t num_verts, uint64_t num_faces
   )
 
 cdef extern from "cMesher.hpp" namespace "zmesh":
@@ -175,11 +175,15 @@ def connected_components(mesh:Mesh) -> list[Mesh]:
   face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
   cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
 
+  cdef uint64_t Nv = mesh.vertices.shape[0]
+
   cdef vector[vector[unsigned int]] vertex_masks = vertex_connected_components_mask(
-    <unsigned int*>&faces[0], mesh.faces.shape[0]
+    <unsigned int*>&faces[0], Nv, mesh.faces.shape[0]
   )
 
   cdef unsigned int[:] mask_view
+
+  face_map = np.zeros([ Nv ], dtype=np.uint32)
 
   ccls = []
   for mask in vertex_masks:
@@ -192,8 +196,11 @@ def connected_components(mesh:Mesh) -> list[Mesh]:
       dtype=np.uint32,
       count=mask.size()
     )
-    uniq, remapped_faces = np.unique(mask_np, return_index=True)
+    uniq, idx = np.unique(mask_np, return_index=True)
     verts = mesh.vertices[uniq]
+
+    face_map[uniq] = np.arange(len(uniq), dtype=np.uint32)
+    remapped_faces = face_map[mask_np].reshape(mask.size() // 3, 3, order="C")
 
     ccls.append(
       Mesh(verts, remapped_faces)

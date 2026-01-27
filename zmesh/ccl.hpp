@@ -13,11 +13,6 @@ public:
   std::vector<T> ids;
   size_t length;
 
-  DisjointSet () {
-    length = 65536; // 2^16, some "reasonable" starting size
-    ids.resize(length);
-  }
-
   DisjointSet (size_t len) {
     length = len;
     ids.resize(len);
@@ -81,12 +76,16 @@ public:
 
 template <typename T>
 std::vector<std::vector<T>>
-vertex_connected_components_mask(const T* faces, const uint64_t N) {
+vertex_connected_components_mask(
+  const T* faces,
+  const uint64_t num_verts,
+  const uint64_t num_faces
+) {
 	T max_label = 0;
 
-	DisjointSet<T> equivalences(N/3 + 1);
+	DisjointSet<T> equivalences(num_verts + 2);
 
-	for (uint64_t i = 0; i < N; i += 3) {
+	for (uint64_t i = 0; i < num_faces * 3; i += 3) {
 		auto f1 = faces[i+0]+1;
 		auto f2 = faces[i+1]+1;
 		auto f3 = faces[i+2]+1;
@@ -102,7 +101,7 @@ vertex_connected_components_mask(const T* faces, const uint64_t N) {
 	std::vector<T> mask(max_label + 1);
 	T next_label = 1;
 
-	for (int64_t i = 0; i <= max_label; i++) {
+	for (int64_t i = 1; i <= max_label; i++) {
 		auto label = equivalences.root(i);
 
     if (mask[label] == 0) {
@@ -115,10 +114,14 @@ vertex_connected_components_mask(const T* faces, const uint64_t N) {
     }
 	}
 
-	std::vector<std::vector<T>> ccl(next_label);
+	std::vector<std::vector<T>> ccl(next_label - 1);
 
-	for (uint64_t i = 0; i < N; i++) {
-		ccl[mask[faces[i]] - 1].push_back(faces[i]);
+  if (ccl.size() == 0) {
+    return ccl;
+  }
+
+	for (uint64_t i = 0; i < num_faces * 3; i++) {
+		ccl[mask[faces[i]+1] - 1].push_back(faces[i]);
 	}
 
 	return ccl;
