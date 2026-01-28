@@ -50,6 +50,18 @@ mesh = mesher.simplify(
 # compute normals on a pre-existing mesh
 mesh = zmesh.compute_normals(mesh) 
 
+# run vertex based connected components
+ccls = zmesh.vertex_connected_components(mesh)
+
+# remove small components based on vertices or faces
+mesh = zmesh.dust(mesh, threshold=100, metric="vertices")
+# remove components bigger than the threshold using invert
+mesh = zmesh.dust(mesh, threshold=100, metric="vertices", invert=True)
+# retain only the largest k connected components
+mesh = zmesh.largest_k(mesh, k=1, metric="vertices")
+# retain only the smallest k connected components
+mesh = zmesh.largest_k(mesh, k=1, metric="vertices", invert=True)
+
 mesh.vertices
 mesh.faces 
 mesh.normals
