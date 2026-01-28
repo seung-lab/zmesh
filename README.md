@@ -50,6 +50,18 @@ mesh = mesher.simplify(
 # compute normals on a pre-existing mesh
 mesh = zmesh.compute_normals(mesh) 
 
+# run vertex based connected components
+ccls = zmesh.vertex_connected_components(mesh)
+
+# remove small components based on vertices or faces
+mesh = zmesh.dust(mesh, threshold=100, metric="vertices")
+# remove components bigger than the threshold using invert
+mesh = zmesh.dust(mesh, threshold=100, metric="vertices", invert=True)
+# retain only the largest k connected components
+mesh = zmesh.largest_k(mesh, k=1, metric="vertices")
+# retain only the smallest k connected components
+mesh = zmesh.largest_k(mesh, k=1, metric="vertices", invert=True)
+
 mesh.vertices
 mesh.faces 
 mesh.normals
@@ -68,7 +80,7 @@ with open('10001001:0', 'wb') as f:
   f.write(mesh.to_precomputed())
 ```
 
-Note: As of the latest version, `mesher.get_mesh` has been deprecated in favor of `mesher.get` which fixes a long standing bug where you needed to transpose your data in order to get a mesh in the correct orientation.
+Note: `mesher.get_mesh` has been deprecated in favor of `mesher.get` which fixed a long standing bug where you needed to transpose your data in order to get a mesh in the correct orientation.
 
 ## Installation 
 

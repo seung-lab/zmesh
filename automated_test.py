@@ -424,10 +424,191 @@ def test_vertex_ccl_chain():
   ccls = zmesh.vertex_connected_components(mesh)
   assert len(ccls) == 1
 
+def test_dust_vertex_metric():
+  """Test dust removes small components with vertex metric."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6], [6, 6, 6],  # Component 2: 5 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [5, 6, 7],  # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=4, metric="vertices", ccl="vertices")
+
+  # Should remove component with 3 vertices, keep component with 5 vertices
+  assert result.vertices.shape[0] == 5
+  assert result.faces.shape[0] == 2
+
+def test_dust_vertex_metric_inverted():
+  """Test dust keeps large components with invert=True."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6], [6, 6, 6],  # Component 2: 5 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [5, 6, 7],  # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=4, metric="vertices", ccl="vertices", invert=True)
+
+  assert result.vertices.shape[0] == 3
+  assert result.faces.shape[0] == 1
 
 
+def test_dust_face_metric():
+  """Test dust with face metric."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1],  # Component 1: 4 vertices, 1 face
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6],  # Component 2: 4 vertices, 3 faces
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1: 1 face
+    [4, 5, 6], [5, 6, 7], [4, 6, 7],  # Component 2: 3 faces
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=2, metric="faces", ccl="vertices")
+
+  # Should remove component with 1 face, keep component with 3 faces
+  assert result.faces.shape[0] == 3
 
 
+def test_dust_face_metric_inverted():
+  """Test dust with face metric inverted."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1],  # Component 1: 1 face
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6],  # Component 2: 3 faces
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [4, 5, 6], [5, 6, 7], [4, 6, 7],  # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=2, metric="faces", ccl="vertices", invert=True)
+
+  assert result.faces.shape[0] == 1
+
+def test_dust_removes_all_components():
+  """Test when all components are filtered out."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Small component
+  ]
+  faces = [[0, 1, 2]]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=10, metric="vertices", ccl="vertices")
+
+  # All components removed
+  assert result.vertices.shape[0] == 0
+  assert result.faces.shape[0] == 0
+
+def test_largest_k_vertex_metric():
+  """Test keeping k largest components by vertex count."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [3, 3, 3], [4, 3, 3], [3, 4, 3], [3, 3, 4], [4, 4, 4],  # Component 2: 5 vertices
+    [7, 7, 7], [8, 7, 7], [7, 8, 7], [7, 7, 8], [8, 8, 8], [8, 8, 9], [9, 9, 9],  # Component 3: 7 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [5, 6, 7],  # Component 2
+    [8, 9, 10], [10, 11, 12], [12, 13, 14],  # Component 3
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  result = zmesh.largest_k(mesh, k=2, metric="vertices", ccl="vertices")
+
+  # Should keep 2 largest: component 3 (7 vertices) and component 2 (5 vertices)
+  assert result.vertices.shape[0] == 12
+
+def test_largest_k_vertex_metric_inverted():
+  """Test keeping k smallest components with invert=True."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [3, 3, 3], [4, 3, 3], [3, 4, 3], [3, 3, 4], [4, 4, 4],  # Component 2: 5 vertices
+    [7, 7, 7], [8, 7, 7], [7, 8, 7], [7, 7, 8], [8, 8, 8], [8, 8, 9], [9, 9, 9],  # Component 3: 7 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [5, 6, 7],  # Component 2
+    [8, 9, 10], [10, 11, 12], [12, 13, 14],  # Component 3
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.largest_k(mesh, k=2, metric="vertices", ccl="vertices", invert=True)
+
+  # Should keep 2 smallest: component 1 (3 vertices) and component 2 (5 vertices)
+  assert result.vertices.shape[0] == 8
 
 
+def test_largest_k_face_metric():
+  """Test keeping k largest components by face count."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1],  # Component 1: 1 face
+    [3, 3, 3], [4, 3, 3], [3, 4, 3], [3, 3, 4],  # Component 2: 3 faces
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1: 1 face
+    [4, 5, 6], [5, 6, 7], [4, 6, 7],  # Component 2: 3 faces
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
 
+  result = zmesh.largest_k(mesh, k=1, metric="faces", ccl="vertices")
+
+  # Should keep largest: component 2 with 3 faces
+  assert result.faces.shape[0] == 3
+
+
+def test_largest_k_k_exceeds_components():
+  """Test that original mesh is returned when k >= number of components."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1
+    [5, 5, 5], [6, 5, 5], [5, 6, 5],  # Component 2
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5],  # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.largest_k(mesh, k=5, metric="vertices", ccl="vertices")
+
+  # k exceeds component count, should return clone of original
+  assert result.vertices.shape[0] == 6
+  assert result.faces.shape[0] == 2
+
+def test_largest_k_k_equals_one():
+  """Test keeping only the single largest component."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6], [6, 6, 6],  # Component 2: 5 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [5, 6, 7],  # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.largest_k(mesh, k=1, metric="vertices", ccl="vertices")
+
+  # Should keep only component 2 with 5 vertices
+  assert result.vertices.shape[0] == 5
+
+def test_largest_k_k_zero():
+  """Test edge case with k=0."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],
+  ]
+  faces = [[0, 1, 2]]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.largest_k(mesh, k=0, metric="vertices", ccl="vertices")
+
+  # k=0 should return empty mesh
+  assert result.vertices.shape[0] == 0
+  assert result.faces.shape[0] == 0
