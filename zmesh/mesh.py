@@ -86,9 +86,9 @@ class Mesh:
 
   def clone(self):
     if self.normals is None:
-      return Mesh(np.copy(self.vertices), np.copy(self.faces), None)
+      return Mesh(np.copy(self.vertices), np.copy(self.faces), None, id=self.id)
     else:
-      return Mesh(np.copy(self.vertices), np.copy(self.faces), np.copy(self.normals))
+      return Mesh(np.copy(self.vertices), np.copy(self.faces), np.copy(self.normals), id=self.id)
 
   def triangles(self) -> npt.NDArray[np.float32]:
     """Returns vertex triples representing triangluar faces."""
