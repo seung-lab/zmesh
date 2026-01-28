@@ -169,8 +169,15 @@ def chunk_mesh(
   
   return chunked_meshes
   
-def connected_components(mesh:Mesh) -> list[Mesh]:
-  """Split a mesh into its components."""
+@cython.binding(True)
+def vertex_connected_components(mesh:Mesh) -> list[Mesh]:
+  """
+  Split a mesh into its components based on vertex connectivity.
+
+  Note: This can cause shared single points to connect two objects 
+    which would be non-manifold geometry. Use face_connected_components
+    to guarantee connected components are manifolds.
+  """
 
   face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
   cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
@@ -207,6 +214,11 @@ def connected_components(mesh:Mesh) -> list[Mesh]:
     )
 
   return ccls
+
+@cython.binding(True)
+def face_connected_components(mesh:Mesh) -> list[Mesh]:
+  """Split a mesh into its components based on face connectivity."""
+  raise NotImplementedError()
 
 def _normalize_mesh(mesh, voxel_centered, physical, resolution):
   """Convert a MeshObject into a  zmesh.Mesh."""

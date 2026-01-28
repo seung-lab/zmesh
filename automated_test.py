@@ -384,7 +384,7 @@ def test_vertex_ccl_single_component():
     [2, 3, 4],
   ]
   mesh = zmesh.Mesh(vertices, faces)
-  ccls = zmesh.connected_components(mesh)
+  ccls = zmesh.vertex_connected_components(mesh)
   assert len(ccls) == 1
 
 
@@ -402,7 +402,7 @@ def test_vertex_ccl_separate_components():
     [3, 4, 5],
   ]
   mesh = zmesh.Mesh(vertices, faces)
-  ccls = zmesh.connected_components(mesh)
+  ccls = zmesh.vertex_connected_components(mesh)
   assert len(ccls) == 2
 
 def test_vertex_ccl_chain():
@@ -421,7 +421,7 @@ def test_vertex_ccl_chain():
     [4, 5, 6],
   ]
   mesh = zmesh.Mesh(vertices, faces)
-  ccls = zmesh.connected_components(mesh)
+  ccls = zmesh.vertex_connected_components(mesh)
   assert len(ccls) == 1
 
 
