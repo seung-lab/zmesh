@@ -78,6 +78,9 @@ def largest_k(
       f"Metric {metric} not supported. Must be one of: 'vertices', 'faces', 'surface_area', 'volume'."
     )
 
+  if k == 0:
+    return Mesh(id=mesh.id)
+
   if ccl == "vertices":
     ccls = vertex_connected_components(mesh)
   elif ccl == "faces":
