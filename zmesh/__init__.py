@@ -85,7 +85,7 @@ def largest_k(
   else:
     raise ValueError(f"Connected components type {ccl} not supported.")
 
-  if k <= len(ccls):
+  if k >= len(ccls):
     return mesh.clone()
 
   if metric == "vertices":
