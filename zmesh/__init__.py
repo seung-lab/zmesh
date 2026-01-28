@@ -57,7 +57,10 @@ def dust(
         if cc.faces.shape[0] >= threshold
       ]
 
-  return Mesh.concatenate(*ccls)
+  if len(ccls) == 0:
+    return Mesh(id=mesh.id)
+  else:
+    return Mesh.concatenate(*ccls)
 
 def largest_k(
   mesh:Mesh, 
