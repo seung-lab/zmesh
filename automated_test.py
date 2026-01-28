@@ -371,7 +371,58 @@ def test_chunk_mesh_triangle():
 
   
 
+def test_vertex_ccl_single_component():
+  vertices = [
+    [0,0,0],
+    [1,0,0],
+    [0,1,0],
+    [0,0,1],
+    [1,0,1],
+  ]
+  faces = [
+    [0, 1, 2],
+    [2, 3, 4],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.vertex_connected_components(mesh)
+  assert len(ccls) == 1
 
+
+def test_vertex_ccl_separate_components():
+  vertices = [
+    [0,0,0],
+    [1,0,0],
+    [0,1,0],
+    [0,0,1],
+    [1,0,1],
+    [1,1,1],
+  ]
+  faces = [
+    [0, 1, 2],
+    [3, 4, 5],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.vertex_connected_components(mesh)
+  assert len(ccls) == 2
+
+def test_vertex_ccl_chain():
+  vertices = [
+    [0,0,0],
+    [1,0,0],
+    [0,1,0],
+    [0,0,1],
+    [1,0,1],
+    [1,1,1],
+    [2,0,1],
+  ]
+  faces = [
+    [0, 1, 2],
+    [2, 3, 4],
+    [4, 5, 6],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.vertex_connected_components(mesh)
+  assert len(ccls) == 1
 
 
 

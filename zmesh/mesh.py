@@ -187,7 +187,7 @@ class Mesh:
     eff_faces = np.unique(eff_faces, axis=0)
 
     eff_normals = None
-    if normals:
+    if normals is not None and normals.size > 0:
       eff_normals = normals[uniq_idx]
 
     mesh = Mesh(eff_verts, eff_faces, eff_normals, id=self.id)
@@ -380,7 +380,7 @@ end_header
     )
 
   @classmethod
-  def from_trimesh(kls, tmesh) -> "Mesh":
+  def from_trimesh(kls, tmesh:"trimesh.Trimesh") -> "Mesh":
     return kls(vertices=tmesh.vertices, faces=tmesh.faces, normals=tmesh.vertex_normals)
 
   def save(self, filename:str):
