@@ -80,7 +80,7 @@ with open('10001001:0', 'wb') as f:
   f.write(mesh.to_precomputed())
 ```
 
-Note: As of the latest version, `mesher.get_mesh` has been deprecated in favor of `mesher.get` which fixes a long standing bug where you needed to transpose your data in order to get a mesh in the correct orientation.
+Note: `mesher.get_mesh` has been deprecated in favor of `mesher.get` which fixed a long standing bug where you needed to transpose your data in order to get a mesh in the correct orientation.
 
 ## Installation 
 
