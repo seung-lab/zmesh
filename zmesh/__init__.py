@@ -34,8 +34,6 @@ def dust(
   else:
     raise ValueError(f"Connected components type {ccl} not supported.")
 
-  import pdb; pdb.set_trace()
-
   if metric == "vertices":
     if invert:
       ccls = [
