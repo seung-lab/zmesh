@@ -80,6 +80,8 @@ def largest_k(
 
   if k == 0:
     return Mesh(id=mesh.id)
+  elif k < 0:
+    raise ValueError(f"k must be >= 0. Got: {k}")
 
   if ccl == "vertices":
     ccls = vertex_connected_components(mesh)
