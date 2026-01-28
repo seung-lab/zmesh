@@ -34,27 +34,29 @@ def dust(
   else:
     raise ValueError(f"Connected components type {ccl} not supported.")
 
+  import pdb; pdb.set_trace()
+
   if metric == "vertices":
     if invert:
       ccls = [
         cc for cc in ccls
-        if cc.vertices.shape[0] >= threshold
+        if cc.vertices.shape[0] < threshold
       ]
     else:
       ccls = [
         cc for cc in ccls
-        if cc.vertices.shape[0] < threshold
+        if cc.vertices.shape[0] >= threshold
       ]
   else:
     if invert:
       ccls = [
         cc for cc in ccls
-        if cc.faces.shape[0] >= threshold
+        if cc.faces.shape[0] < threshold
       ]
     else:
       ccls = [
         cc for cc in ccls
-        if cc.faces.shape[0] < threshold
+        if cc.faces.shape[0] >= threshold
       ]
 
   return Mesh.concatenate(*ccls)
