@@ -114,6 +114,8 @@ vertex_connected_components_mask(
     }
 	}
 
+  equivalences = DisjointSet<T>(0); // clear memory
+
 	std::vector<std::vector<T>> ccl(next_label - 1);
 
   if (ccl.size() == 0) {
