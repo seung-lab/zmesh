@@ -27,7 +27,7 @@ def dust(
   elif metric not in ["faces", "vertices"]:
     raise ValueError(f"Metric {metric} not supported. Must be one of: 'vertices', 'faces', 'surface_area', 'volume'.")
 
-  if ccls == "vertices":
+  if ccl == "vertices":
     ccls = vertex_connected_components(mesh)
   elif ccl == "faces":
     ccls = face_connected_components(mesh)
@@ -75,7 +75,7 @@ def largest_k(
       f"Metric {metric} not supported. Must be one of: 'vertices', 'faces', 'surface_area', 'volume'."
     )
 
-  if ccls == "vertices":
+  if ccl == "vertices":
     ccls = vertex_connected_components(mesh)
   elif ccl == "faces":
     ccls = face_connected_components(mesh)
