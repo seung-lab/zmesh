@@ -5,6 +5,8 @@
 #include <limits>
 #include <vector>
 
+#include "unordered_dense.hpp"
+
 namespace zmesh::ccl {
 
 template <typename T>
@@ -171,8 +173,6 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		adj[mkedge(f2,f3)].push_back(face+1);
 	}
 
-	printf("adj done!\n");
-
 	DisjointSet<T> equivalences(num_faces + 2); // +1 for zero offset, +1 for face+1
 
 	int k = 0;
@@ -192,11 +192,7 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		k++;
 	}
 
-	printf("build equivalences!\n");
-
 	adj = decltype(adj)(); // clear memory
-
-	printf("clear adj!\n");
 
 	std::vector<T> mask(num_faces + 1);
 	T next_label = 1;
@@ -214,8 +210,6 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		}
 	}
 
-	printf("created mask!\n");
-
 	equivalences = DisjointSet<T>(0); // clear memory
 
 	std::vector<std::vector<T>> ccl(next_label - 1);
@@ -223,8 +217,6 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 	if (ccl.size() == 0) {
 		return ccl;
 	}
-
-	printf("mapping components!\n");
 
 	for (uint64_t i = 0; i < num_faces * 3; i++) {
 		ccl[mask[faces[i]+1] - 1].push_back(faces[i]);
