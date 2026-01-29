@@ -92,6 +92,8 @@ def largest_k(
 
   if k >= len(ccls):
     return mesh.clone()
+  elif k == 1:
+    return ccls[0]
 
   if metric == "vertices":
     scores = [ (i, cc.vertices.shape[0]) for i, cc in enumerate(ccls) ]

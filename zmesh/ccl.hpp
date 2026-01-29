@@ -129,6 +129,110 @@ vertex_connected_components_mask(
 	return ccl;
 }
 
+// FACE CCL BELOW
+// Needs to find face adjacency based on edges
+
+// Szudzik hashing creates perfect hashing from N^2 -> N
+// If it overflows, who cares? We don't need perfection.
+template <typename T>
+struct SzudzikPairHash {
+	std::size_t operator()(const std::pair<T, T>& p) const noexcept {
+		const T a = p.first;
+		const T b = p.second;
+		return a >= b ? (a * a + a + b) : (a + b * b);
+	}
+};
+
+template <typename T>
+std::pair<T,T> mkedge(const T a, const T b) {
+	return (a < b) 
+		? std::make_pair(a,b) 
+		: std::make_pair(b,a);
+}
+
+template <typename T>
+std::vector<std::vector<T>>
+face_connected_components_mask(const T* faces, const uint64_t num_faces) {
+
+	ankerl::unordered_dense::map<std::pair<T,T>, std::vector<T>, SzudzikPairHash<T>> adj;
+	adj.reserve(num_faces * 2);
+
+	printf("start!\n");
+
+	for (uint64_t face = 0; face < num_faces; face++) {
+		const uint64_t i = face * 3;
+
+		auto f1 = faces[i+0];
+		auto f2 = faces[i+1];
+		auto f3 = faces[i+2];
+
+		adj[mkedge(f1,f2)].push_back(face+1);
+		adj[mkedge(f1,f3)].push_back(face+1);
+		adj[mkedge(f2,f3)].push_back(face+1);
+	}
+
+	printf("adj done!\n");
+
+	DisjointSet<T> equivalences(num_faces + 2); // +1 for zero offset, +1 for face+1
+
+	int k = 0;
+	for (auto& p : adj) {
+		const std::vector<T>& group = p.second;
+		if (group.empty()) {
+			continue;
+		}
+
+		const T first = group[0];
+		// printf("%d k=%d\n", first, k);
+
+		for (int i = 1; i < group.size(); i++) {
+			// printf("%d k=%d\n", group[i], k);
+			equivalences.unify(first, group[i]);
+		}	
+		k++;
+	}
+
+	printf("build equivalences!\n");
+
+	adj = decltype(adj)(); // clear memory
+
+	printf("clear adj!\n");
+
+	std::vector<T> mask(num_faces + 1);
+	T next_label = 1;
+
+	for (int64_t i = 1; i <= num_faces; i++) {
+		auto label = equivalences.root(i);
+
+		if (mask[label] == 0) {
+			mask[label] = next_label;
+			mask[i] = next_label;
+			next_label++;
+		}
+		else {
+			mask[i] = mask[label]; 
+		}
+	}
+
+	printf("created mask!\n");
+
+	equivalences = DisjointSet<T>(0); // clear memory
+
+	std::vector<std::vector<T>> ccl(next_label - 1);
+
+	if (ccl.size() == 0) {
+		return ccl;
+	}
+
+	printf("mapping components!\n");
+
+	for (uint64_t i = 0; i < num_faces * 3; i++) {
+		ccl[mask[faces[i]+1] - 1].push_back(faces[i]);
+	}
+
+	return ccl;
+}
+
 };
 
 #endif
