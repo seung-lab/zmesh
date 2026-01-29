@@ -28,10 +28,14 @@ class Mesh:
     else:
       self.vertices = np.asarray(vertices, dtype=np.float32)
     
+    face_dtype = np.uint32
+    if self.vertices.shape[0] > np.iinfo(np.uint32).max:
+      face_dtype = np.uint64
+
     if faces is None:
-      self.faces = np.zeros([0,3], dtype=np.uint32)
+      self.faces = np.zeros([0,3], dtype=face_dtype)
     else:
-      self.faces = np.asarray(faces, dtype=np.uint32)
+      self.faces = np.asarray(faces, dtype=face_dtype)
 
     if normals is None:
       self.normals = normals
@@ -96,13 +100,19 @@ class Mesh:
 
   @classmethod
   def concatenate(cls, *meshes, id:Optional[int] = None) -> "Mesh":
-    vertex_ct = np.zeros(len(meshes) + 1, np.uint32)
+    vertex_ct = np.zeros(len(meshes) + 1, np.uint64)
     vertex_ct[1:] = np.cumsum([ len(mesh) for mesh in meshes ])
+
+    face_dtype = np.uint64
+    if vertex_ct[-1] < np.iinfo(np.uint32).max:
+      vertex_ct = vertex_ct.astype(np.uint32)
+      face_dtype = np.uint32
 
     vertices = np.concatenate([ mesh.vertices for mesh in meshes ])
     
     faces = np.concatenate([ 
-      mesh.faces + vertex_ct[i] for i, mesh in enumerate(meshes) 
+      mesh.faces.astype(face_dtype, copy=False) + vertex_ct[i]
+      for i, mesh in enumerate(meshes) 
     ])
 
     # normals = np.concatenate([ mesh.normals for mesh in meshes ])
@@ -233,7 +243,7 @@ class Mesh:
     vertex_index_format = [
       np.uint32(self.vertices.shape[0]), # Number of vertices (3 coordinates)
       self.vertices,
-      self.faces
+      self.faces.astype(np.uint32, copy=False)
     ]
     return b''.join([ array.tobytes('C') for array in vertex_index_format ])
 
