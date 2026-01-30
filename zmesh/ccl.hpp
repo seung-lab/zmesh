@@ -192,7 +192,7 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 	std::vector<T> mask(num_faces + 1);
 	T next_label = 1;
 
-	for (int64_t i = 1; i <= num_faces; i++) {
+	for (uint64_t i = 1; i <= num_faces; i++) {
 		auto label = equivalences.root(i);
 
 		if (mask[label] == 0) {
