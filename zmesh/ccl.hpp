@@ -159,8 +159,6 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 	ankerl::unordered_dense::map<std::pair<T,T>, std::vector<T>, SzudzikPairHash<T>> adj;
 	adj.reserve(num_faces * 2);
 
-	printf("start!\n");
-
 	for (uint64_t face = 0; face < num_faces; face++) {
 		const uint64_t i = face * 3;
 
@@ -183,10 +181,9 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		}
 
 		const T first = group[0];
-		// printf("%d k=%d\n", first, k);
+		equivalences.add(first);
 
 		for (int i = 1; i < group.size(); i++) {
-			// printf("%d k=%d\n", group[i], k);
 			equivalences.unify(first, group[i]);
 		}	
 		k++;
@@ -218,8 +215,8 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		return ccl;
 	}
 
-	for (uint64_t i = 0; i < num_faces * 3; i++) {
-		ccl[mask[faces[i]+1] - 1].push_back(faces[i]);
+	for (uint64_t i = 0; i < num_faces; i++) {
+		ccl[mask[i+1] - 1].push_back(i);
 	}
 
 	return ccl;

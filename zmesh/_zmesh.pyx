@@ -238,7 +238,6 @@ def face_connected_components(mesh:Mesh) -> list[Mesh]:
     <uint64_t*>&faces[0], mesh.faces.shape[0]
   )
 
-  print("face ccl done")
   cdef uint64_t[:] mask_view
   face_map = np.zeros([ mesh.vertices.shape[0] ], dtype=np.uint64)
 

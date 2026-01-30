@@ -370,7 +370,6 @@ def test_chunk_mesh_triangle():
   assert [0.5,0.5,0] in m.vertices
 
   
-
 def test_vertex_ccl_single_component():
   vertices = [
     [0,0,0],
