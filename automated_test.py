@@ -446,6 +446,48 @@ def test_face_ccl_chain():
   ccls = zmesh.face_connected_components(mesh)
   assert len(ccls) == 1
 
+def test_non_manifold_vertex_ccl():
+
+  # a triangle strip where one vertex is shared
+  # between two manifolds
+
+  #              here
+  # . -- . -- . --. -- .
+  #  \  / \  / \ / \  / \
+  #   . -- . -- .    . -- .
+
+  vertices = [
+    [0,0,0],
+    [1,1,0],
+    [1,0,0],
+    [2,1,0],
+    [2,0,0],
+    [3,1,0],
+    [3,0,0],
+    [4,1,0],
+
+    [10, 0, 0],
+    [10, 1, 0],
+    [11, 0, 0],
+  ]
+  faces = [
+    [0, 1, 2],
+    [2, 1, 3],
+    [3, 2, 4],
+    [4, 3, 5],
+    [5, 4, 6],
+    [6, 5, 7],
+    
+    [7, 8, 9],
+    [8, 9, 10],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.face_connected_components(mesh)
+  assert len(ccls) == 2
+
+  ccls = zmesh.vertex_connected_components(mesh)
+  assert len(ccls) == 1
+
 def test_dust_vertex_metric():
   """Test dust removes small components with vertex metric."""
   vertices = [
