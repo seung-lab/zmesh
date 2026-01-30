@@ -464,6 +464,23 @@ def test_dust_vertex_metric():
   assert result.vertices.shape[0] == 5
   assert result.faces.shape[0] == 2
 
+def test_dust_face_metric_face_ccl():
+  """Test dust removes small components with vertex metric."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6], [6, 6, 6],  # Component 2: 5 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [4, 5, 6], [5, 6, 7], # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=2, metric="faces", ccl="faces")
+  # Should remove component with 3 vertices, keep component with 5 vertices
+  assert result.vertices.shape[0] == 5
+  assert result.faces.shape[0] == 3
+
 def test_dust_vertex_metric_inverted():
   """Test dust keeps large components with invert=True."""
   vertices = [
