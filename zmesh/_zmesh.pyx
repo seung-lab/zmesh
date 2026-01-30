@@ -35,8 +35,11 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
   )
 
 cdef extern from "ccl.hpp" namespace "zmesh::ccl":
-  cdef vector[vector[unsigned int]] vertex_connected_components_mask(
-    unsigned int* faces, uint64_t num_verts, uint64_t num_faces
+  cdef vector[vector[uint64_t]] vertex_connected_components_mask(
+    uint64_t* faces, uint64_t num_verts, uint64_t num_faces
+  )
+  cdef vector[vector[uint64_t]] face_connected_components_mask(
+    uint64_t* faces, uint64_t num_faces
   )
 
 cdef extern from "cMesher.hpp" namespace "zmesh":
@@ -178,36 +181,41 @@ def vertex_connected_components(mesh:Mesh) -> list[Mesh]:
     which would be non-manifold geometry. Use face_connected_components
     to guarantee connected components are manifolds.
   """
+  if mesh.empty():
+    return []
 
   face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
-  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([mesh.faces.size], order=face_order)
+  cdef cnp.ndarray[uint64_t] faces = mesh.faces.reshape(
+    [mesh.faces.size], order=face_order
+  ).astype(np.uint64, copy=False)
 
   cdef uint64_t Nv = mesh.vertices.shape[0]
 
-  cdef vector[vector[unsigned int]] vertex_masks = vertex_connected_components_mask(
-    <unsigned int*>&faces[0], Nv, mesh.faces.shape[0]
+  cdef vector[vector[uint64_t]] vertex_masks = vertex_connected_components_mask(
+    <uint64_t*>&faces[0], Nv, mesh.faces.shape[0]
   )
 
-  cdef unsigned int[:] mask_view
+  cdef uint64_t[:] mask_view
 
-  face_map = np.zeros([ Nv ], dtype=np.uint32)
+  face_map = np.zeros([ Nv ], dtype=np.uint64)
 
   ccls = []
   for mask in vertex_masks:
-    if len(mask) == 0:
+    if mask.empty():
       continue
 
-    mask_view = <unsigned int[:mask.size()]> &mask[0]
+    mask_view = <uint64_t[:mask.size()]> &mask[0]
     mask_np = np.frombuffer(
       mask_view,
-      dtype=np.uint32,
+      dtype=np.uint64,
       count=mask.size()
     )
     uniq, idx = np.unique(mask_np, return_index=True)
     verts = mesh.vertices[uniq]
 
-    face_map[uniq] = np.arange(len(uniq), dtype=np.uint32)
+    face_map[uniq] = np.arange(len(uniq), dtype=np.uint64)
     remapped_faces = face_map[mask_np].reshape(mask.size() // 3, 3, order="C")
+    remapped_faces = remapped_faces.astype(mesh.faces.dtype, copy=False)
 
     ccls.append(
       Mesh(verts, remapped_faces)
@@ -218,7 +226,46 @@ def vertex_connected_components(mesh:Mesh) -> list[Mesh]:
 @cython.binding(True)
 def face_connected_components(mesh:Mesh) -> list[Mesh]:
   """Split a mesh into its components based on face connectivity."""
-  raise NotImplementedError()
+  if mesh.empty():
+    return []
+
+  face_order = 'C' if mesh.faces.flags.c_contiguous else 'F'
+  cdef cnp.ndarray[uint64_t] faces = mesh.faces.reshape(
+    [mesh.faces.size], order=face_order
+  ).astype(np.uint64, copy=False)
+
+  cdef vector[vector[uint64_t]] face_masks = face_connected_components_mask(
+    <uint64_t*>&faces[0], mesh.faces.shape[0]
+  )
+
+  cdef uint64_t[:] mask_view
+  face_map = np.zeros([ mesh.vertices.shape[0] ], dtype=np.uint64)
+
+  ccls = []
+  for mask in face_masks:
+    if mask.empty():
+      continue
+
+    mask_view = <uint64_t[:mask.size()]> &mask[0]
+    mask_np = np.frombuffer(
+      mask_view,
+      dtype=np.uint64,
+      count=mask.size()
+    )
+
+    ccl_faces = mesh.faces[mask_np,:].reshape(-1)
+    uniq, idx = np.unique(ccl_faces, return_index=True)
+    verts = mesh.vertices[uniq]
+
+    face_map[uniq] = np.arange(len(uniq), dtype=np.uint64)
+    remapped_faces = face_map[ccl_faces].reshape(ccl_faces.size // 3, 3, order="C")
+    remapped_faces = remapped_faces.astype(mesh.faces.dtype, copy=False)
+
+    ccls.append(
+      Mesh(verts, remapped_faces)
+    )
+
+  return ccls
 
 def _normalize_mesh(mesh, voxel_centered, physical, resolution):
   """Convert a MeshObject into a  zmesh.Mesh."""

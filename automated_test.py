@@ -370,7 +370,6 @@ def test_chunk_mesh_triangle():
   assert [0.5,0.5,0] in m.vertices
 
   
-
 def test_vertex_ccl_single_component():
   vertices = [
     [0,0,0],
@@ -424,6 +423,71 @@ def test_vertex_ccl_chain():
   ccls = zmesh.vertex_connected_components(mesh)
   assert len(ccls) == 1
 
+def test_face_ccl_chain():
+  vertices = [
+    [0,0,0],
+    [1,1,0],
+    [1,0,0],
+    [2,1,0],
+    [2,0,0],
+    [3,1,0],
+    [3,0,0],
+    [4,1,0],
+  ]
+  faces = [
+    [0, 1, 2],
+    [2, 1, 3],
+    [3, 2, 4],
+    [4, 3, 5],
+    [5, 4, 6],
+    [6, 5, 7],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.face_connected_components(mesh)
+  assert len(ccls) == 1
+
+def test_non_manifold_vertex_ccl():
+
+  # a triangle strip where one vertex is shared
+  # between two manifolds
+
+  #              here
+  # . -- . -- . --. -- .
+  #  \  / \  / \ / \  / \
+  #   . -- . -- .    . -- .
+
+  vertices = [
+    [0,0,0],
+    [1,1,0],
+    [1,0,0],
+    [2,1,0],
+    [2,0,0],
+    [3,1,0],
+    [3,0,0],
+    [4,1,0],
+
+    [10, 0, 0],
+    [10, 1, 0],
+    [11, 0, 0],
+  ]
+  faces = [
+    [0, 1, 2],
+    [2, 1, 3],
+    [3, 2, 4],
+    [4, 3, 5],
+    [5, 4, 6],
+    [6, 5, 7],
+    
+    [7, 8, 9],
+    [8, 9, 10],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.face_connected_components(mesh)
+  assert len(ccls) == 2
+
+  ccls = zmesh.vertex_connected_components(mesh)
+  assert len(ccls) == 1
+
 def test_dust_vertex_metric():
   """Test dust removes small components with vertex metric."""
   vertices = [
@@ -441,6 +505,23 @@ def test_dust_vertex_metric():
   # Should remove component with 3 vertices, keep component with 5 vertices
   assert result.vertices.shape[0] == 5
   assert result.faces.shape[0] == 2
+
+def test_dust_face_metric_face_ccl():
+  """Test dust removes small components with vertex metric."""
+  vertices = [
+    [0, 0, 0], [1, 0, 0], [0, 1, 0],  # Component 1: 3 vertices
+    [5, 5, 5], [6, 5, 5], [5, 6, 5], [5, 5, 6], [6, 6, 6],  # Component 2: 5 vertices
+  ]
+  faces = [
+    [0, 1, 2],  # Component 1
+    [3, 4, 5], [4, 5, 6], [5, 6, 7], # Component 2
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+
+  result = zmesh.dust(mesh, threshold=2, metric="faces", ccl="faces")
+  # Should remove component with 3 vertices, keep component with 5 vertices
+  assert result.vertices.shape[0] == 5
+  assert result.faces.shape[0] == 3
 
 def test_dust_vertex_metric_inverted():
   """Test dust keeps large components with invert=True."""
