@@ -9,7 +9,7 @@ def dust(
   mesh:Mesh,
   threshold:float,
   metric:Literal["vertices", "faces", "surface_area", "volume"] = "vertices",
-  ccl:Literal["vertices", "faces"] = "vertices",
+  ccl:Literal["vertices", "faces"] = "faces",
   invert:bool = False,
 ) -> Mesh:
   """
@@ -66,7 +66,7 @@ def largest_k(
   mesh:Mesh, 
   k:int,
   metric:Literal["vertices", "faces", "surface_area", "volume"] = "vertices",
-  ccl:Literal["vertices", "faces"] = "vertices",
+  ccl:Literal["vertices", "faces"] = "faces",
   invert:bool = False,
 ) -> Mesh:
   """Keep only the largest k components in the mesh."""
