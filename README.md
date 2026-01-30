@@ -50,6 +50,8 @@ mesh = mesher.simplify(
 # compute normals on a pre-existing mesh
 mesh = zmesh.compute_normals(mesh) 
 
+# run face based connected components
+ccls = zmesh.face_connected_components(mesh)
 # run vertex based connected components
 ccls = zmesh.vertex_connected_components(mesh)
 
