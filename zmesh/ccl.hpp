@@ -173,7 +173,6 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 
 	DisjointSet<T> equivalences(num_faces + 2); // +1 for zero offset, +1 for face+1
 
-	int k = 0;
 	for (auto& p : adj) {
 		const std::vector<T>& group = p.second;
 		if (group.empty()) {
@@ -186,7 +185,6 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		for (int i = 1; i < group.size(); i++) {
 			equivalences.unify(first, group[i]);
 		}	
-		k++;
 	}
 
 	adj = decltype(adj)(); // clear memory
