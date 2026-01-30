@@ -423,6 +423,29 @@ def test_vertex_ccl_chain():
   ccls = zmesh.vertex_connected_components(mesh)
   assert len(ccls) == 1
 
+def test_face_ccl_chain():
+  vertices = [
+    [0,0,0],
+    [1,1,0],
+    [1,0,0],
+    [2,1,0],
+    [2,0,0],
+    [3,1,0],
+    [3,0,0],
+    [4,1,0],
+  ]
+  faces = [
+    [0, 1, 2],
+    [2, 1, 3],
+    [3, 2, 4],
+    [4, 3, 5],
+    [5, 4, 6],
+    [6, 5, 7],
+  ]
+  mesh = zmesh.Mesh(vertices, faces)
+  ccls = zmesh.face_connected_components(mesh)
+  assert len(ccls) == 1
+
 def test_dust_vertex_metric():
   """Test dust removes small components with vertex metric."""
   vertices = [
