@@ -1,4 +1,8 @@
 prune connectomics_npy_meshes
 exclude connectomics.npy.gz
+exclude zmesh/_zmesh.cpp
 include LICENSE
+include zmesh/ccl.hpp
 include zmesh/cMesher.hpp
+include zmesh/unordered_dense.hpp
+include zmesh/utility.hpp
