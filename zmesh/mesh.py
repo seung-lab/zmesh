@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Union
+from typing import Optional, Iterator, Union, Literal
 
 import numpy as np
 import numpy.typing as npt
@@ -162,6 +162,26 @@ class Mesh:
     faces = mapping[faces]
 
     return Mesh(verts, faces, None)
+
+  def dust(
+    self,
+    threshold:float,
+    metric:Literal["vertices", "faces", "surface_area", "volume"] = "vertices",
+    ccl:Literal["vertices", "faces"] = "faces",
+    invert:bool = False,
+  ) -> "Mesh":
+    import zmesh
+    return zmesh.dust(self, threshold=threshold, metric=metric, ccl=ccl, intert=invert)
+
+  def largest_k(
+    self,
+    k:int,
+    metric:Literal["vertices", "faces", "surface_area", "volume"] = "vertices",
+    ccl:Literal["vertices", "faces"] = "faces",
+    invert:bool = False,
+  ) -> "Mesh":
+    import zmesh
+    return zmesh.largest_k(self, k=k, metric=metric, ccl=ccl, intert=invert)
 
   def remove_degenerate_faces(self) -> "Mesh":
     """Remove faces that reference the same vertex two or three times."""
