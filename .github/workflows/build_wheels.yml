@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v3.2.0
+        uses: joerick/cibuildwheel@v3.3.1
         env:
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_ARCHS_MACOS: "x86_64 arm64"
