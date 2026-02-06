@@ -32,7 +32,11 @@ setuptools.setup(
   setup_requires=['pbr', 'numpy', 'cython'],
   python_requires=">=3.8",
   pbr=True,
-  define_macros=[ ("NDEBUG", 1) ],
+  define_macros=[ 
+    ("NDEBUG", 1),
+    ("NPY_NO_DEPRECATED_API", 1),
+    ("NPY_1_7_API_VERSION", 1),
+  ],
   extras_require={
     "viewer": [ "vtk" ],
   },
