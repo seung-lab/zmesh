@@ -103,7 +103,7 @@ vertex_connected_components_mask(
 	std::vector<T> mask(max_label + 1);
 	T next_label = 1;
 
-	for (int64_t i = 1; i <= max_label; i++) {
+	for (T i = 1; i <= max_label; i++) {
 		auto label = equivalences.root(i);
 
 		if (mask[label] == 0) {
@@ -182,7 +182,7 @@ face_connected_components_mask(const T* faces, const uint64_t num_faces) {
 		const T first = group[0];
 		equivalences.add(first);
 
-		for (int i = 1; i < group.size(); i++) {
+		for (size_t i = 1; i < group.size(); i++) {
 			equivalences.unify(first, group[i]);
 		}	
 	}
