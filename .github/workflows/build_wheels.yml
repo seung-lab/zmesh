@@ -10,23 +10,22 @@ env:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}-${{ matrix.arch }}
-    runs-on: ${{ matrix.runner }}
+    name: Build wheels on ${{matrix.arch}} for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
+        arch: [auto]
         include:
-          - os: ubuntu
-            arch: x86_64
-            runner: ubuntu-24.04
-          - os: ubuntu
+          - os: ubuntu-latest
             arch: aarch64
-            runner: ubuntu-24.04-arm64
-          - os: windows
-            arch: x86_64
-            runner: windows-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        if:  ${{ matrix.arch == 'aarch64' }}
+        uses: docker/setup-qemu-action@v1
 
       - name: Build wheels
         uses: joerick/cibuildwheel@v3.3.1
