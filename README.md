@@ -111,7 +111,7 @@ Thanks to Aleks Zlateski for creating and sharing this beautiful mesher.
 
 Later changes by Will Silversmith, Nico Kemnitz, and Jingpeng Wu. 
 
-Thank you to Sven Forstmann, Kristof S., Br&eacute;nainn Woodsend, and others for the source code to pyfqmr which we have adapted here for non-topology preserving simplification and OBJ reading and writing. See https://github.com/Kramer84/pyfqmr-Fast-Quadric-Mesh-Reduction/
+Thank you to Sven Forstmann, Kristof S., Br&eacute;nainn Woodsend, and others for the source code to pyfqmr which we have adapted here for non-topology preserving simplification and fast OBJ reading. See https://github.com/Kramer84/pyfqmr-Fast-Quadric-Mesh-Reduction/
 
 ## References  
 
