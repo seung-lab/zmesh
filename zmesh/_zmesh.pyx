@@ -174,8 +174,9 @@ def simplify_fqmr(
   alpha:float = 1e-9,
   K:int = 3,
   preserve_border:bool = False,
-  compute_normals = False,
-  voxel_centered = False, 
+  compute_normals:bool = False,
+  voxel_centered:bool = False,
+  return_iterations:bool = False,
 ) -> Mesh:
   """
   Perform a quadrics based mesh simplification that 
@@ -252,7 +253,10 @@ def simplify_fqmr(
   if compute_normals:
     new_mesh = globals()["compute_normals"](new_mesh)
 
-  return new_mesh
+  if return_iterations:
+    return (new_mesh, num_iters)
+  else:
+    return new_mesh
 
 @cython.binding(True)
 def chunk_mesh(
