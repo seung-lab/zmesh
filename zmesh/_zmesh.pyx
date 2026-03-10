@@ -104,13 +104,24 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
 
 
 cdef object cpp_meshobj_to_mesh(MeshObject mobj):
-  cdef int Nv = mobj.points.size() // 3
-  cdef int Nf = mobj.faces.size() // 3
+  cdef uint64_t Nv = mobj.points.size() // 3
+  cdef uint64_t Nf = mobj.faces.size() // 3
+  cdef uint64_t Nn = mobj.normals.size() // 3;
   
-  points = np.asarray(<float[:mobj.points.size()]>mobj.points.data()).reshape(Nv, 3).copy()
-  faces = np.asarray(<unsigned int[:mobj.faces.size()]>mobj.faces.data()).reshape(Nf, 3).copy()
+  points = None
+  faces = None
+  normals = None
+  
+  if Nv > 0:
+    points = np.asarray(<float[:mobj.points.size()]>mobj.points.data()).reshape(Nv, 3).copy()
 
-  return Mesh(points, faces, None)
+  if Nf > 0:
+    faces = np.asarray(<unsigned int[:mobj.faces.size()]>mobj.faces.data()).reshape(Nf, 3).copy()
+
+  if Nn > 0:
+    normals = np.asarray(<float[:mobj.normals.size()]>mobj.normals.data()).reshape(Nn, 3).copy()
+
+  return Mesh(points, faces, normals)
 
 @cython.binding(True)
 def load_obj(filename:str) -> Mesh:
