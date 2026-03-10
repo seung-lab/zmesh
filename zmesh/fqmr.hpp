@@ -80,9 +80,15 @@ class SymmetricMatrix {
 		const int a21, const int a22, const int a23,
 		const int a31, const int a32, const int a33
 	){
+		// less likely to over or underflow if we alternate
+		// additions and subtractions
 		return static_cast<double>(
-			(m[a11]*m[a22]*m[a33]) + (m[a13]*m[a21]*m[a32]) + (m[a12]*m[a23]*m[a31])
-			- (m[a13]*m[a22]*m[a31]) - (m[a11]*m[a23]*m[a32]) - (m[a12]*m[a21]*m[a33])
+			(m[a11]*m[a22]*m[a33])
+			- (m[a13]*m[a22]*m[a31])
+			+ (m[a13]*m[a21]*m[a32])
+			- (m[a11]*m[a23]*m[a32])
+			+ (m[a12]*m[a23]*m[a31])
+			- (m[a12]*m[a21]*m[a33])
 		);
 	}
 
@@ -112,6 +118,7 @@ struct Triangle {
 	bool dirty;
 	Vec3<float> n;
 };
+
 struct Vertex { 
 	Vec3<float> p;
 	uint32_t tstart;
@@ -236,7 +243,6 @@ struct FqmrMesh {
 		materials = std::vector<std::string>();
 	}
 };
-
 
 // Error between vertex and Quadric
 double vertex_error(
