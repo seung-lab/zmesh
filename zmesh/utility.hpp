@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <limits>
 #include <optional>
 #include <vector>
@@ -238,7 +240,8 @@ struct MeshObject {
     faces.push_back(f3);
   }
 
-  void add_triangle(const Vec3<unsigned int>& face) {
+  template <typename T>
+  void add_triangle(const Vec3<T>& face) {
     faces.push_back(face.x);
     faces.push_back(face.y);
     faces.push_back(face.z);
@@ -268,6 +271,125 @@ struct MeshObject {
     return (points.size() > 0) 
       ? ((points.size() - 1) / 3)
       : -1;
+  }
+
+  // Adapted from fqmr.hpp
+  // https://github.com/Kramer84/pyfqmr-Fast-Quadric-Mesh-Reduction
+  // MIT Licensed
+  void load_obj(const std::string& filename) {
+    points.clear();
+    faces.clear();
+    normals.clear();
+
+    if (filename.size() == 0) {
+      return;
+    }
+    
+    // Using C I/O for performance reasons
+    FILE* fn = fopen(filename.c_str(), "r");
+    if (fn == NULL) {
+      printf("File %s not found!\n", filename.c_str());
+      return;
+    }
+
+    fseek(fn, 0, SEEK_END);
+    long file_size = ftell(fn);
+    rewind(fn);
+    
+    points.reserve(file_size / 10);
+    faces.reserve(file_size / 10);
+    
+    char* line = NULL;
+    size_t n = 0;
+    ssize_t len = 0;
+
+    // Normals for OBJ are face-vertex, not vertex normals
+    // so let's just skip them since we use vertex normals
+    Vec3<float> v;
+    Vec3<int64_t> f;
+    int discard;
+
+    auto check_f = [&](const Vec3<int64_t>& f) {
+      // In OBJ, negative indices can be relative,
+      // but they are not supported by this parser.
+      if (f.x <= 0 || f.y <= 0 || f.z <= 0) {
+        free(line);
+        fclose(fn);
+        throw std::runtime_error("load_obj: unsupported relative or zero face index.");
+      }
+    };
+
+    while ((len = getline(&line, &n, fn)) != -1) {
+      char *p, *end;
+      
+      if (len == 0 || line[0] == '\n') {
+        continue;
+      }
+      // We don't work with materials or UVs for connectomics
+      // so just skip parsing.
+      else if (line[0] == 'v' && line[1] == ' ') {
+        p = line + 2;
+        v.x = strtof(p, &end); if (end == p) continue; p = end;
+        v.y = strtof(p, &end); if (end == p) continue; p = end;
+        v.z = strtof(p, &end); if (end == p) continue;
+        add_point(v);
+      }
+      else if (line[0] == 'v' && (line[1] == 't' || line[1] == 'n') && line[2] == ' ') {
+        continue;
+      }
+      else if (line[0] == 'f') {
+        p = line + 2;
+        char* slash = strchr(p, '/');
+
+        // f -= 1 because obj faces are indexed from 1
+        if (slash == NULL) {
+          f.x = strtol(p, &end, 10); if (end == p) continue; p = end;
+          f.y = strtol(p, &end, 10); if (end == p) continue; p = end;
+          f.z = strtol(p, &end, 10); if (end == p) continue;
+          check_f(f);
+          --f;
+          add_triangle(f);
+        }
+        else if (sscanf(line,"f %lld// %lld// %lld//", &f.x, &f.y, &f.z) == 3) {
+          check_f(f);
+          --f;
+          add_triangle(f);
+        }
+        else if (
+          sscanf(line,"f %lld//%d %lld//%d %lld//%d",
+            &f.x, &discard,
+            &f.y, &discard,
+            &f.z, &discard) == 6
+        ) {
+          check_f(f);
+          --f;
+          add_triangle(f);
+        }
+        else if (sscanf(line,"f %lld/%d/%d %lld/%d/%d %lld/%d/%d",
+          &f.x, &discard, &discard,
+          &f.y, &discard, &discard,
+          &f.z, &discard, &discard) == 9) {
+          
+          check_f(f);
+          --f;
+          add_triangle(f);
+        }
+        else {
+          free(line);
+          fclose(fn);
+          throw std::runtime_error("load_obj: unrecognized face.");
+        }
+      }
+      else if (strncmp(line, "mtllib", 6) == 0) {
+        continue;
+      }
+      else if (strncmp(line, "usemtl", 6) == 0) {
+        continue;
+      }
+    }
+
+    free(line);
+    fclose(fn);
   }
 };
 
