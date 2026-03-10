@@ -111,17 +111,15 @@ public:
     return x == other.x && y == other.y && z == other.z;
   }
   T& operator[](const int idx) {
-    if (idx == 0) {
-      return x;
-    }
-    else if (idx == 1) {
-      return y;
-    }
-    else if (idx == 2) {
-      return z;
-    }
-    else {
-      throw new std::runtime_error("Index out of bounds.");
+    switch (idx) {
+      case 0:
+        return x;
+      case 1:
+        return y;
+      case 2:
+        return z;
+      default:
+        throw new std::runtime_error("Index out of bounds.");
     }
   }
   T get(const int idx) const {
