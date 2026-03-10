@@ -698,7 +698,9 @@ int simplify_below_threshold(
 		
 		update_mesh(triangles, vertices, refs, iteration);
 		
-		loopi(ZERO, triangles.size()) triangles[i].dirty = 0;
+		loopi(ZERO, triangles.size()) {
+			triangles[i].dirty = 0;
+		}
 		
 		// All triangles with edges below the threshold will be removed
 		//
