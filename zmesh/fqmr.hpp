@@ -158,9 +158,6 @@ struct FqmrMesh {
 	std::vector<Triangle> triangles;
 	std::vector<Vertex> vertices;
 
-	std::string mtllib;
-	std::vector<std::string> materials;
-
 	void set(
 		const std::span<const float>& verts, 
 		const std::span<const uint32_t>& faces
@@ -239,8 +236,6 @@ struct FqmrMesh {
 	void clear() {
 		triangles = std::vector<Triangle>();
 		vertices = std::vector<Vertex>();
-		mtllib = "";
-		materials = std::vector<std::string>();
 	}
 };
 
