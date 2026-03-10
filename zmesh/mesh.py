@@ -442,11 +442,15 @@ end_header
 
     Supported: obj, ply
     """
+    import zmesh
+
+    if filename.endswith(".obj"):
+      return zmesh.load_obj(filename)
+    elif not filename.endswith(".ply"):
+      raise ValueError(f"File format not supported: {filename}")
+
     with open(filename, "rb") as f:
-      if filename.endswith(".ply"):
-        return kls.from_ply(f.read())
-      else:
-        return kls.from_obj(f.read())
+      return kls.from_ply(f.read())
 
 def _create_vtk_mesh(vertices, faces):
   import vtk
