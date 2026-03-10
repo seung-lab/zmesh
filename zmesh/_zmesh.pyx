@@ -48,6 +48,7 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
     vector[float] normals
     vector[unsigned int] faces
     void load_obj(string)
+    void save_obj(string)
 
 cdef extern from "chunk_mesh.hpp" namespace "zmesh::chunk_mesh":
   cdef vector[MeshObject] chunk_mesh_accelerated(

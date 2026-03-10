@@ -387,6 +387,25 @@ struct MeshObject {
     free(line);
     fclose(fn);
   }
+
+  void save_obj(const std::string& filename) {
+    FILE *file = fopen(filename.c_str(), "w");
+
+    if (!file) {
+      printf("write_obj: can't write data file \"%s\".\n", filename.c_str());
+      return;
+    }
+
+    for (size_t i = 0; i < points.size() / 3; i += 3) {
+      fprintf(file, "v %.5f %.5f %.5f\n", points[i], points[i+1], points[i+2]);
+    }
+
+    for (size_t i = 0; i < faces.size() / 3; i += 3) {
+      fprintf(file, "f %u %u %u\n", faces[i]+1, faces[i+1]+1, faces[i+2]+1);
+    }
+
+    fclose(file);
+  }
 };
 
 };
