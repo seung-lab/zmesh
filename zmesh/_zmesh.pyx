@@ -9,6 +9,7 @@ from libc.stdint cimport (
   int64_t, int32_t, int16_t, int8_t,
 )
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 from libcpp cimport bool
 
 import operator
@@ -46,7 +47,7 @@ cdef extern from "utility.hpp" namespace "zmesh::utility":
     vector[float] points
     vector[float] normals
     vector[unsigned int] faces
-
+    void load_obj(string)
 
 cdef extern from "chunk_mesh.hpp" namespace "zmesh::chunk_mesh":
   cdef vector[MeshObject] chunk_mesh_accelerated(
@@ -101,6 +102,22 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
     void clear()
     P pack_coords(P x, P y, P z)
 
+
+cdef object cpp_meshobj_to_mesh(MeshObject mobj):
+  cdef int Nv = mobj.points.size() // 3
+  cdef int Nf = mobj.faces.size() // 3
+  
+  points = np.asarray(<float[:mobj.points.size()]>mobj.points.data()).reshape(Nv, 3).copy()
+  faces = np.asarray(<unsigned int[:mobj.faces.size()]>mobj.faces.data()).reshape(Nf, 3).copy()
+
+  return Mesh(points, faces, None)
+
+@cython.binding(True)
+def load_obj(filename:str) -> Mesh:
+  """Load an obj using accelerated code."""
+  cdef MeshObject m;
+  m.load_obj(filename.encode("utf8"))
+  return cpp_meshobj_to_mesh(m)
 
 @cython.binding(True)
 def compute_normals(mesh:Mesh) -> Mesh:
@@ -215,8 +232,8 @@ def simplify_fqmr(
   simplified_vertices = np.asarray(fqmr_mesh.getVertices(), dtype=np.float32)
   simplifed_faces = np.asarray(fqmr_mesh.getFaces(), dtype=np.uint32)
 
-  simplified_vertices = simplified_vertices.reshape([simplified_vertices.size() // 3, 3])
-  simplifed_faces = simplifed_faces.reshape([simplifed_faces.size() // 3, 3])
+  simplified_vertices = simplified_vertices.reshape([simplified_vertices.size // 3, 3])
+  simplifed_faces = simplifed_faces.reshape([simplifed_faces.size // 3, 3])
 
   new_mesh = Mesh(simplified_vertices, simplifed_faces, id=mesh.id)
 
@@ -258,18 +275,6 @@ def chunk_mesh(
     chunk_size[0], chunk_size[1], chunk_size[2],
     grid_origin[0], grid_origin[1], grid_origin[2]
   )
-
-  def norm(msh):
-    points = np.array(msh['points'], dtype=np.float32)
-    Nv = points.size // 3
-    Nf = len(msh['faces']) // 3
-
-    points = points.reshape(Nv, 3)
-    faces = np.array(msh['faces'], dtype=np.uint32).reshape(Nf, 3)
-    m = Mesh(points, faces, None)
-    if hasattr(msh, 'id'):
-      m.id = msh.id
-    return m
   
   grid_size = np.ceil((maxpt - grid_origin) / np.array(chunk_size)).astype(int)
   grid_size = np.maximum(grid_size, [1,1,1])
@@ -279,7 +284,10 @@ def chunk_mesh(
   for gz in range(grid_size[2]):
     for gy in range(grid_size[1]):
       for gx in range(grid_size[0]):
-        submesh = norm(objs[i])
+        submesh = cpp_meshobj_to_mesh(objs[i])
+        if hasattr(mesh, 'id'):
+          submesh.id = mesh.id
+
         i += 1
 
         if submesh.empty():
@@ -385,25 +393,16 @@ def face_connected_components(mesh:Mesh) -> list[Mesh]:
   return ccls
 
 def _normalize_mesh(mesh, voxel_centered, physical, resolution):
-  """Convert a MeshObject into a  zmesh.Mesh."""
-  points = np.array(mesh['points'], dtype=np.float32)
-  Nv = points.size // 3
-  Nf = len(mesh['faces']) // 3
+  """Apply scaling factors to convert from zmesh internals to physical coordinates."""
 
-  points = points.reshape(Nv, 3)
   if not physical:
-    points *= resolution
+    mesh.vertices *= resolution
 
   if voxel_centered:
-    points += resolution
-  points /= 2.0
-  faces = np.asarray(mesh['faces'], dtype=np.uint32).reshape(Nf, 3)
+    mesh.vertices += resolution
   
-  normals = None
-  if mesh.get('normals', None) is not None and len(mesh['normals']) > 0:
-    normals = np.asarray(mesh['normals'], dtype=np.float32).reshape(Nv, 3)
-
-  return Mesh(points, faces, normals)
+  mesh.vertices /= 2.0
+  return mesh
 
 class Mesher:
   """
@@ -505,7 +504,9 @@ class Mesher:
     )
 
     if normals:
-      mesh = compute_normals_meshobj(mesh)
+      mesh = compute_normals(mesh)
+
+    mesh.id = int(mesh_id)
 
     return _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
 
@@ -541,7 +542,7 @@ class Mesher:
     )
 
     if normals:
-      mesh = compute_normals_meshobj(mesh)
+      mesh = compute_normals(mesh)
 
     mesh = _normalize_mesh(mesh, voxel_centered, physical=True, resolution=self.voxel_res)
     mesh.id = int(label)
@@ -643,12 +644,15 @@ class Mesher:
     )
     del mesher
 
-    cdef int i = 0
-    if min_vertex != 0:
-      for i in range(len(result.points)):
-        result.points[i] += min_vertex
+    simplified_mesh = cpp_meshobj_to_mesh(result)
 
-    return _normalize_mesh(result, voxel_centered, physical=False, resolution=self.voxel_res)
+    if min_vertex != 0:
+      simplified_mesh.vertices += min_vertex
+
+    if hasattr(mesh, 'id'):
+      simplified_mesh.id = mesh.id
+
+    return _normalize_mesh(simplified_mesh, voxel_centered, physical=False, resolution=self.voxel_res)
   
   def clear(self):
     self._mesher.clear()
@@ -719,7 +723,8 @@ cdef class Mesher3208:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -748,7 +753,8 @@ cdef class Mesher3216:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -777,7 +783,8 @@ cdef class Mesher3232:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -806,7 +813,8 @@ cdef class Mesher3264:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -835,7 +843,8 @@ cdef class Mesher6408:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -864,7 +873,8 @@ cdef class Mesher6416:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -893,7 +903,8 @@ cdef class Mesher6432:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
@@ -922,7 +933,8 @@ cdef class Mesher6464:
     return self.ptr.ids()
   
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
-    return self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
+    return cpp_meshobj_to_mesh(meshobj)
   
   def clear(self):
     self.ptr.clear()
