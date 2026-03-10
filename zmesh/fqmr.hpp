@@ -13,6 +13,7 @@
 //https://github.com/sp4cerat/Fast-Quadric-Mesh-S;
 // 5/2016: Chris Rorden created minimal version for OSX/Linux/Windows compile
 // 3/2026: William Silversmith forked from https://github.com/Kramer84/pyfqmr-Fast-Quadric-Mesh-Reduction
+//         dropped texture mapping and focused on memory pressure
 
 #include <cmath>
 #include <cstdint>
@@ -35,42 +36,6 @@ using namespace zmesh::utility;
 namespace zmesh::fqmr {
 
 constexpr size_t ZERO = 0;
-
-Vec3<float> barycentric(
-	const Vec3<float> &p, 
-	const Vec3<float> &a, 
-	const Vec3<float> &b, 
-	const Vec3<float> &c
-) {
-	Vec3<float> v0 = b-a;
-	Vec3<float> v1 = c-a;
-	Vec3<float> v2 = p-a;
-	double d00 = v0.dot(v0);
-	double d01 = v0.dot(v1);
-	double d11 = v1.dot(v1);
-	double d20 = v2.dot(v0);
-	double d21 = v2.dot(v1);
-	double denom = d00*d11 - d01*d01;
-	double v = (d11 * d20 - d01 * d21) / denom;
-	double w = (d00 * d21 - d01 * d20) / denom;
-	double u = 1.0 - v - w;
-	return Vec3<float>(u,v,w);
-}
-
-Vec3<float> interpolate(
-	const Vec3<float> &p, 
-	const Vec3<float> &a, 
-	const Vec3<float> &b, 
-	const Vec3<float> &c, 
-	const Vec3<float> attrs[3]
-) {
-	Vec3<float> bary = barycentric(p,a,b,c);
-	Vec3<float> out = Vec3<float>(0,0,0);
-	out = out + attrs[0] * bary.x;
-	out = out + attrs[1] * bary.y;
-	out = out + attrs[2] * bary.z;
-	return out;
-}
 
 double min(double v1, double v2) {
 	return fmin(v1,v2);
@@ -140,22 +105,12 @@ class SymmetricMatrix {
 ///////////////////////////////////////////
 
 // Global Variables & Structures
-enum Attributes {
-	NONE = 0,
-	NORMAL = 2,
-	TEXCOORD = 4,
-	COLOR = 8
-};
-
 struct Triangle { 
 	uint32_t v[3];
 	float err[4];
 	bool deleted;
 	bool dirty;
-	uint8_t attr;
 	Vec3<float> n;
-	Vec3<float> uvs[3];
-	int16_t material; 
 };
 struct Vertex { 
 	Vec3<float> p;
@@ -224,8 +179,6 @@ struct FqmrMesh {
 			t.v[0] = faces[i];
 			t.v[1] = faces[i+1];
 			t.v[2] = faces[i+2];
-			t.attr = 0;
-			t.material = -1;
 			triangles.push_back(t);
 		}
 	}
@@ -542,34 +495,6 @@ bool flipped(
 	return false;
 }
 
-void update_uvs(
-	std::vector<Triangle>& triangles,
-	const std::vector<Vertex>& vertices, 
-	const RefList& refs,
-	uint32_t i0,
-	const Vertex &v,
-	const Vec3<float> &p,
-	std::vector<int> &deleted
-) {
-	for (uint32_t k = 0; k < v.tcount; k++) {
-		auto tid     = refs.tris[v.tstart+k];
-		auto tvertex = refs.verts[v.tstart+k];
-
-		Triangle &t = triangles[tid];
-		if (t.deleted) {
-			continue;
-		}
-		else if (deleted[k]) {
-			continue;
-		}
-
-		Vec3<float> p1 = vertices[t.v[0]].p;
-		Vec3<float> p2 = vertices[t.v[1]].p;
-		Vec3<float> p3 = vertices[t.v[2]].p;
-		t.uvs[tvertex] = interpolate(p,p1,p2,p3,t.uvs);
-	}
-}
-
 // Update triangle connections and edge error after a edge is collapsed
 void update_triangles(
 	std::vector<Triangle>& triangles,
@@ -700,11 +625,6 @@ int simplify_to_triangle_count(
 						continue;
 					}
 
-					if ((t.attr & TEXCOORD) == TEXCOORD) {
-						update_uvs(triangles,vertices,refs,i0,v0,p,deleted0);
-						update_uvs(triangles,vertices,refs,i0,v1,p,deleted1);
-					}
-
 					// not flipped, so remove edge
 					v0.p = p;
 					v0.q = v1.q + v0.q;
@@ -818,11 +738,6 @@ int simplify_below_threshold(
 					if (flipped(triangles,vertices,refs,p,i0,i1,v0,v1,deleted0)) continue;
 					if (flipped(triangles,vertices,refs,p,i1,i0,v1,v0,deleted1)) continue;
 
-					if ((t.attr & TEXCOORD) == TEXCOORD) {
-						update_uvs(triangles,vertices,refs,i0,v0,p,deleted0);
-						update_uvs(triangles,vertices,refs,i0,v1,p,deleted1);
-					}
-
 					// not flipped, so remove edge
 					v0.p = p;
 					v0.q = v1.q + v0.q;
@@ -859,209 +774,6 @@ int simplify_below_threshold(
 	compact_mesh(triangles, vertices);
 
 	return iteration;
-}
-
-char *trimwhitespace(char *str) {
-	char *end;
-
-	// Trim leading space
-	while (isspace((unsigned char)*str)) {
-		str++;
-	}
-
-	if (*str == 0) { // All spaces?
-		return str;
-	}
-
-	// Trim trailing space
-	end = str + strlen(str) - 1;
-	while (end > str && isspace((unsigned char)*end)) {
-		end--;
-	}
-
-	// Write new null terminator
-	*(end+1) = 0;
-
-	return str;
-}
-
-FqmrMesh load_obj(const char* filename, bool process_uv = false) {
-	FqmrMesh mesh;
-
-	mesh.vertices.clear();
-	mesh.triangles.clear();
-	
-	if (filename == NULL || filename[0] == 0) {
-		return mesh;
-	}
-	
-	FILE* fn = fopen(filename, "rb");
-	if (fn == NULL) {
-		printf("File %s not found!\n", filename);
-		return mesh;
-	}
-	
-	fseek(fn, 0, SEEK_END);
-	long file_size = ftell(fn);
-	rewind(fn);
-	
-	mesh.vertices.reserve(file_size / 10);
-	mesh.triangles.reserve(file_size / 10);
-	
-	char line[1000];
-	int vertex_cnt = 0;
-	int material = -1;
-	std::map<std::string, int> material_map;
-	std::vector<Vec3<float>> uvs;
-	std::vector<std::vector<int>> uvMap;
-	
-	while (fgets(line, sizeof(line), fn) != NULL) {
-		char *p, *end;
-		
-		if (strncmp(line, "mtllib", 6) == 0) {
-			mesh.mtllib = trimwhitespace(&line[7]);
-		}
-		else if (strncmp(line, "usemtl", 6) == 0) {
-			std::string usemtl = trimwhitespace(&line[7]);
-			if (material_map.find(usemtl) == material_map.end()) {
-				material_map[usemtl] = mesh.materials.size();
-				mesh.materials.push_back(usemtl);
-			}
-			material = material_map[usemtl];
-		}
-		else if (line[0] == 'v' && line[1] == 't' && line[2] == ' ') {
-			Vec3<float> uv;
-			p = line + 3;
-			uv.x = strtof(p, &end); if (end == p) continue; p = end;
-			uv.y = strtof(p, &end); if (end == p) continue; p = end;
-			uv.z = strtof(p, &end); // optional, ok if it fails
-			if (end == p) uv.z = 0.0f;
-			uvs.push_back(uv);
-		}
-		else if (line[0] == 'v' && line[1] == ' ') {
-			Vertex v;
-			p = line + 2;
-			v.p.x = strtof(p, &end); if (end == p) continue; p = end;
-			v.p.y = strtof(p, &end); if (end == p) continue; p = end;
-			v.p.z = strtof(p, &end); if (end == p) continue;
-			mesh.vertices.push_back(v);
-		}
-		else if (line[0] == 'f') {
-			Triangle t;
-			bool tri_ok = false;
-			bool has_uv = false;
-			int integers[9];
-			
-			if (sscanf(line,"f %d %d %d",
-				&integers[0],&integers[1],&integers[2]) == 3) {
-				tri_ok = true;
-			}
-			else if (sscanf(line,"f %d// %d// %d//",
-				&integers[0],&integers[1],&integers[2]) == 3) {
-				tri_ok = true;
-			}
-			else if (sscanf(line,"f %d//%d %d//%d %d//%d",
-				&integers[0],&integers[3],
-				&integers[1],&integers[4],
-				&integers[2],&integers[5]) == 6) {
-				tri_ok = true;
-			}
-			else if (sscanf(line,"f %d/%d/%d %d/%d/%d %d/%d/%d",
-				&integers[0],&integers[6],&integers[3],
-				&integers[1],&integers[7],&integers[4],
-				&integers[2],&integers[8],&integers[5]) == 9) {
-				tri_ok = true;
-				has_uv = true;
-			}
-			else {
-				printf("Unrecognized face: %s", line);
-				fclose(fn);
-				exit(0);
-			}
-			
-			if (tri_ok) {
-				t.v[0] = integers[0]-1-vertex_cnt;
-				t.v[1] = integers[1]-1-vertex_cnt;
-				t.v[2] = integers[2]-1-vertex_cnt;
-				t.attr = 0;
-				
-				if (process_uv && has_uv) {
-					std::vector<int> indices;
-					indices.push_back(integers[6]-1-vertex_cnt);
-					indices.push_back(integers[7]-1-vertex_cnt);
-					indices.push_back(integers[8]-1-vertex_cnt);
-					uvMap.push_back(indices);
-					t.attr |= TEXCOORD;
-				}
-
-				t.material = material;
-				mesh.triangles.push_back(t);
-			}
-		}
-	}
-
-	if (process_uv && uvs.size()) {
-		loopi(ZERO, mesh.triangles.size()) {
-			loopj(0,3) {
-				mesh.triangles[i].uvs[j] = uvs[uvMap[i][j]];
-			}
-		}
-	}
-
-	fclose(fn);
-
-	return mesh;
-}
-
-void write_obj(const FqmrMesh& mesh, const char* filename) {
-	auto& vertices = mesh.vertices;
-	auto& triangles = mesh.triangles;
-	auto& mtllib = mesh.mtllib;
-	auto& materials = mesh.materials;
-
-	FILE *file = fopen(filename, "w");
-	int cur_material = -1;
-	bool has_uv = (triangles.size() && (triangles[0].attr & TEXCOORD) == TEXCOORD);
-
-	if (!file) {
-		printf("write_obj: can't write data file \"%s\".\n", filename);
-		exit(0);
-	}
-	if (!mtllib.empty()) {
-		fprintf(file, "mtllib %s\n", mtllib.c_str());
-	}
-	loopi(ZERO, vertices.size()) {
-		fprintf(file, "v %g %g %g\n", vertices[i].p.x,vertices[i].p.y,vertices[i].p.z);
-	}
-
-	if (has_uv) {
-		loopi(ZERO, triangles.size()) {
-			if(!triangles[i].deleted) {
-				fprintf(file, "vt %g %g\n", triangles[i].uvs[0].x, triangles[i].uvs[0].y);
-				fprintf(file, "vt %g %g\n", triangles[i].uvs[1].x, triangles[i].uvs[1].y);
-				fprintf(file, "vt %g %g\n", triangles[i].uvs[2].x, triangles[i].uvs[2].y);
-			}
-		}
-	}
-
-	int uv = 1;
-	loopi(ZERO, triangles.size()) {
-		if(!triangles[i].deleted) {
-			if (triangles[i].material != cur_material) {
-				cur_material = triangles[i].material;
-				fprintf(file, "usemtl %s\n", materials[triangles[i].material].c_str());
-			}
-			if (has_uv) {
-				fprintf(file, "f %d/%d %d/%d %d/%d\n", triangles[i].v[0]+1, uv, triangles[i].v[1]+1, uv+1, triangles[i].v[2]+1, uv+2);
-				uv += 3;
-			}
-			else {
-				fprintf(file, "f %d %d %d\n", triangles[i].v[0]+1, triangles[i].v[1]+1, triangles[i].v[2]+1);
-			}
-		}
-	}
-
-	fclose(file);
 }
 
 };
