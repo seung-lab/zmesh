@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import gzip
+import os
 import sys
 
 import zmesh
