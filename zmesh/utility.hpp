@@ -10,6 +10,8 @@
 #include <optional>
 #include <vector>
 
+#include "builtins.hpp"
+
 namespace zmesh::utility {
 
 template <typename T = float>
