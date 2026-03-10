@@ -181,7 +181,9 @@ def simplify_fqmr(
   """
   Perform a quadrics based mesh simplification that 
   does not preserve topology. This version is based
-  on the Fast Quadratic Mesh Reduction implementation.
+  on the Fast Quadratic Mesh Reduction implementation
+  
+  https://github.com/Kramer84/pyfqmr-Fast-Quadric-Mesh-Reduction
 
   This method scores the error resulting from simplifying
   a vertex and performs simplification for all those vertices
