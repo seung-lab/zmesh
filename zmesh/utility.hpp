@@ -119,7 +119,7 @@ public:
       case 2:
         return z;
       default:
-        throw new std::runtime_error("Index out of bounds.");
+        throw std::runtime_error("Index out of bounds.");
     }
   }
   T get(const int idx) const {
@@ -133,7 +133,7 @@ public:
       return z;
     }
     else {
-      throw new std::runtime_error("Index out of bounds.");
+      throw std::runtime_error("Index out of bounds.");
     }
   }
   T dot(const Vec3& o) const {
