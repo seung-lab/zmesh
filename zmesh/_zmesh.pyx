@@ -215,6 +215,12 @@ def simplify_fqmr(
       Parameter for controlling the thresold growth
   preserve_border: 
       Flag for preserving vertices on open border
+
+  Returns:
+    if return_iterations:
+      return (mesh, num_iterations)
+    else:
+      return mesh
   """
   mesh.vertices = np.ascontiguousarray(mesh.vertices)
   mesh.faces = np.ascontiguousarray(mesh.faces)
