@@ -297,7 +297,7 @@ struct MeshObject {
     
     char* line = NULL;
     size_t n = 0;
-    ssize_t len = 0;
+    int64_t len = 0;
 
     // Normals for OBJ are face-vertex, not vertex normals
     // so let's just skip them since we use vertex normals
