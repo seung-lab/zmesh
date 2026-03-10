@@ -2,7 +2,10 @@ prune connectomics_npy_meshes
 exclude connectomics.npy.gz
 exclude zmesh/_zmesh.cpp
 include LICENSE
+include FQMR_LICENSE
 include zmesh/ccl.hpp
+include zmesh/chunk_mesh.hpp
 include zmesh/cMesher.hpp
+include zmesh/fqmr.hpp
 include zmesh/unordered_dense.hpp
 include zmesh/utility.hpp
