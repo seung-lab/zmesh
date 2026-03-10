@@ -111,6 +111,8 @@ Thanks to Aleks Zlateski for creating and sharing this beautiful mesher.
 
 Later changes by Will Silversmith, Nico Kemnitz, and Jingpeng Wu. 
 
+Thank you to Sven Forstmann, Kristof S., Br&eacute;nainn Woodsend, and others for the source code to pyfqmr which we have adapted here for non-topology preserving simplification and OBJ reading and writing. See https://github.com/Kramer84/pyfqmr-Fast-Quadric-Mesh-Reduction/
+
 ## References  
 
 1. W. Lorensen and H. Cline. "Marching Cubes: A High Resolution 3D Surface Construction Algorithm". pp 163-169. Computer Graphics, Volume 21, Number 4, July 1987. ([link](https://people.eecs.berkeley.edu/~jrs/meshpapers/LorensenCline.pdf))  

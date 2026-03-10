@@ -4,7 +4,10 @@ import cython
 
 from typing import List, Tuple, Sequence
 
-from libc.stdint cimport uint64_t, uint32_t, uint16_t, uint8_t
+from libc.stdint cimport (
+  uint64_t, uint32_t, uint16_t, uint8_t, 
+  int64_t, int32_t, int16_t, int8_t,
+)
 from libcpp.vector cimport vector
 from libcpp cimport bool
 
@@ -16,12 +19,36 @@ cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
 
+cdef extern from "fqmr.hpp" namespace "zmesh::fqmr":
+  cdef struct FqmrMesh:
+    void set(
+      float* verts, uint64_t Nv,
+      uint32_t* faces, uint64_t Nf
+    )
+    vector[float] getVertices()
+    vector[uint32_t] getFaces()
+
+  cdef void simplify_to_triangle_count(
+    FqmrMesh& mesh,
+    int64_t target_count, 
+    int update_rate,
+    double agressiveness,
+    int max_iterations,
+    double alpha,
+    int K,
+    bool lossless,
+    double threshold_lossless,
+    bool preserve_border
+  )
+
 cdef extern from "utility.hpp" namespace "zmesh::utility":
   cdef struct MeshObject:
     vector[float] points
     vector[float] normals
     vector[unsigned int] faces
 
+
+cdef extern from "chunk_mesh.hpp" namespace "zmesh::chunk_mesh":
   cdef vector[MeshObject] chunk_mesh_accelerated(
     float* vertices, uint64_t num_vertices,
     unsigned int* faces, uint64_t num_faces,
@@ -107,6 +134,96 @@ def compute_normals_meshobj(mesh:dict) -> Mesh:
   )
   mesh["normals"] = np.array(normals).reshape((Nv, 3), order="C")
   return mesh
+
+@cython.binding(True)
+def simplify_fqmr(
+  mesh:Mesh,
+  target_count:int, 
+  update_rate:int = 5,
+  aggressiveness:float = 7,
+  max_iterations:int = 100,
+  alpha:float = 1e-9,
+  K:int = 3,
+  preserve_border:bool = False,
+  compute_normals = False,
+  voxel_centered = False, 
+) -> Mesh:
+  """
+  Perform a quadrics based mesh simplification that 
+  does not preserve topology. This version is based
+  on the Fast Quadratic Mesh Reduction implementation.
+
+  This method scores the error resulting from simplifying
+  a vertex and performs simplification for all those vertices
+  below a certain threshold. At each iteration, the threshold
+  is increased until the target count is reached.
+
+  The formula for the current threshold is:
+
+    threshold = alpha * (iteration + K)^aggressiveness
+
+  Where alpha, K, and aggressiveness are user defined and iteration
+  starts at 0.
+
+  Parameters
+  ----------
+  target_count: Target number of triangles
+  update_rate: Number of iterations between each update.
+  aggressiveness:
+      Parameter controlling the growth rate of the threshold at each
+      iteration when lossless is False.
+  max_iterations:
+      Maximal number of iterations
+  threshold_lossless: 
+      Maximal error after which a vertex is not deleted, only for
+      lossless method.
+  alpha:
+      Parameter for controlling the threshold growth
+  K:
+      Parameter for controlling the thresold growth
+  preserve_border: 
+      Flag for preserving vertices on open border
+  """
+  mesh.vertices = np.ascontiguousarray(mesh.vertices)
+  mesh.faces = np.ascontiguousarray(mesh.faces)
+
+  cdef FqmrMesh fqmr_mesh
+  cdef cnp.ndarray[float] verts = mesh.vertices.reshape([ mesh.vertices.size, ])
+  cdef cnp.ndarray[unsigned int] faces = mesh.faces.reshape([ mesh.faces.size ])
+
+  fqmr_mesh.set(
+    <float*>&verts[0], mesh.vertices.shape[0],
+    <uint32_t*>&faces[0], mesh.faces.shape[0]
+  );
+
+  lossless = False
+  threshold_lossless = 1e-4
+
+  num_iters = simplify_to_triangle_count(
+    fqmr_mesh, 
+    target_count, 
+    update_rate, 
+    aggressiveness, 
+    max_iterations, 
+    alpha, 
+    K, 
+    lossless, 
+    threshold_lossless, 
+    preserve_border
+  )
+
+  simplified_vertices = np.asarray(fqmr_mesh.getVertices(), dtype=np.float32)
+  simplifed_faces = np.asarray(fqmr_mesh.getFaces(), dtype=np.uint32)
+
+  simplified_vertices = simplified_vertices.reshape([simplified_vertices.size() // 3, 3])
+  simplifed_faces = simplifed_faces.reshape([simplifed_faces.size() // 3, 3])
+
+  new_mesh = Mesh(simplified_vertices, simplifed_faces, id=mesh.id)
+
+  if compute_normals:
+    new_mesh = globals()["compute_normals"](new_mesh)
+
+  return new_mesh
 
 @cython.binding(True)
 def chunk_mesh(
