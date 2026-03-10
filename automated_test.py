@@ -694,3 +694,21 @@ def test_largest_k_k_zero():
   # k=0 should return empty mesh
   assert result.vertices.shape[0] == 0
   assert result.faces.shape[0] == 0
+
+@pytest.mark.parametrize("target_count", [100, 200, 500])
+def test_fqmr_simplification(target_count):
+  path = os.path.join("connectomics_npy_meshes", "unsimplified")
+  for filename in os.listdir(path)[:10]:
+    filepath = os.path.join(path, filename)
+    mesh = zmesh.Mesh.load(filepath)
+    simplified_mesh = zmesh.simplify_fqmr(
+      mesh,
+      target_count=target_count,
+      max_iterations=999,
+    )
+    assert simplified_mesh.vertices.shape[0] <= target_count
+    assert simplified_mesh.vertices.shape[0] > 10
+
+
+
+
