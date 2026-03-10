@@ -17,6 +17,32 @@ public:
   Vec3() : x(0), y(0), z(0) {}
   Vec3(T x, T y, T z) : x(x), y(y), z(z) {}
 
+  Vec3& operator--() {
+    x--;
+    y--;
+    z--;
+    return *this;
+  }
+  Vec3 operator--(int) {
+    Vec3 old = *this;
+    x--; 
+    y--; 
+    z--;
+    return old;
+  }
+  Vec3& operator++() {
+    x++;
+    y++;
+    z++;
+    return *this;
+  }
+  Vec3 operator++(int) {
+    Vec3 old = *this;
+    x++; 
+    y++; 
+    z++;
+    return old;
+  }
   Vec3 operator+(const Vec3& other) const {
     return Vec3(x + other.x, y + other.y, z + other.z);
   }
@@ -28,10 +54,10 @@ public:
   Vec3 operator+(const T other) const {
     return Vec3(x + other, y + other, z + other);
   }
-  void operator+=(const T other) {
-    x += other;
-    y += other;
-    z += other;
+  void operator+=(const T scalar) {
+    x += scalar;
+    y += scalar;
+    z += scalar;
   }
   Vec3 operator-() const {
     return Vec3(-x,-y,-z);
@@ -41,6 +67,16 @@ public:
   }
   Vec3 operator-(const T scalar) const {
     return Vec3(x - scalar, y - scalar, z - scalar);
+  }
+  void operator-=(const T scalar) {
+    x -= scalar;
+    y -= scalar;
+    z -= scalar;
+  }
+  void operator-=(const Vec3& other) {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
   }
   Vec3 operator*(const T scalar) const {
     return Vec3(x * scalar, y * scalar, z * scalar);
