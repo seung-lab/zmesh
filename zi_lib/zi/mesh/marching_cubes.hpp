@@ -342,28 +342,10 @@ private:
                 std::array<LabelType, 8> ulabels = labels;
                 zi::mesh::sort_8(ulabels);
 
-                for (int i = 7; i >= 0; i--)
-                {
-                    const LabelType label = ulabels[i];
-                    if (label == 0)
-                    {
-                        break;
-                    }
-                    else if (i < 7 && ulabels[i + 1] == label)
-                    {
-                        continue;
-                    }
-
-                    std::size_t c = 0;
-
-                    for (std::size_t n = 0; n < 8; ++n)
-                    {
-                        c |= (labels[n] != label) << n;
-                    }
-
+                auto add_face = [&](const LabelType label, const uint8_t c) {
                     if (!mc_edge_table[c])
                     {
-                        continue;
+                        return;
                     }
 
                     PositionType cur =
@@ -382,6 +364,50 @@ private:
                             edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
                             edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
                             edge_midpoints[mc_triangle_table[c][n]] + cur);
+                    }
+                };
+
+                // i=7
+                uint8_t accumulate = 0;
+                uint8_t c;
+
+                LabelType label = ulabels[7];
+                if (label == 0)
+                {
+                    return;
+                }
+
+                c = 0;
+                for (int n = 0; n < 8; n++) {
+                    c |= (uint8_t)(labels[n] != label) << n;
+                }
+                accumulate |= (uint8_t)~c;
+                add_face(label, c);
+
+                for (int i = 6; i >= 0 && accumulate != 0xff; i--)
+                {
+                    label = ulabels[i];
+                    if (label == 0)
+                    {
+                        break;
+                    }
+                    else if (ulabels[i + 1] == label)
+                    {
+                        continue;
+                    }
+
+                    if (label == ulabels[0]) {
+                        c = accumulate;
+                        add_face(label, c);
+                        break;
+                    }
+                    else {
+                        c = 0;
+                        for (int n = 0; n < 8; n++) {
+                            c |= (uint8_t)(labels[n] != label) << n;
+                        }
+                        accumulate |= (uint8_t)~c;
+                        add_face(label, c);
                     }
                 }
             },
