@@ -38,6 +38,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "builtins.hpp"
+
 namespace zi::mesh
 {
 
@@ -359,8 +361,8 @@ private:
                 uint8_t c = 0;
 
                 for (int i = 0; i < 8 && accumulate != 0xff; i++) {
-                    int start = __builtin_ctz(~accumulate);
-                    int end = 8 - ((__builtin_clz((uint8_t)~accumulate)) - 24);
+                    int start = zmesh_ctz(~accumulate);
+                    int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
 
                     const LabelType label = labels[start];
 

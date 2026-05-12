@@ -1,50 +1,36 @@
 #ifndef _ZMESH_BUILTINS_HXX_
 #define _ZMESH_BUILTINS_HXX_
 
-
 #ifdef _MSC_VER
 #  include <intrin.h>
-#  define popcount __popcnt
-
-// https://stackoverflow.com/questions/355967/how-to-use-msvc-intrinsics-to-get-the-equivalent-of-this-gcc-code
-unsigned long ctz(unsigned long value) {
-    unsigned long trailing_zero = 0;
+#  define zmesh_popcount __popcnt
+// Source - https://stackoverflow.com/a/20468180
+// Posted by crazyjul
+// Retrieved 2026-05-12, License - CC BY-SA 3.0
+uint32_t __inline zmesh_ctz (uint32_t value) {
+    DWORD trailing_zero = 0;
     if (_BitScanForward(&trailing_zero, value)) {
         return trailing_zero;
     }
     else {
-        return 32;
+        return 32; // undefined if value 0, choose 32 as a sensible choice
+    }
+}
+uint32_t __inline zmesh_clz (uint32_t value) {
+    DWORD leading_zero = 0;
+
+    if (_BitScanReverse(&leading_zero, value)) {
+       return 31 - leading_zero;
+    }
+    else {
+         return 32; // undefined if value 0, choose 32 as a sensible choice
     }
 }
 #else
-#  define popcount __builtin_popcount
-#  define ctz __builtin_ctz
+#  define zmesh_popcount __builtin_popcount
+#  define zmesh_ctz __builtin_ctz
+#  define zmesh_clz __builtin_clz
 #endif
-
-uint32_t ffs (uint32_t x) {
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
-   return __builtin_ffs(x);
-#elif defined _MSC_VER
-  /* _BitScanForward
-     <https://docs.microsoft.com/en-us/cpp/intrinsics/bitscanforward-bitscanforward64> */
-  unsigned long bit;
-  if (_BitScanForward (&bit, x)) {
-    return bit + 1;
-  }
-  return 0;
-#else 
-  if (x == 0) {
-    return 0;
-  }
-  constexpr uint32_t num_bits = sizeof(x) * 8;
-  for (uint32_t i = 0; i < num_bits; i++) {
-    if ((x >> i) & 0x1) {
-        return i + 1;
-    }
-  }
-  return 0;
-#endif
-}
 
 // Windows implementation of getline thanks to claude.ai
 #ifdef _WIN32
