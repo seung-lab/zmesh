@@ -359,14 +359,21 @@ private:
                 uint8_t c = 0;
 
                 for (int i = 0, j = 0; i < 8 && accumulate != 0xff; i++) {
-                    int start = __builtin_ffs(~accumulate);
-                    start = start > 0 ? start - 1 : 0;
+                    int start = __builtin_ctz(~accumulate);
+                    int end = 8 - ((__builtin_clz((uint8_t)~accumulate)) - 24);
 
                     const LabelType label = labels[start];
 
                     c = 0;
-                    for (int n = start; n < 8; n++) {
-                        c |= (uint8_t)(labels[n] != label) << n;
+                    if (end == 8) {
+                        for (int n = start; n < 8; n++) {
+                            c |= (uint8_t)(labels[n] != label) << n;
+                        }
+                    }
+                    else {
+                        for (int n = start; n < end; n++) {
+                            c |= (uint8_t)(labels[n] != label) << n;
+                        }
                     }
                     accumulate |= (uint8_t)~c;
 
