@@ -358,7 +358,7 @@ private:
                 uint8_t accumulate = 0;
                 uint8_t c = 0;
 
-                for (int i = 0, j = 0; i < 8 && accumulate != 0xff; i++) {
+                for (int i = 0; i < 8 && accumulate != 0xff; i++) {
                     int start = __builtin_ctz(~accumulate);
                     int end = 8 - ((__builtin_clz((uint8_t)~accumulate)) - 24);
 
