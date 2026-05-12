@@ -6,6 +6,7 @@
 #include <zi/mesh/int_mesh.hpp>
 #include <zi/mesh/quadratic_simplifier.hpp>
 #include <zi/vl/vec.hpp>
+#include <zi/utility/robin_hood.hpp>
 
 #include "utility.hpp" // includes MeshObject def'n
 
@@ -63,7 +64,12 @@ class CMesher {
       return empty_obj;
     }
 
-    std::vector< zi::vl::vec< PositionType, 3> > triangles = marchingcubes_.get_triangles(segid);
+    std::vector< zi::vl::vec< PositionType, 3> > triangles = std::move(marchingcubes_.get_triangles(segid));
+
+    // faster
+    if (simplification_factor == 0 && !generate_normals) {
+      return trianges2mesh(triangles);
+    }
 
     return simplify(
       triangles,
@@ -75,7 +81,61 @@ class CMesher {
     );
   }
 
-  zmesh::utility::MeshObject simplify(      
+  // This is only for converting triangles
+  // into a vertex and face triangle soup object
+  // with no simplification or normal calculation.
+  MeshObject trianges2mesh(
+    const std::vector< zi::vl::vec< PositionType, 3> >& triangles
+  ) {
+    MeshObject obj;
+    
+    uint32_t idx = 0;
+    robin_hood::unordered_flat_map<PositionType, uint32_t> pts;
+    pts.reserve(3 * triangles.size());
+
+    for (auto &tri : triangles) {
+        if (!pts.count(tri.at(0))) {
+            pts.emplace(tri.at(0), idx++);
+        }
+        if (!pts.count(tri.at(1))) {
+            pts.emplace(tri.at(1), idx++);
+        }
+        if (!pts.count(tri.at(2))) {
+            pts.emplace(tri.at(2), idx++);
+        }
+    }
+
+    robin_hood::unordered_flat_map<uint32_t, PositionType> ipts;
+    for (auto it : pts) {
+      ipts[it.second] = it.first;
+    }
+
+    obj.points.reserve(pts.size());
+    obj.faces.reserve(3 * triangles.size());
+
+    for (uint32_t i = 0; i < idx; i++) {
+      PositionType vert = ipts[i];
+      obj.points.push_back(
+        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_z<SimplifierType>(vert)
+      ); 
+      obj.points.push_back(
+        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_y<SimplifierType>(vert)
+      ); 
+      obj.points.push_back(
+        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_x<SimplifierType>(vert)
+      );
+    }
+
+    for (auto &tri : triangles) {
+      obj.faces.push_back(pts[tri.at(0)]);
+      obj.faces.push_back(pts[tri.at(2)]);
+      obj.faces.push_back(pts[tri.at(1)]);
+    }
+
+    return obj;
+  }
+
+  MeshObject simplify(      
       const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
       bool generate_normals,
       int simplification_factor,
