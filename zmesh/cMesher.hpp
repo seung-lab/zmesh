@@ -68,7 +68,7 @@ class CMesher {
 
     // faster
     if (simplification_factor == 0 && !generate_normals) {
-      return triangles2mesh(triangles);
+      return triangles2mesh(triangles, transpose);
     }
 
     return simplify(
@@ -85,7 +85,8 @@ class CMesher {
   // into a vertex and face triangle soup object
   // with no simplification or normal calculation.
   MeshObject triangles2mesh(
-    const std::vector< zi::vl::vec< PositionType, 3> >& triangles
+    const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
+    const bool transpose
   ) {
     MeshObject obj;
     
@@ -115,21 +116,41 @@ class CMesher {
 
     for (uint32_t i = 0; i < idx; i++) {
       PositionType vert = ipts[i];
-      obj.points.push_back(
-        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_z<SimplifierType>(vert, 0, voxelresolution_[2])
-      ); 
-      obj.points.push_back(
-        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_y<SimplifierType>(vert, 0, voxelresolution_[1])
-      ); 
-      obj.points.push_back(
-        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_x<SimplifierType>(vert, 0, voxelresolution_[0])
-      );
+      if (transpose) {
+        obj.points.push_back(
+          zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_z<SimplifierType>(vert, 0, voxelresolution_[0])
+        );
+        obj.points.push_back(
+          zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_y<SimplifierType>(vert, 0, voxelresolution_[1])
+        );
+        obj.points.push_back(
+          zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_x<SimplifierType>(vert, 0, voxelresolution_[2])
+        );
+      }
+      else {
+        obj.points.push_back(
+          zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_x<SimplifierType>(vert, 0, voxelresolution_[0])
+        );
+        obj.points.push_back(
+          zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_y<SimplifierType>(vert, 0, voxelresolution_[1])
+        );
+        obj.points.push_back(
+          zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_z<SimplifierType>(vert, 0, voxelresolution_[2])
+        );
+      }
     }
 
     for (auto &tri : triangles) {
-      obj.faces.push_back(pts[tri.at(0)]);
-      obj.faces.push_back(pts[tri.at(2)]);
-      obj.faces.push_back(pts[tri.at(1)]);
+      if (transpose) {
+        obj.faces.push_back(pts[tri.at(0)]);
+        obj.faces.push_back(pts[tri.at(2)]);
+        obj.faces.push_back(pts[tri.at(1)]);
+      }
+      else {
+        obj.faces.push_back(pts[tri.at(1)]);
+        obj.faces.push_back(pts[tri.at(2)]);
+        obj.faces.push_back(pts[tri.at(0)]);
+      }
     }
 
     return obj;
