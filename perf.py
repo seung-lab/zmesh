@@ -71,7 +71,7 @@ def test_scikit_marching_cubes():
     print("marching cubes (filled) NOT HANDLED")
     
     labels = np.ones((512,512,512))
-    labels = np.load("./connectomics.npy")
+    labels = crackle.load("connectomics.npy.ckl.gz")
     labels = np.ascontiguousarray(labels)
 
     N = 1
@@ -98,7 +98,7 @@ def test_scikit_marching_cubes():
 # factor 100 max error 1: 350636148 bytes (4.6x)
 
 def test_zmesh_simplification():
-    labels = np.load("./connectomics.npy")
+    labels = crackle.load("connectomics.npy.ckl.gz")
     mesher = zmesh.Mesher((1,1,1))
     mesher.mesh(labels)
 
