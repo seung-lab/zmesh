@@ -1,6 +1,7 @@
 #ifndef CMESHER_H
 #define CMESHER_H
 
+#include <deque>
 #include <vector>
 #include <zi/mesh/marching_cubes.hpp>
 #include <zi/mesh/int_mesh.hpp>
@@ -64,7 +65,7 @@ class CMesher {
       return empty_obj;
     }
 
-    std::vector< zi::vl::vec< PositionType, 3> > triangles = std::move(marchingcubes_.get_triangles(segid));
+    std::deque< zi::vl::vec< PositionType, 3> > triangles = std::move(marchingcubes_.get_triangles(segid));
 
     // faster
     if (simplification_factor == 0 && !generate_normals) {
@@ -85,7 +86,7 @@ class CMesher {
   // into a vertex and face triangle soup object
   // with no simplification or normal calculation.
   zmesh::utility::MeshObject triangles2mesh(
-    const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
+    const std::deque< zi::vl::vec< PositionType, 3> >& triangles,
     const bool transpose
   ) {
     zmesh::utility::MeshObject obj;
@@ -157,7 +158,7 @@ class CMesher {
   }
 
   zmesh::utility::MeshObject simplify(      
-      const std::vector< zi::vl::vec< PositionType, 3> >& triangles,
+      const std::deque< zi::vl::vec< PositionType, 3> >& triangles,
       bool generate_normals,
       int simplification_factor,
       float max_simplification_error,
@@ -265,8 +266,8 @@ class CMesher {
     float min_simplification_error
   ) {
 
-    std::vector< zi::vl::vec< PositionType, 3> > triangles;
-    triangles.reserve(Nv);
+    std::deque< zi::vl::vec< PositionType, 3> > triangles;
+    // triangles.reserve(Nv);
 
     for (size_t i = 0; i < Nv; i++) {
       triangles.push_back(

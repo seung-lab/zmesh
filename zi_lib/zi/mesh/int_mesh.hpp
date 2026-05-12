@@ -19,6 +19,7 @@
 #ifndef ZI_MESH_INT_MESH_HPP
 #define ZI_MESH_INT_MESH_HPP 1
 
+#include <deque>
 #include <vector>
 #include <zi/mesh/marching_cubes.hpp>
 #include <zi/mesh/quadratic_simplifier.hpp>
@@ -53,6 +54,15 @@ public:
     void clear()
     {
         v_.clear();
+    }
+
+    void add(const std::deque< triangle_t >& v, PositionType x=0, PositionType y=0, PositionType z=0)
+    {
+        PositionType off = static_cast<PositionType>(marcher_t::pack_coords(x*2,y*2,z*2));
+        for ( std::size_t i = 0; i < v.size(); ++i )
+        {
+            v_.push_back(v[i] + off);
+        }
     }
 
     void add(const std::vector< triangle_t >& v, PositionType x=0, PositionType y=0, PositionType z=0)

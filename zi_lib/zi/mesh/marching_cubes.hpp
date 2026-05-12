@@ -27,6 +27,7 @@
 #include "detail/mc_tables.hpp"
 
 #include <zi/mesh/network_sort.hpp>
+#include <zi/utility/builtins.hpp>
 #include <zi/vl/vec.hpp>
 
 #include <algorithm>
@@ -37,8 +38,6 @@
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
-
-#include "builtins.hpp"
 
 namespace zi::mesh
 {
@@ -163,7 +162,7 @@ public:
     using triangle_t = vl::vec<PositionType, 3>;
 
     std::size_t                                            num_faces_;
-    std::unordered_map<LabelType, std::vector<triangle_t>> meshes_;
+    std::unordered_map<LabelType, std::deque<triangle_t>> meshes_;
 
 public:
     const auto& meshes() const
@@ -402,7 +401,7 @@ public:
         }
     }
 
-    std::vector<triangle_t> const& get_triangles(LabelType const& id) const
+    auto const& get_triangles(LabelType const& id) const
     {
         return meshes_.find(id)->second;
     }
