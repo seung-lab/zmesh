@@ -116,13 +116,13 @@ class CMesher {
     for (uint32_t i = 0; i < idx; i++) {
       PositionType vert = ipts[i];
       obj.points.push_back(
-        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_z<SimplifierType>(vert)
+        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_z<SimplifierType>(vert, 0, voxelresolution_[2])
       ); 
       obj.points.push_back(
-        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_y<SimplifierType>(vert)
+        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_y<SimplifierType>(vert, 0, voxelresolution_[1])
       ); 
       obj.points.push_back(
-        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_x<SimplifierType>(vert)
+        zi::mesh::marching_cubes<PositionType, LabelType>::template unpack_x<SimplifierType>(vert, 0, voxelresolution_[0])
       );
     }
 
