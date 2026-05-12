@@ -68,7 +68,7 @@ class CMesher {
 
     // faster
     if (simplification_factor == 0 && !generate_normals) {
-      return trianges2mesh(triangles);
+      return triangles2mesh(triangles);
     }
 
     return simplify(
@@ -84,7 +84,7 @@ class CMesher {
   // This is only for converting triangles
   // into a vertex and face triangle soup object
   // with no simplification or normal calculation.
-  MeshObject trianges2mesh(
+  MeshObject triangles2mesh(
     const std::vector< zi::vl::vec< PositionType, 3> >& triangles
   ) {
     MeshObject obj;
