@@ -330,18 +330,6 @@ private:
                     return;
                 }
 
-                // Instead of using std::unordered_set or similar
-                // to get unique labels, use a high efficiency sort,
-                // a "network sort", for a fixed size labels and then
-                // iterate from high to low values and skip repeats.
-                // This Saves almost 40% of the march time. We make an
-                // array copy before sorting to preserve the structure
-                // in labels. std::unordered_set uses a hash with closed
-                // addressing + chaining which is inefficient for our
-                // case.
-                std::array<LabelType, 8> ulabels = labels;
-                zi::mesh::sort_8(ulabels);
-
                 auto add_face = [&](const LabelType label, const uint8_t c) {
                     if (!mc_edge_table[c])
                     {
@@ -367,46 +355,22 @@ private:
                     }
                 };
 
-                // i=7
                 uint8_t accumulate = 0;
-                uint8_t c;
+                uint8_t c = 0;
 
-                LabelType label = ulabels[7];
-                if (label == 0)
-                {
-                    return;
-                }
+                for (int i = 0, j = 0; i < 8 && accumulate != 0xff; i++) {
+                    int start = __builtin_ffs(~accumulate);
+                    start = start > 0 ? start - 1 : 0;
 
-                c = 0;
-                for (int n = 0; n < 8; n++) {
-                    c |= (uint8_t)(labels[n] != label) << n;
-                }
-                accumulate |= (uint8_t)~c;
-                add_face(label, c);
+                    const LabelType label = labels[start];
 
-                for (int i = 6; i >= 0 && accumulate != 0xff; i--)
-                {
-                    label = ulabels[i];
-                    if (label == 0)
-                    {
-                        break;
+                    c = 0;
+                    for (int n = start; n < 8; n++) {
+                        c |= (uint8_t)(labels[n] != label) << n;
                     }
-                    else if (ulabels[i + 1] == label)
-                    {
-                        continue;
-                    }
+                    accumulate |= (uint8_t)~c;
 
-                    if (label == ulabels[0]) {
-                        c = accumulate;
-                        add_face(label, c);
-                        break;
-                    }
-                    else {
-                        c = 0;
-                        for (int n = 0; n < 8; n++) {
-                            c |= (uint8_t)(labels[n] != label) << n;
-                        }
-                        accumulate |= (uint8_t)~c;
+                    if (label != 0) {
                         add_face(label, c);
                     }
                 }
