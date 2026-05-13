@@ -391,7 +391,7 @@ private:
                     c |= (uint8_t)(labels[n] != label) << n;
                 }
                 accumulate |= (uint8_t)~c;
-                add_face(x,y,z,label, c);
+                add_face(x, y, z, label, c);
 
                 for (int i = 6; i >= 0 && accumulate != 0xff; i--) {
                     label = ulabels[i];
@@ -404,7 +404,7 @@ private:
 
                     if (label == ulabels[0]) {
                         c = accumulate;
-                        add_face(x,y,z,label, c);
+                        add_face(x, y, z, label, c);
                         break;
                     }
                     else {
@@ -413,7 +413,7 @@ private:
                             c |= (uint8_t)(labels[n] != label) << n;
                         }
                         accumulate |= (uint8_t)~c;
-                        add_face(x,y,z,label, c);
+                        add_face(x, y, z, label, c);
                     }
                 }
             },
@@ -461,7 +461,7 @@ private:
                     accumulate |= (uint8_t)~c;
 
                     if (label != 0) {
-                        add_face(x,y,z,label, c);
+                        add_face(x, y, z, label, c);
                     }
                 }
             },
