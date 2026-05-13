@@ -105,11 +105,10 @@ def test_zmesh_simplification():
     N = 1
     start = time.time()
     for label in tqdm(mesher.ids()):
-        mesher.get_mesh(label, 
-            simplification_factor=100, 
-
+        mesher.get(label, 
+            reduction_factor=100, 
             # Max tolerable error in physical distance
-            max_simplification_error=1,
+            max_error=1,
         )
     end = time.time()
     result("simplification (connectomics.npy)", end - start, labels, N=N)
