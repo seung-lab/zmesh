@@ -420,7 +420,6 @@ private:
                 order_tag);
         }
         else {
-            printf("HERE\n");
             mc_nested_loops(
                 sx, sy, sz,
                 [&](std::size_t x, std::size_t y, std::size_t z, std::size_t ind)
