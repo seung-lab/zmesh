@@ -7,8 +7,8 @@
 // Source - https://stackoverflow.com/a/20468180
 // Posted by crazyjul
 // Retrieved 2026-05-12, License - CC BY-SA 3.0
-uint32_t __inline zmesh_ctz (uint32_t value) {
-    DWORD trailing_zero = 0;
+unsigned long __inline zmesh_ctz (unsigned long value) {
+    unsigned long trailing_zero = 0;
     if (_BitScanForward(&trailing_zero, value)) {
         return trailing_zero;
     }
@@ -16,8 +16,8 @@ uint32_t __inline zmesh_ctz (uint32_t value) {
         return 32; // undefined if value 0, choose 32 as a sensible choice
     }
 }
-uint32_t __inline zmesh_clz (uint32_t value) {
-    DWORD leading_zero = 0;
+unsigned long __inline zmesh_clz (unsigned long value) {
+    unsigned long leading_zero = 0;
 
     if (_BitScanReverse(&leading_zero, value)) {
        return 31 - leading_zero;
