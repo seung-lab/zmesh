@@ -287,6 +287,7 @@ private:
     template <class Tag>
     void marche(const LabelType* data, std::size_t const sx,
                 std::size_t const sy, std::size_t const sz,
+                const bool preserve_order,
                 Tag const& order_tag)
     {
         meshes_.reserve(sx * sy);
@@ -312,92 +313,177 @@ private:
 
         auto strides = get_strides(sx, sy, sz, order_tag);
 
-        mc_nested_loops(
-            sx, sy, sz,
-            [&](std::size_t x, std::size_t y, std::size_t z, std::size_t ind)
+        auto add_face = [&](
+            std::size_t x, std::size_t y, std::size_t z, 
+            const LabelType label, const uint8_t c
+        ) {
+            if (!mc_edge_table[c])
             {
-                std::array<LabelType, 8> const labels = {
-                    data[ind],
-                    data[ind + strides[0]],
-                    data[ind + strides[1]],
-                    data[ind + strides[2]],
-                    data[ind + strides[3]],
-                    data[ind + strides[4]],
-                    data[ind + strides[5]],
-                    data[ind + strides[6]]};
+                return;
+            }
 
-                if (all_equal(labels))
-                {
-                    return;
-                }
+            PositionType cur =
+                ((x * mask_traits::unit_x) | (y * mask_traits::unit_y) |
+                 (z * mask_traits::unit_z))
+                << 1;
 
-                auto add_face = [&](const LabelType label, const uint8_t c) {
-                    if (!mc_edge_table[c])
+            auto& face_list = meshes_[label];
+
+            for (std::size_t n = 0;
+                 mc_triangle_table[c][n] != mc_triangle_table_end;
+                 n += 3)
+            {
+                ++num_faces_;
+                face_list.emplace_back(
+                    edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
+                    edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
+                    edge_midpoints[mc_triangle_table[c][n]] + cur);
+            }
+        };
+
+        if (preserve_order) {
+            mc_nested_loops(
+                sx, sy, sz,
+                [&](std::size_t x, std::size_t y, std::size_t z, std::size_t ind
+            ) {
+                    std::array<LabelType, 8> const labels = {
+                        data[ind],
+                        data[ind + strides[0]],
+                        data[ind + strides[1]],
+                        data[ind + strides[2]],
+                        data[ind + strides[3]],
+                        data[ind + strides[4]],
+                        data[ind + strides[5]],
+                        data[ind + strides[6]]};
+
+                    if (all_equal(labels))
                     {
                         return;
                     }
 
-                    PositionType cur =
-                        ((x * mask_traits::unit_x) | (y * mask_traits::unit_y) |
-                         (z * mask_traits::unit_z))
-                        << 1;
+                    // Instead of using std::unordered_set or similar
+                    // to get unique labels, use a high efficiency sort,
+                    // a "network sort", for a fixed size labels and then
+                    // iterate from high to low values and skip repeats.
+                    // This Saves almost 40% of the march time. We make an
+                    // array copy before sorting to preserve the structure
+                    // in labels. std::unordered_set uses a hash with closed
+                    // addressing + chaining which is inefficient for our
+                    // case.
+                    std::array<LabelType, 8> ulabels = labels;
+                    zi::mesh::sort_8(ulabels);
 
-                    auto& face_list = meshes_[label];
+                    // i=7
+                    uint8_t accumulate = 0;
+                    uint8_t c;
 
-                    for (std::size_t n = 0;
-                         mc_triangle_table[c][n] != mc_triangle_table_end;
-                         n += 3)
+                    LabelType label = ulabels[7];
+                    if (label == 0)
                     {
-                        ++num_faces_;
-                        face_list.emplace_back(
-                            edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
-                            edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
-                            edge_midpoints[mc_triangle_table[c][n]] + cur);
+                        return;
                     }
-                };
-
-                uint8_t accumulate = 0;
-                uint8_t c = 0;
-
-                for (int i = 0; i < 8 && accumulate != 0xff; i++) {
-                    int start = zmesh_ctz(~accumulate);
-                    int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
-
-                    const LabelType label = labels[start];
 
                     c = 0;
-                    if (end == 8) {
-                        for (int n = start; n < 8; n++) {
-                            c |= (uint8_t)(labels[n] != label) << n;
-                        }
-                    }
-                    else {
-                        for (int n = start; n < end; n++) {
-                            c |= (uint8_t)(labels[n] != label) << n;
-                        }
+                    for (int n = 0; n < 8; n++) {
+                        c |= (uint8_t)(labels[n] != label) << n;
                     }
                     accumulate |= (uint8_t)~c;
+                    add_face(x,y,z,label, c);
 
-                    if (label != 0) {
-                        add_face(label, c);
+                    for (int i = 6; i >= 0 && accumulate != 0xff; i--)
+                    {
+                        label = ulabels[i];
+                        if (label == 0)
+                        {
+                            break;
+                        }
+                        else if (ulabels[i + 1] == label)
+                        {
+                            continue;
+                        }
+
+                        if (label == ulabels[0]) {
+                            c = accumulate;
+                            add_face(x,y,z,label, c);
+                            break;
+                        }
+                        else {
+                            c = 0;
+                            for (int n = 0; n < 8; n++) {
+                                c |= (uint8_t)(labels[n] != label) << n;
+                            }
+                            accumulate |= (uint8_t)~c;
+                            add_face(x,y,z,label, c);
+                        }
                     }
-                }
-            },
-            order_tag);
+                },
+                order_tag);
+        }
+        else {
+            printf("HERE\n");
+            mc_nested_loops(
+                sx, sy, sz,
+                [&](std::size_t x, std::size_t y, std::size_t z, std::size_t ind)
+                {
+                    std::array<LabelType, 8> const labels = {
+                        data[ind],
+                        data[ind + strides[0]],
+                        data[ind + strides[1]],
+                        data[ind + strides[2]],
+                        data[ind + strides[3]],
+                        data[ind + strides[4]],
+                        data[ind + strides[5]],
+                        data[ind + strides[6]]};
+
+                    if (all_equal(labels))
+                    {
+                        return;
+                    }
+
+                    uint8_t accumulate = 0;
+                    uint8_t c = 0;
+
+                    for (int i = 0; i < 8 && accumulate != 0xff; i++) {
+                        int start = zmesh_ctz(~accumulate);
+                        int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
+
+                        const LabelType label = labels[start];
+
+                        c = 0;
+                        if (end == 8) {
+                            for (int n = start; n < 8; n++) {
+                                c |= (uint8_t)(labels[n] != label) << n;
+                            }
+                        }
+                        else {
+                            for (int n = start; n < end; n++) {
+                                c |= (uint8_t)(labels[n] != label) << n;
+                            }
+                        }
+                        accumulate |= (uint8_t)~c;
+
+                        if (label != 0) {
+                            add_face(x,y,z,label, c);
+                        }
+                    }
+                },
+                order_tag);
+        }
     }
 
 public:
     void marche(const LabelType* data, std::size_t const sx,
                 std::size_t const sy, std::size_t const sz,
+                const bool preserve_order = true,
                 const bool c_order = true)
     {
         if (c_order)
         {
-            marche(data, sx, sy, sz, c_order_tag());
+            marche(data, sx, sy, sz, preserve_order, c_order_tag());
         }
         else
         {
-            marche(data, sx, sy, sz, fortran_order_tag());
+            marche(data, sx, sy, sz, preserve_order, fortran_order_tag());
         }
     }
 

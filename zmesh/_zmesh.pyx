@@ -79,7 +79,12 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
       unsigned int sx, 
       unsigned int sy, 
       unsigned int sz, 
-      bool c_order
+      # for backwards compatibility 
+      # preserve final vertex/face order
+      # set false for additional performance
+      # but possibly a different mesh binary
+      bool preserve_order, 
+      bool c_order # this is the input array order, C or F
     ) nogil
     vector[L] ids() nogil
     MeshObject get_mesh(
@@ -448,7 +453,7 @@ class Mesher:
     self._voxel_res = np.array(res, dtype=np.float32)
 
   @cython.binding(True)
-  def mesh(self, data, close=False):
+  def mesh(self, data:np.ndarray, close:bool = False, preserve_order:bool = True):
     """
     Triggers the multi-label meshing process.
     After the mesher has run, you can call mesher.get.
@@ -495,7 +500,7 @@ class Mesher:
 
     self._mesher = MesherClass(self.voxel_res)
 
-    return self._mesher.mesh(data)
+    return self._mesher.mesh(data, preserve_order=preserve_order)
 
   @cython.binding(True)
   def ids(self):
@@ -735,11 +740,12 @@ cdef class Mesher3208:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -749,7 +755,7 @@ cdef class Mesher3208:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -765,11 +771,12 @@ cdef class Mesher3216:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -779,7 +786,7 @@ cdef class Mesher3216:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -795,11 +802,12 @@ cdef class Mesher3232:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -809,7 +817,7 @@ cdef class Mesher3232:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -825,11 +833,12 @@ cdef class Mesher3264:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -839,7 +848,7 @@ cdef class Mesher3264:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -855,11 +864,12 @@ cdef class Mesher6408:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -869,7 +879,7 @@ cdef class Mesher6408:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -885,11 +895,12 @@ cdef class Mesher6416:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -899,7 +910,7 @@ cdef class Mesher6416:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -915,11 +926,12 @@ cdef class Mesher6432:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -929,7 +941,7 @@ cdef class Mesher6432:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 
@@ -945,11 +957,12 @@ cdef class Mesher6464:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -959,7 +972,7 @@ cdef class Mesher6464:
   def get_mesh(self, mesh_id, normals=False, simplification_factor=0, max_simplification_error=40, min_simplification_error=(25 * sys.float_info.epsilon), transpose=True):
     cdef MeshObject meshobj = self.ptr.get_mesh(mesh_id, normals, simplification_factor, max_simplification_error, min_simplification_error, transpose)
     return cpp_meshobj_to_mesh(meshobj)
-  
+
   def clear(self):
     self.ptr.clear()
 

@@ -7,11 +7,12 @@ cdef class Mesher{{ position_type }}{{ '%02d' % label_type }}:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data):
+  def mesh(self, data, preserve_order:bool):
     cdef cnp.ndarray[uint{{label_type}}_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint{{ label_type }})
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
+      preserve_order,
       data.flags.c_contiguous
     )
 
