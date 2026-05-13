@@ -10,7 +10,12 @@ mesher = Mesher( (4,4,40) ) # anisotropy of image
 # initial marching cubes pass
 # close controls whether meshes touching
 # the image boundary are left open or closed
-mesher.mesh(labels, close=False) 
+mesher.mesh(labels, close=False)
+
+# If you don't mind shuffling the vertices and faces
+# from older versions of zmesh, this option unlocks
+# some performance optimizations.
+mesher.mesh(labels, preserve_order=False) 
 
 meshes = []
 for obj_id in mesher.ids():

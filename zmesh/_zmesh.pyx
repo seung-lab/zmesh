@@ -463,6 +463,9 @@ class Mesher:
       the image will be left open on the sides that touch
       the boundary. If True, this ensures that all meshes
       produced will be closed.
+    preserve_order: Allow additional performance optimizations by relaxing
+      the order labels must be processed in. A different vertex/face
+      ordering may result.
     """
     del self._mesher
 
