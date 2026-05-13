@@ -285,11 +285,13 @@ private:
     }
 
     template <class Tag>
-    void marche(const LabelType* data, std::size_t const sx,
-                std::size_t const sy, std::size_t const sz,
-                const bool preserve_order,
-                Tag const& order_tag)
-    {
+    [[gnu::flatten]] // needed to get add_face lambda to inline properly
+    void marche(
+        const LabelType* data,
+        std::size_t const sx, std::size_t const sy, std::size_t const sz,
+        const bool preserve_order,
+        Tag const& order_tag
+    ) {
         meshes_.reserve(sx * sy);
 
         constexpr std::array<PositionType, 8> cube_corners = {
