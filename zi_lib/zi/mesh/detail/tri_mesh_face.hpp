@@ -53,6 +53,10 @@ private:
     }
 
 public:
+    void print() const {
+        printf("%d %d %d\n", v_[0], v_[1], v_[2]);
+    }
+
     inline bool operator==(const tri_mesh_face_impl& o) const
     {
         return std::equal(v_, v_ + 3, o.v_);

@@ -513,7 +513,7 @@ public:
         return 0;
     }
 
-    detail::tri_mesh_face_container& faces() { return mesh_.faces; }
+    detail::tri_mesh_face_container& faces() { return mesh_.get_faces(); }
 
     std::size_t stripify(std::vector<uint32_t>& vertices,
                          std::vector<uint32_t>& strip_begins,
@@ -743,11 +743,12 @@ private:
     {
         FOR_EACH(it, quadratic_) { it->clear(); }
 
-        FOR_EACH(it, mesh_.faces)
+        for (auto& face : mesh_.get_faces().iter())
         {
-            vl::vec<Float, 3>& v0 = points_[it->v0()];
-            vl::vec<Float, 3>& v1 = points_[it->v1()];
-            vl::vec<Float, 3>& v2 = points_[it->v2()];
+            // face.print();
+            vl::vec<Float, 3>& v0 = points_[face.v0()];
+            vl::vec<Float, 3>& v1 = points_[face.v1()];
+            vl::vec<Float, 3>& v2 = points_[face.v2()];
 
             vl::vec<Float, 3> a    = cross(v1 - v0, v2 - v0);
             Float             area = normalize(a);
@@ -755,10 +756,11 @@ private:
             detail::quadratic<Float> q(a[0], a[1], a[2], -dot(a, v0));
 
             q *= (area * 2.0);
+            // printf("%.2f\n", q);
 
-            quadratic_[it->v0()] += q;
-            quadratic_[it->v1()] += q;
-            quadratic_[it->v2()] += q;
+            quadratic_[face.v0()] += q;
+            quadratic_[face.v1()] += q;
+            quadratic_[face.v2()] += q;
         }
 
         // FOR_EACH( it, d_.vd_ )
@@ -774,24 +776,24 @@ private:
 
         FOR_EACH(it, normals_) { (*it) = vl::vec<Float, 3>::zero; }
 
-        FOR_EACH(it, mesh_.faces)
+        for (auto& face : mesh_.get_faces().iter())
         {
-            vl::vec<Float, 3>& v0 = points_[it->v0()];
-            vl::vec<Float, 3>& v1 = points_[it->v1()];
-            vl::vec<Float, 3>& v2 = points_[it->v2()];
+            vl::vec<Float, 3>& v0 = points_[face.v0()];
+            vl::vec<Float, 3>& v1 = points_[face.v1()];
+            vl::vec<Float, 3>& v2 = points_[face.v2()];
 
             vl::vec<Float, 3> center(v0 + v1 + v2);
             center /= 3;
 
             vl::vec<Float, 3> n(norm(cross(v1 - v0, v2 - v0)));
             // n = norm( n ); // / n_len;
-            normals_[it->v0()] += n * len(points_[it->v0()] - center);
-            normals_[it->v1()] += n * len(points_[it->v1()] - center);
-            normals_[it->v2()] += n * len(points_[it->v2()] - center);
+            normals_[face.v0()] += n * len(points_[face.v0()] - center);
+            normals_[face.v1()] += n * len(points_[face.v1()] - center);
+            normals_[face.v2()] += n * len(points_[face.v2()] - center);
 
-            ++counts[it->v0()];
-            ++counts[it->v1()];
-            ++counts[it->v2()];
+            ++counts[face.v0()];
+            ++counts[face.v1()];
+            ++counts[face.v2()];
         }
 
         for (std::size_t i = 0; i < size_; ++i)
@@ -874,21 +876,21 @@ private:
 
     void init_heap()
     {
-        FOR_EACH(it, mesh_.faces)
+        for (auto& face : mesh_.get_faces().iter())
         {
-            if (it->v0() < it->v1())
+            if (face.v0() < face.v1())
             {
-                add_to_heap(it->v0(), it->v1());
+                add_to_heap(face.v0(), face.v1());
             }
 
-            if (it->v1() < it->v2())
+            if (face.v1() < face.v2())
             {
-                add_to_heap(it->v1(), it->v2());
+                add_to_heap(face.v1(), face.v2());
             }
 
-            if (it->v2() < it->v0())
+            if (face.v2() < face.v0())
             {
-                add_to_heap(it->v2(), it->v0());
+                add_to_heap(face.v2(), face.v0());
             }
         }
     }
