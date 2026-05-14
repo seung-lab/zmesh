@@ -121,6 +121,7 @@ struct trimesh_faces
 
 private:
     std::vector<face_slot> faces_;
+    std::vector<uint32_t> free_list_;
     std::size_t size_;
 public:
     trimesh_faces() {
@@ -148,19 +149,32 @@ public:
 
     std::size_t push_back(const face_type& face)
     {
-        faces_.push_back(face);
         size_++;
-        return faces_.size();
+        if (free_list_.empty()) {
+            faces_.push_back(face);
+            return faces_.size();
+        }
+        else {
+            uint32_t id = free_list_.back();
+            faces_[id].face = face;
+            faces_[id].alive = true;
+            return id+1;
+        }
     }
 
     void clear() {
         faces_.clear();
+        free_list_.clear();
         size_ = 0;
     }
 
     void erase(const uint32_t id) {
         size_ -= static_cast<std::size_t>(faces_[id-1].alive);
         faces_[id-1].alive = false;
+        auto it = std::find(free_list_.begin(), free_list_.end(), id-1);
+        if (it != free_list_.end()) {
+            free_list_.erase(it);
+        }
     }
 
     auto iter() const
