@@ -132,7 +132,7 @@ public:
     }
 
     bool alive(const uint32_t id) const {
-        if (id == 0 || id >= faces_.size()) {
+        if (id == 0 || id > faces_.size()) {
             return false;
         }
         return faces_[id-1].alive;
