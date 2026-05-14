@@ -310,8 +310,7 @@ public:
         size_ = s;
         vertices_.resize(s);
         edges_.clear();
-        faces_.clear();
-        max_face_ = 0;
+        faces_.clear(); 
     }
 
     uint32_t add_face(const uint32_t x, const uint32_t y, const uint32_t z)
