@@ -121,9 +121,15 @@ struct trimesh_faces
 
 private:
     std::vector<face_slot> faces_;
-
+    std::size_t size_;
 public:
-    void reserve(const std::size_t N) { faces_.reserve(N); }
+    trimesh_faces() {
+        size_ = 0;
+    }
+
+    void reserve(const std::size_t N) {
+        faces_.reserve(N);
+    }
 
     bool alive(const uint32_t id) const
     {
@@ -131,22 +137,33 @@ public:
         {
             return false;
         }
-        return faces_[id].alive;
+        return faces_[id-1].alive;
     }
 
-    face_type get(const uint32_t id) const { return faces_[id].face; }
+    face_type get(const uint32_t id) const {
+        return faces_[id-1].face;
+    }
 
-    std::size_t size() const { return faces_.size(); }
+    std::size_t size() const  {
+        return size_;
+    }
 
     std::size_t push_back(const face_type& face)
     {
         faces_.push_back(face);
-        return faces_.size() - 1;
+        size_++;
+        return size_;
     }
 
-    void clear() { faces_.clear(); }
+    void clear() {
+        faces_.clear();
+        size_ = 0;
+    }
 
-    void erase(const uint32_t id) { faces_[id].alive = false; }
+    void erase(const uint32_t id) {
+        size_ -= faces_[id].alive;
+        faces_[id].alive = false;
+    }
 
     auto iter() const
     {
@@ -156,14 +173,14 @@ public:
                                      { return s.face; });
     }
 
-    auto enumerate() const
-    {
-        return std::views::iota(std::size_t{0}, faces_.size()) |
-               std::views::filter([this](std::size_t i)
-                                  { return faces_[i].alive; }) |
-               std::views::transform(
-                   [this](std::size_t i)
-                   { return std::pair{i, std::cref(faces_[i].face)}; });
+    auto enumerate() const {
+        return std::views::iota(std::size_t{0}, faces_.size())
+            | std::views::filter([this](std::size_t i) {
+                  return faces_[i].alive;
+              })
+            | std::views::transform([this](std::size_t i) {
+                  return std::pair{i+1, std::cref(faces_[i].face)};
+              });
     }
 };
 
