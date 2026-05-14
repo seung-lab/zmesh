@@ -369,7 +369,7 @@ public:
 
         const uint32_t face_id = vertices_[id].face_;
 
-        if (faces_.alive(face_id))
+        if ( !faces_.alive( face_id ) )
         {
             return 0;
         }
