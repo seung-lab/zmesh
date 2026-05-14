@@ -310,6 +310,7 @@ public:
 
     void clear()
     {
+        size_ = 0;
         vertices_.clear();
         edges_.clear();
         faces_.clear();
