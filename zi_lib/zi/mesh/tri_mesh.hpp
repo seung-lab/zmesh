@@ -121,58 +121,58 @@ struct trimesh_faces
 
 private:
     std::vector<face_slot> faces_;
-    std::vector<uint32_t> free_list_;
-    std::size_t size_;
+    std::vector<uint32_t>  free_list_;
+    std::size_t            size_;
+
 public:
-    trimesh_faces() {
-        size_ = 0;
-    }
+    trimesh_faces() { size_ = 0; }
 
-    void reserve(const std::size_t N) {
-        faces_.reserve(N);
-    }
+    void reserve(const std::size_t N) { faces_.reserve(N); }
 
-    bool alive(const uint32_t id) const {
-        if (id == 0 || id > faces_.size()) {
+    bool alive(const uint32_t id) const
+    {
+        if (id == 0 || id > faces_.size())
+        {
             return false;
         }
-        return faces_[id-1].alive;
+        return faces_[id - 1].alive;
     }
 
-    face_type get(const uint32_t id) const {
-        return faces_[id-1].face;
-    }
+    face_type get(const uint32_t id) const { return faces_[id - 1].face; }
 
-    std::size_t size() const  {
-        return size_;
-    }
+    std::size_t size() const { return size_; }
 
     std::size_t push_back(const face_type& face)
     {
         size_++;
-        if (free_list_.empty()) {
+        if (free_list_.empty())
+        {
             faces_.push_back(face);
             return faces_.size();
         }
-        else {
-            uint32_t id = free_list_.back();
-            faces_[id].face = face;
+        else
+        {
+            uint32_t id      = free_list_.back();
+            faces_[id].face  = face;
             faces_[id].alive = true;
-            return id+1;
+            return id + 1;
         }
     }
 
-    void clear() {
+    void clear()
+    {
         faces_.clear();
         free_list_.clear();
         size_ = 0;
     }
 
-    void erase(const uint32_t id) {
-        size_ -= static_cast<std::size_t>(faces_[id-1].alive);
-        faces_[id-1].alive = false;
-        auto it = std::find(free_list_.begin(), free_list_.end(), id-1);
-        if (it != free_list_.end()) {
+    void erase(const uint32_t id)
+    {
+        size_ -= static_cast<std::size_t>(faces_[id - 1].alive);
+        faces_[id - 1].alive = false;
+        auto it = std::find(free_list_.begin(), free_list_.end(), id - 1);
+        if (it != free_list_.end())
+        {
             free_list_.erase(it);
         }
     }
@@ -185,14 +185,14 @@ public:
                                      { return s.face; });
     }
 
-    auto enumerate() const {
-        return std::views::iota(std::size_t{0}, faces_.size())
-            | std::views::filter([this](std::size_t i) {
-                  return faces_[i].alive;
-              })
-            | std::views::transform([this](std::size_t i) {
-                  return std::pair{i+1, std::cref(faces_[i].face)};
-              });
+    auto enumerate() const
+    {
+        return std::views::iota(std::size_t{0}, faces_.size()) |
+               std::views::filter([this](std::size_t i)
+                                  { return faces_[i].alive; }) |
+               std::views::transform(
+                   [this](std::size_t i)
+                   { return std::pair{i + 1, std::cref(faces_[i].face)}; });
     }
 };
 
@@ -321,7 +321,6 @@ public:
         return *this;
     };
 
-
     void clear()
     {
         size_ = 0;
@@ -335,7 +334,7 @@ public:
         size_ = s;
         vertices_.resize(s);
         edges_.clear();
-        faces_.clear(); 
+        faces_.clear();
     }
 
     uint32_t add_face(const uint32_t x, const uint32_t y, const uint32_t z)
@@ -394,12 +393,12 @@ public:
 
         const uint32_t face_id = vertices_[id].face_;
 
-        if ( !faces_.alive( face_id ) )
+        if (!faces_.alive(face_id))
         {
             return 0;
         }
 
-        return faces_.get( face_id ).edge_from( id );
+        return faces_.get(face_id).edge_from(id);
     }
 
     uint32_t across_edge(const uint64_t eid) const
