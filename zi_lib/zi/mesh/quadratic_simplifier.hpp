@@ -513,7 +513,7 @@ public:
         return 0;
     }
 
-    detail::tri_mesh_face_container& faces() { return mesh_.get_faces(); }
+    auto& faces() { return mesh_.get_faces(); }
 
     std::size_t stripify(std::vector<uint32_t>& vertices,
                          std::vector<uint32_t>& strip_begins,
