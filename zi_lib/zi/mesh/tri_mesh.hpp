@@ -385,7 +385,7 @@ public:
             return 0;
         }
 
-        return faces_.get(face_id).edge_from(face_id);
+        return faces_.get( face_id ).edge_from( id );
     }
 
     uint32_t across_edge(const uint64_t eid) const
