@@ -159,7 +159,7 @@ public:
     }
 
     void erase(const uint32_t id) {
-        size_ -= faces_[id-1].alive;
+        size_ -= static_cast<std::size_t>(faces_[id-1].alive);
         faces_[id-1].alive = false;
     }
 
