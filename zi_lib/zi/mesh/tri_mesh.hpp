@@ -131,10 +131,8 @@ public:
         faces_.reserve(N);
     }
 
-    bool alive(const uint32_t id) const
-    {
-        if (id >= faces_.size())
-        {
+    bool alive(const uint32_t id) const {
+        if (id == 0 || id >= faces_.size()) {
             return false;
         }
         return faces_[id-1].alive;
@@ -152,7 +150,7 @@ public:
     {
         faces_.push_back(face);
         size_++;
-        return size_;
+        return faces_.size();
     }
 
     void clear() {
@@ -161,8 +159,8 @@ public:
     }
 
     void erase(const uint32_t id) {
-        size_ -= faces_[id].alive;
-        faces_[id].alive = false;
+        size_ -= faces_[id-1].alive;
+        faces_[id-1].alive = false;
     }
 
     auto iter() const
