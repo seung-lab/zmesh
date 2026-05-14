@@ -307,14 +307,9 @@ public:
         return *this;
     };
 
-    void clear(std::size_t s = 0)
-    {
-        if (s && (s != size_))
-        {
-            size_ = s;
-            vertices_.resize(s);
-        }
 
+    void clear()
+    {
         vertices_.clear();
         edges_.clear();
         faces_.clear();
