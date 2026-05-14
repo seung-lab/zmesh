@@ -53,9 +53,7 @@ private:
     }
 
 public:
-    void print() const {
-        printf("%d %d %d\n", v_[0], v_[1], v_[2]);
-    }
+    void print() const { printf("%d %d %d\n", v_[0], v_[1], v_[2]); }
 
     inline bool operator==(const tri_mesh_face_impl& o) const
     {
