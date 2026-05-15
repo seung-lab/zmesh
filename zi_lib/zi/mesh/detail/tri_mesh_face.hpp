@@ -45,7 +45,7 @@ namespace detail
 struct tri_mesh_face_impl
 {
 private:
-    uint32_t v_[3];
+    uint32_t v_[3] = {};
 
     static inline uint64_t make_edge(uint32_t x, uint32_t y)
     {
@@ -164,7 +164,7 @@ struct face_slot
     bool      alive;
 
     face_slot()
-        : alive(false)
+        : face(), alive(false)
     {
     }
     face_slot(const tri_mesh_face_impl& face_)
