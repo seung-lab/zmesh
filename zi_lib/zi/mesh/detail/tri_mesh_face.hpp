@@ -210,7 +210,11 @@ public:
         return faces_[id].alive;
     }
 
-    tri_mesh_face_impl get(const uint32_t id) const { return faces_[id].face; }
+    tri_mesh_face_impl get(const uint32_t id) const { 
+        ZI_ASSERT(id < faces_.size());
+        ZI_ASSERT(faces_[id].alive);
+        return faces_[id].face;
+    }
 
     std::size_t size() const { return alive_count_; }
 
