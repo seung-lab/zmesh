@@ -210,6 +210,7 @@ public:
         else
         {
             uint32_t id      = free_list_.back();
+            free_list_.pop_back();
             faces_[id].face  = face;
             faces_[id].alive = true;
             return id + 1;
