@@ -32,6 +32,8 @@ jobs:
 
       - name: Compile
         run: python setup.py develop
+        env:
+          ZMESH_CHECK_ASSERTS: true
 
       - name: Test with pytest
         run: pytest -v -x automated_test.py
