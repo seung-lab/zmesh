@@ -227,11 +227,7 @@ public:
     {
         size_ -= static_cast<std::size_t>(faces_[id - 1].alive);
         faces_[id - 1].alive = false;
-        auto it = std::find(free_list_.begin(), free_list_.end(), id - 1);
-        if (it != free_list_.end())
-        {
-            free_list_.erase(it);
-        }
+        free_list_.push_back(id - 1);
     }
 
     auto iter() const
