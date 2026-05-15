@@ -158,6 +158,101 @@ private:
     }
 };
 
+struct face_slot
+{
+    tri_mesh_face_impl face;
+    bool      alive;
+
+    face_slot()
+        : alive(false)
+    {
+    }
+    face_slot(const tri_mesh_face_impl& face_)
+        : face(face_)
+        , alive(true)
+    {
+    }
+};
+
+struct trimesh_faces
+{
+private:
+    std::vector<face_slot> faces_;
+    std::vector<uint32_t>  free_list_;
+    std::size_t            size_;
+
+public:
+    trimesh_faces() { size_ = 0; }
+
+    void reserve(const std::size_t N) { faces_.reserve(N); }
+
+    bool alive(const uint32_t id) const
+    {
+        if (id == 0 || id > faces_.size())
+        {
+            return false;
+        }
+        return faces_[id - 1].alive;
+    }
+
+    tri_mesh_face_impl get(const uint32_t id) const { return faces_[id - 1].face; }
+
+    std::size_t size() const { return size_; }
+
+    std::size_t push_back(const tri_mesh_face_impl& face)
+    {
+        size_++;
+        if (free_list_.empty())
+        {
+            faces_.push_back(face);
+            return faces_.size();
+        }
+        else
+        {
+            uint32_t id      = free_list_.back();
+            faces_[id].face  = face;
+            faces_[id].alive = true;
+            return id + 1;
+        }
+    }
+
+    void clear()
+    {
+        faces_.clear();
+        free_list_.clear();
+        size_ = 0;
+    }
+
+    void erase(const uint32_t id)
+    {
+        size_ -= static_cast<std::size_t>(faces_[id - 1].alive);
+        faces_[id - 1].alive = false;
+        auto it = std::find(free_list_.begin(), free_list_.end(), id - 1);
+        if (it != free_list_.end())
+        {
+            free_list_.erase(it);
+        }
+    }
+
+    auto iter() const
+    {
+        return faces_ |
+               std::views::filter([](const face_slot& s) { return s.alive; }) |
+               std::views::transform([](const face_slot& s) -> const tri_mesh_face_impl&
+                                     { return s.face; });
+    }
+
+    auto enumerate() const
+    {
+        return std::views::iota(std::size_t{0}, faces_.size()) |
+               std::views::filter([this](std::size_t i)
+                                  { return faces_[i].alive; }) |
+               std::views::transform(
+                   [this](std::size_t i)
+                   { return std::pair{i + 1, std::cref(faces_[i].face)}; });
+    }
+};
+
 struct tri_mesh_face_container
 {
 protected:
