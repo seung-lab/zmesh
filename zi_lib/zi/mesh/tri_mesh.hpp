@@ -239,7 +239,7 @@ public:
 
     uint32_t add_face(const uint32_t x, const uint32_t y, const uint32_t z)
     {
-
+        ZI_ASSERT(x != y && y != z && x != z);
         ZI_ASSERT(x < size_ && y < size_ && z < size_);
 
         const uint32_t max_face = faces_.push_back(face_type(x, y, z));
