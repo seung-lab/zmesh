@@ -194,10 +194,10 @@ struct trimesh_faces
 private:
     std::vector<face_slot> faces_;
     std::vector<uint32_t>  free_list_;
-    std::size_t            size_;
+    std::size_t            alive_count_;
 
 public:
-    trimesh_faces() { size_ = 0; }
+    trimesh_faces() { alive_count_ = 0; }
 
     void reserve(const std::size_t N) { faces_.reserve(N); }
 
@@ -212,11 +212,11 @@ public:
 
     tri_mesh_face_impl get(const uint32_t id) const { return faces_[id].face; }
 
-    std::size_t size() const { return size_; }
+    std::size_t size() const { return alive_count_; }
 
     std::size_t push_back(const tri_mesh_face_impl& face)
     {
-        size_++;
+        alive_count_++;
         if (free_list_.empty())
         {
             faces_.push_back(face);
@@ -236,12 +236,12 @@ public:
     {
         faces_.clear();
         free_list_.clear();
-        size_ = 0;
+        alive_count_ = 0;
     }
 
     void erase(const uint32_t id)
     {
-        size_ -= static_cast<std::size_t>(faces_[id].alive);
+        alive_count_ -= static_cast<std::size_t>(faces_[id].alive);
         faces_[id].alive = false;
         free_list_.push_back(id);
     }
