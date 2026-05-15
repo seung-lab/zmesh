@@ -174,6 +174,21 @@ struct face_slot
     }
 };
 
+struct trimesh_faces_iterator {
+    const std::vector<face_slot>* faces;
+    std::size_t idx;
+
+    tri_mesh_face_impl operator*() const { return faces->at(idx).face; }
+    trimesh_faces_iterator& operator++() {
+        do { 
+            ++idx; 
+        } while (idx < faces->size() && !(*faces)[idx].alive);
+        return *this;
+    }
+        
+    bool operator!=(const trimesh_faces_iterator& o) const { return idx != o.idx; }
+};
+
 struct trimesh_faces
 {
 private:
@@ -231,156 +246,18 @@ public:
         free_list_.push_back(id - 1);
     }
 
-    auto iter() const
+    trimesh_faces_iterator begin() const
     {
-        return faces_ |
-               std::views::filter([](const face_slot& s) { return s.alive; }) |
-               std::views::transform([](const face_slot& s) -> const tri_mesh_face_impl
-                                     { return s.face; });
+        auto it = trimesh_faces_iterator{&faces_, 0};
+        if (!faces_.empty() && !faces_[0].alive) {
+            ++it;
+        }
+        return it;
     }
-
-    auto enumerate() const
+    
+    trimesh_faces_iterator end() const
     {
-        return std::views::iota(std::size_t{0}, faces_.size()) |
-               std::views::filter([this](std::size_t i)
-                                  { return faces_[i].alive; }) |
-               std::views::transform(
-                   [this](std::size_t i)
-                   { return std::pair{i + 1, std::cref(faces_[i].face)}; });
-    }
-};
-
-struct tri_mesh_face_container
-{
-protected:
-    reference_wrapper<unordered_map<uint32_t, tri_mesh_face_impl>> faces_;
-
-    tri_mesh_face_container(unordered_map<uint32_t, tri_mesh_face_impl>& faces)
-        : faces_(faces)
-    {
-    }
-
-    friend class ::zi::mesh::tri_mesh;
-
-public:
-    template <bool IsConst>
-    struct iterator_base
-    {
-        typedef iterator_base<IsConst>                  iterator_type;
-        typedef std::ptrdiff_t                          difference_type;
-        typedef std::forward_iterator_tag               iterator_category;
-        typedef tri_mesh_face_impl                      value_type;
-        typedef typename if_<IsConst, const tri_mesh_face_impl*,
-                             tri_mesh_face_impl*>::type pointer;
-        typedef typename if_<IsConst, const tri_mesh_face_impl&,
-                             tri_mesh_face_impl&>::type reference;
-
-        inline iterator_base()
-            : i_()
-        {
-        }
-
-        inline reference operator*() const { return i_->second; }
-        inline pointer   operator->() const { return &i_->second; }
-
-        inline iterator_type& operator++()
-        {
-            ++i_;
-            return *this;
-        }
-
-        inline iterator_type operator++(int)
-        {
-            iterator_type tmp = *this;
-            ++i_;
-            return tmp;
-        }
-
-        template <bool B>
-        inline bool operator==(const iterator_base<B>& o) const
-        {
-            return i_ == o.i_;
-        }
-
-        template <bool B>
-        inline bool operator!=(const iterator_base<B>& o) const
-        {
-            return i_ != o.i_;
-        }
-
-        inline uint32_t id() const { return i_->first; }
-        inline          operator uint32_t() const { return i_->first; }
-
-        template <std::size_t Index>
-        inline uint32_t vertex(
-            typename enable_if<(Index < 3), ::zi::detail::dummy<Index>>::type =
-                0) const
-        {
-            return i_->second.template vertex<Index>();
-        }
-
-        inline uint32_t v0() const { return i_->second.v0(); }
-        inline uint32_t v1() const { return i_->second.v1(); }
-        inline uint32_t v2() const { return i_->second.v2(); }
-
-        inline uint64_t e0() const { return i_->second.e0(); }
-        inline uint64_t e1() const { return i_->second.e1(); }
-        inline uint64_t e2() const { return i_->second.e2(); }
-
-        inline uint64_t edge(std::size_t i) { return i_->second.edge(i); }
-
-        template <std::size_t Index>
-        inline uint64_t edge(
-            typename enable_if<(Index < 3), ::zi::detail::dummy<Index>>::type =
-                0) const
-        {
-            return i_->second.template edge<Index>();
-        }
-
-        inline uint64_t edge_from(uint32_t v) const
-        {
-            return i_->second.edge_from(v);
-        }
-
-        friend struct tri_mesh_face_container;
-
-    private:
-        typedef typename if_<
-            IsConst,
-            unordered_map<uint32_t, tri_mesh_face_impl>::const_iterator,
-            unordered_map<uint32_t, tri_mesh_face_impl>::iterator>::type
-            base_type;
-
-        base_type i_;
-
-        explicit iterator_base(const base_type& i)
-            : i_(i)
-        {
-        }
-    };
-
-    typedef iterator_base<false>::iterator_type iterator;
-    typedef iterator_base<true>::iterator_type  const_iterator;
-
-    inline iterator find(uint32_t id)
-    {
-        return iterator(faces_.get().find(id));
-    }
-
-    inline const_iterator find(uint32_t id) const
-    {
-        return const_iterator(faces_.get().find(id));
-    }
-
-    inline iterator       begin() { return iterator(faces_.get().begin()); }
-    inline iterator       end() { return iterator(faces_.get().end()); }
-    inline const_iterator begin() const
-    {
-        return const_iterator(faces_.get().begin());
-    }
-    inline const_iterator end() const
-    {
-        return const_iterator(faces_.get().end());
+        return {&faces_, faces_.size()};
     }
 };
 

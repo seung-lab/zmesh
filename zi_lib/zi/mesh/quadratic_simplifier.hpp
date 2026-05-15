@@ -743,7 +743,7 @@ private:
     {
         FOR_EACH(it, quadratic_) { it->clear(); }
 
-        for (auto& face : mesh_.get_faces().iter())
+        for (auto face : mesh_.get_faces())
         {
             // face.print();
             vl::vec<Float, 3>& v0 = points_[face.v0()];
@@ -776,7 +776,7 @@ private:
 
         FOR_EACH(it, normals_) { (*it) = vl::vec<Float, 3>::zero; }
 
-        for (auto& face : mesh_.get_faces().iter())
+        for (auto face : mesh_.get_faces())
         {
             vl::vec<Float, 3>& v0 = points_[face.v0()];
             vl::vec<Float, 3>& v1 = points_[face.v1()];
@@ -876,7 +876,7 @@ private:
 
     void init_heap()
     {
-        for (auto& face : mesh_.get_faces().iter())
+        for (auto face : mesh_.get_faces())
         {
             if (face.v0() < face.v1())
             {

@@ -30,7 +30,6 @@
 
 #    include <functional>
 #    include <iostream>
-#    include <ranges>
 #    include <stdexcept>
 #    include <vector>
 
@@ -437,40 +436,40 @@ public:
 
     std::size_t size() const { return size_; }
 
-    bool check_rep() const
-    {
+    // bool check_rep() const
+    // {
 
-        if (edges_.size() != faces_.size() * 3)
-        {
-            ZI_THROW("check_rep: extra edges present");
-        }
+    //     if (edges_.size() != faces_.size() * 3)
+    //     {
+    //         ZI_THROW("check_rep: extra edges present");
+    //     }
 
-        for (const auto& [face_id, face_ref] : faces_.enumerate())
-        {
-            const auto& face = face_ref.get();
+    //     for (const auto& [face_id, face_ref] : faces_.enumerate())
+    //     {
+    //         const auto& face = face_ref.get();
 
-            if (!(vertices_[face.v0()].valid() &&
-                  vertices_[face.v1()].valid() && vertices_[face.v2()].valid()))
-            {
-                ZI_THROW("check_rep: invalid vertex found");
-            }
+    //         if (!(vertices_[face.v0()].valid() &&
+    //               vertices_[face.v1()].valid() && vertices_[face.v2()].valid()))
+    //         {
+    //             ZI_THROW("check_rep: invalid vertex found");
+    //         }
 
-            if ((edges_.find(face.e0())->second).face() != face_id ||
-                (edges_.find(face.e1())->second).face() != face_id ||
-                (edges_.find(face.e2())->second).face() != face_id)
-            {
-                ZI_THROW("check_rep: edge doesn't link to the correct face");
-            }
+    //         if ((edges_.find(face.e0())->second).face() != face_id ||
+    //             (edges_.find(face.e1())->second).face() != face_id ||
+    //             (edges_.find(face.e2())->second).face() != face_id)
+    //         {
+    //             ZI_THROW("check_rep: edge doesn't link to the correct face");
+    //         }
 
-            if (!(edges_.count(face.e0()) && edges_.count(face.e1()) &&
-                  edges_.count(face.e2())))
-            {
-                ZI_THROW("check_rep: face missing an edge");
-            }
-        }
+    //         if (!(edges_.count(face.e0()) && edges_.count(face.e1()) &&
+    //               edges_.count(face.e2())))
+    //         {
+    //             ZI_THROW("check_rep: face missing an edge");
+    //         }
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     bool is_closed_surface() const
     {
@@ -505,7 +504,7 @@ public:
             }
         }
 
-        for (auto& face : faces_.iter())
+        for (auto face : faces_)
         {
             if (!(vertices_[face.v0()].valid() &&
                   vertices_[face.v1()].valid() && vertices_[face.v2()].valid()))
@@ -525,7 +524,7 @@ public:
 
     void print_faces() const
     {
-        for (auto& face : faces_.iter())
+        for (auto face : faces_)
         {
             std::cout << "f: " << face.v0() << ',' << face.v1() << ','
                       << face.v2() << '\n';
@@ -542,7 +541,7 @@ public:
     {
         r.resize(faces_.size());
         std::size_t i = 0;
-        for (auto& face : faces_.iter())
+        for (auto face : faces_)
         {
             r[i++] = T(face.v0(), face.v1(), face.v2());
         }
