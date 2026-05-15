@@ -270,13 +270,26 @@ class CMesher {
     bool transpose = true
   ) {
     std::deque< zi::vl::vec< PositionType, 3> > triangles;
-    for (int i = 0; i < mesh.faces.size(); i += 3) {
-      zi::vl::vec< PositionType, 3 > vec(
-        mesh.points[mesh.faces[i]],
-        mesh.points[mesh.faces[i+1]],
-        mesh.points[mesh.faces[i+2]]
-      );
-      triangles.push_back(vec);
+
+    if (transpose) {
+      for (int i = 0; i < mesh.faces.size(); i += 3) {
+        zi::vl::vec< PositionType, 3 > vec(
+          mesh.points[mesh.faces[i+2]],
+          mesh.points[mesh.faces[i+1]],
+          mesh.points[mesh.faces[i+0]]
+        );
+        triangles.push_back(vec);
+      }
+    }
+    else {
+      for (int i = 0; i < mesh.faces.size(); i += 3) {
+        zi::vl::vec< PositionType, 3 > vec(
+          mesh.points[mesh.faces[i+0]],
+          mesh.points[mesh.faces[i+1]],
+          mesh.points[mesh.faces[i+2]]
+        );
+        triangles.push_back(vec);
+      }
     }
 
     return simplify(
