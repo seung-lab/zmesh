@@ -446,7 +446,7 @@ private:
 
                     for (int i = 0; i < 8 && accumulate != 0xff; i++)
                     {
-                        int start = zmesh_ctz(~accumulate);
+                        int start = zmesh_ctz((uint8_t)~accumulate);
                         int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
 
                         const LabelType label = labels[start];
@@ -456,21 +456,21 @@ private:
                         {
                             for (int n = start; n < 8; n++)
                             {
-                                c |= (uint8_t)(labels[n] != label) << n;
+                                c |= (uint8_t)(labels[n] == label) << n;
                             }
                         }
                         else
                         {
                             for (int n = start; n < end; n++)
                             {
-                                c |= (uint8_t)(labels[n] != label) << n;
+                                c |= (uint8_t)(labels[n] == label) << n;
                             }
                         }
-                        accumulate |= (uint8_t)~c;
+                        accumulate |= (uint8_t)c;
 
                         if (label != 0)
                         {
-                            add_face(x, y, z, label, c);
+                            add_face(x, y, z, label, (uint8_t)~c);
                         }
                     }
                 },
