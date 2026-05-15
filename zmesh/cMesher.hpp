@@ -269,7 +269,7 @@ class CMesher {
     // w/ backwards compatibility
     bool transpose = true
   ) {
-    std::deque< zi::vl::vec< PositionType, 3> >& triangles;
+    std::deque< zi::vl::vec< PositionType, 3> > triangles;
     for (int i = 0; i < mesh.faces.size(); i++) {
         triangles.push_back(mesh.points[mesh.faces[i]]);
     }
