@@ -258,6 +258,31 @@ class CMesher {
     return obj;
   }
 
+  auto simplify(
+    const zmesh::utility::MeshObject& mesh,
+    bool generate_normals,
+    int simplification_factor,
+    float max_simplification_error,
+    float min_simplification_error,
+
+    // This is to support the old broken version
+    // w/ backwards compatibility
+    bool transpose = true
+  ) {
+    std::deque< zi::vl::vec< PositionType, 3> >& triangles;
+    for (int i = 0; i < mesh.faces.size(); i++) {
+        triangles.push_back(mesh.points[mesh.faces[i]]);
+    }
+
+    return simplify(
+      triangles, 
+      generate_normals,
+      simplification_factor, 
+      max_simplification_error, 
+      min_simplification_error
+    );
+  }
+
   zmesh::utility::MeshObject simplify_points(
     const uint64_t* points,
     const size_t Nv,
