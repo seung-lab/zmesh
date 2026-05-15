@@ -203,14 +203,14 @@ public:
 
     bool alive(const uint32_t id) const
     {
-        if (id == 0 || id > faces_.size())
+        if (id >= faces_.size())
         {
             return false;
         }
-        return faces_[id - 1].alive;
+        return faces_[id].alive;
     }
 
-    tri_mesh_face_impl get(const uint32_t id) const { return faces_[id - 1].face; }
+    tri_mesh_face_impl get(const uint32_t id) const { return faces_[id].face; }
 
     std::size_t size() const { return size_; }
 
@@ -220,7 +220,7 @@ public:
         if (free_list_.empty())
         {
             faces_.push_back(face);
-            return faces_.size();
+            return faces_.size() - 1;
         }
         else
         {
@@ -228,7 +228,7 @@ public:
             free_list_.pop_back();
             faces_[id].face  = face;
             faces_[id].alive = true;
-            return id + 1;
+            return id;
         }
     }
 
@@ -241,9 +241,9 @@ public:
 
     void erase(const uint32_t id)
     {
-        size_ -= static_cast<std::size_t>(faces_[id - 1].alive);
-        faces_[id - 1].alive = false;
-        free_list_.push_back(id - 1);
+        size_ -= static_cast<std::size_t>(faces_[id].alive);
+        faces_[id].alive = false;
+        free_list_.push_back(id);
     }
 
     trimesh_faces_iterator begin() const
