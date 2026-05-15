@@ -178,7 +178,7 @@ struct trimesh_faces_iterator {
     const std::vector<face_slot>* faces;
     std::size_t idx;
 
-    tri_mesh_face_impl operator*() const { return faces->at(idx).face; }
+    tri_mesh_face_impl operator*() const { return (*faces)[idx].face; }
     trimesh_faces_iterator& operator++() {
         do { 
             ++idx; 
