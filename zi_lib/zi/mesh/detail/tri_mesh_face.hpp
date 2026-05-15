@@ -235,7 +235,7 @@ public:
     {
         return faces_ |
                std::views::filter([](const face_slot& s) { return s.alive; }) |
-               std::views::transform([](const face_slot& s) -> const tri_mesh_face_impl&
+               std::views::transform([](const face_slot& s) -> const tri_mesh_face_impl
                                      { return s.face; });
     }
 
