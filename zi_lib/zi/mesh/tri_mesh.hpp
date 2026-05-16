@@ -416,7 +416,9 @@ public:
             const uint32_t  nv  = edg.vertex_;
 
             remove_face(edg.face_);
-            add_face(v2, v, nv);
+            if (v2 != v && nv != v) {
+                add_face(v2, v, nv);
+            }
             v = nv;
         }
 
