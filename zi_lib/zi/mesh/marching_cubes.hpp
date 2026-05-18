@@ -39,6 +39,14 @@
 #include <unordered_map>
 #include <vector>
 
+#if defined(__GNUC__) || defined(__clang__)
+  #define ZMESH_FLATTEN [[gnu::flatten]]
+#elif defined(_MSC_VER) && _MSC_VER >= 1939  // VS 2022+
+  #define ZMESH_FLATTEN [[msvc::flatten]]
+#else
+  #define ZMESH_FLATTEN
+#endif
+
 namespace zi::mesh
 {
 
@@ -281,7 +289,7 @@ private:
     }
 
     template <class Tag>
-    [[gnu::flatten]] // needed to get add_face lambda to inline properly
+    ZMESH_FLATTEN // e.g. [[gnu::flatten]] gets add_face lambda to inline properly, defined in builtins.hpp
     void marche(const LabelType* data, std::size_t const sx,
                 std::size_t const sy, std::size_t const sz,
                 const bool preserve_order, Tag const& order_tag)
