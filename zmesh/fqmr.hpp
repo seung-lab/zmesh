@@ -83,12 +83,12 @@ class SymmetricMatrix {
 		// less likely to over or underflow if we alternate
 		// additions and subtractions
 		return static_cast<double>(
-			(m[a11]*m[a22]*m[a33])
-			- (m[a13]*m[a22]*m[a31])
-			+ (m[a13]*m[a21]*m[a32])
-			- (m[a11]*m[a23]*m[a32])
-			+ (m[a12]*m[a23]*m[a31])
-			- (m[a12]*m[a21]*m[a33])
+			((double)m[a11] * (double)m[a22] * (double)m[a33])
+			- ((double)m[a13] * (double)m[a22] * (double)m[a31])
+			+ ((double)m[a13] * (double)m[a21] * (double)m[a32])
+			- ((double)m[a11] * (double)m[a23] * (double)m[a32])
+			+ ((double)m[a12] * (double)m[a23] * (double)m[a31])
+			- ((double)m[a12] * (double)m[a21] * (double)m[a33])
 		);
 	}
 
