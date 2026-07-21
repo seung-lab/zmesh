@@ -64,7 +64,7 @@ bool all_equal_branchless(std::array<T, N> const& arr) noexcept
     else
     {
         T lo = arr[0], hi = arr[0];
-        for (int i = 1; i < N; i++)
+        for (auto i = 1; i < N; i++)
         {
             lo &= arr[i];
             hi |= arr[i];
