@@ -99,10 +99,6 @@ private:
     marching_cubes(marching_cubes const&)            = delete;
     marching_cubes& operator=(marching_cubes const&) = delete;
 
-    // static std::size_t const tri_table_end = 0xffffffff;
-    // static std::size_t const edge_table[256];
-    // static std::size_t const tri_table[256][16];
-
     using mask_traits = mc_masks<PositionType>;
 
 public:
@@ -430,24 +426,70 @@ private:
         }
         else
         {
+
+            bool skip_check = false;
+
             mc_nested_loops(
                 sx, sy, sz,
                 [&](std::size_t x, std::size_t y, std::size_t z,
                     std::size_t ind)
                 {
                     std::array<LabelType, 8> const labels = {
-                        data[ind],
-                        data[ind + strides[0]],
-                        data[ind + strides[1]],
-                        data[ind + strides[2]],
-                        data[ind + strides[3]],
-                        data[ind + strides[4]],
-                        data[ind + strides[5]],
-                        data[ind + strides[6]]};
+                        data[ind],                  
+                        data[ind + strides[0]],                     
+                        data[ind + strides[1]],                     
+                        data[ind + strides[2]],                     
+                        data[ind + strides[3]],                     
+                        data[ind + strides[4]],                     
+                        data[ind + strides[5]],                     
+                        data[ind + strides[6]]};                    
 
-                    if (all_equal_branchless(labels))
-                    {
-                        return;
+                    // check for solid color 2x2x2 region taking advantage
+                    // of the sliding window to skip a check on the next
+                    // iteration if the front of the block is not-solid color
+                    if constexpr (std::is_same_v<Tag, fortran_order_tag>) {
+                        if (!skip_check) {
+                            bool front_equal = (
+                                (labels[1] == labels[2])
+                                && (labels[1] == labels[5])
+                                && (labels[1] == labels[6])
+                            );
+                            bool front_and_back_equal = front_equal && (
+                                (labels[0] == labels[3])
+                                && (labels[0] == labels[4])
+                                && (labels[0] == labels[7])
+                            );
+                            skip_check = !front_equal;
+                            if (front_and_back_equal && labels[0] == labels[1])
+                            {
+                                return;
+                            }
+                        }
+                        else {
+                            skip_check = false;
+                        }
+                    }
+                    else {
+                        if (!skip_check) {
+                            bool front_equal = (
+                                (labels[2] == labels[3])
+                                && (labels[2] == labels[6])
+                                && (labels[2] == labels[7])
+                            );
+                            bool front_and_back_equal = front_equal && (
+                                (labels[0] == labels[1])
+                                && (labels[0] == labels[4])
+                                && (labels[0] == labels[5])
+                            );
+                            skip_check = !front_equal;
+                            if (front_and_back_equal && labels[0] == labels[2])
+                            {
+                                return;
+                            }
+                        }
+                        else {
+                            skip_check = false;
+                        }
                     }
 
                     uint8_t accumulate = 0;
