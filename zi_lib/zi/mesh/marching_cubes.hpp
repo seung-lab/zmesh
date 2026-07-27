@@ -455,13 +455,13 @@ private:
                                 && (labels[1] == labels[5])
                                 && (labels[1] == labels[6])
                             );
-                            bool back_equal = (
+                            bool front_and_back_equal = front_equal && (
                                 (labels[0] == labels[3])
                                 && (labels[0] == labels[4])
                                 && (labels[0] == labels[7])
                             );
                             skip_check = !front_equal;
-                            if (back_equal && front_equal && labels[0] == labels[1])
+                            if (front_and_back_equal && labels[0] == labels[1])
                             {
                                 return;
                             }
@@ -477,13 +477,13 @@ private:
                                 && (labels[2] == labels[6])
                                 && (labels[2] == labels[7])
                             );
-                            bool back_equal = (
+                            bool front_and_back_equal = front_equal && (
                                 (labels[0] == labels[1])
                                 && (labels[0] == labels[4])
                                 && (labels[0] == labels[5])
                             );
                             skip_check = !front_equal;
-                            if (back_equal && front_equal && labels[0] == labels[2])
+                            if (front_and_back_equal && labels[0] == labels[2])
                             {
                                 return;
                             }
