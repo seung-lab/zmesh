@@ -448,6 +448,9 @@ private:
                         data[ind + strides[5]],                     
                         data[ind + strides[6]]};                    
 
+                    // check for solid color 2x2x2 region taking advantage
+                    // of the sliding window to skip a check on the next
+                    // iteration if the front of the block is not-solid color
                     if constexpr (std::is_same_v<Tag, fortran_order_tag>) {
                         if (!skip_check) {
                             bool front_equal = (
