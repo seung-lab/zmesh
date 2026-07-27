@@ -430,24 +430,43 @@ private:
         }
         else
         {
+
+            bool skip_check = false;
+
             mc_nested_loops(
                 sx, sy, sz,
                 [&](std::size_t x, std::size_t y, std::size_t z,
                     std::size_t ind)
                 {
                     std::array<LabelType, 8> const labels = {
-                        data[ind],
-                        data[ind + strides[0]],
-                        data[ind + strides[1]],
-                        data[ind + strides[2]],
-                        data[ind + strides[3]],
-                        data[ind + strides[4]],
-                        data[ind + strides[5]],
-                        data[ind + strides[6]]};
+                        data[ind],                  
+                        data[ind + strides[0]],                     
+                        data[ind + strides[1]],                     
+                        data[ind + strides[2]],                     
+                        data[ind + strides[3]],                     
+                        data[ind + strides[4]],                     
+                        data[ind + strides[5]],                     
+                        data[ind + strides[6]]};                    
 
-                    if (all_equal_branchless(labels))
-                    {
-                        return;
+                    if (!skip_check) {
+                        bool front_equal = (
+                            (labels[1] == labels[2])
+                            && (labels[1] == labels[5])
+                            && (labels[1] == labels[6])
+                        );
+                        bool back_equal = (
+                            (labels[0] == labels[3])
+                            && (labels[0] == labels[4])
+                            && (labels[0] == labels[7])
+                        );
+                        skip_check = !front_equal;
+                        if (back_equal && front_equal && labels[0] == labels[1])
+                        {
+                            return;
+                        }
+                    }
+                    else {
+                        skip_check = false;
                     }
 
                     uint8_t accumulate = 0;
