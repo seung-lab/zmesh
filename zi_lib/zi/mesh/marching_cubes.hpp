@@ -448,25 +448,49 @@ private:
                         data[ind + strides[5]],                     
                         data[ind + strides[6]]};                    
 
-                    if (!skip_check) {
-                        bool front_equal = (
-                            (labels[1] == labels[2])
-                            && (labels[1] == labels[5])
-                            && (labels[1] == labels[6])
-                        );
-                        bool back_equal = (
-                            (labels[0] == labels[3])
-                            && (labels[0] == labels[4])
-                            && (labels[0] == labels[7])
-                        );
-                        skip_check = !front_equal;
-                        if (back_equal && front_equal && labels[0] == labels[1])
-                        {
-                            return;
+                    if constexpr (std::is_same_v<Tag, fortran_order_tag>) {
+                        if (!skip_check) {
+                            bool front_equal = (
+                                (labels[1] == labels[2])
+                                && (labels[1] == labels[5])
+                                && (labels[1] == labels[6])
+                            );
+                            bool back_equal = (
+                                (labels[0] == labels[3])
+                                && (labels[0] == labels[4])
+                                && (labels[0] == labels[7])
+                            );
+                            skip_check = !front_equal;
+                            if (back_equal && front_equal && labels[0] == labels[1])
+                            {
+                                return;
+                            }
+                        }
+                        else {
+                            skip_check = false;
                         }
                     }
                     else {
-                        skip_check = false;
+                        if (!skip_check) {
+                            bool front_equal = (
+                                (labels[2] == labels[3])
+                                && (labels[2] == labels[6])
+                                && (labels[2] == labels[7])
+                            );
+                            bool back_equal = (
+                                (labels[0] == labels[1])
+                                && (labels[0] == labels[4])
+                                && (labels[0] == labels[5])
+                            );
+                            skip_check = !front_equal;
+                            if (back_equal && front_equal && labels[0] == labels[2])
+                            {
+                                return;
+                            }
+                        }
+                        else {
+                            skip_check = false;
+                        }
                     }
 
                     uint8_t accumulate = 0;
