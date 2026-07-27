@@ -99,10 +99,6 @@ private:
     marching_cubes(marching_cubes const&)            = delete;
     marching_cubes& operator=(marching_cubes const&) = delete;
 
-    // static std::size_t const tri_table_end = 0xffffffff;
-    // static std::size_t const edge_table[256];
-    // static std::size_t const tri_table[256][16];
-
     using mask_traits = mc_masks<PositionType>;
 
 public:
