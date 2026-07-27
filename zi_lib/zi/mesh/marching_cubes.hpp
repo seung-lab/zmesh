@@ -333,10 +333,10 @@ private:
 
             auto& face_list = meshes_[label];
 
-            for (std::size_t n = 0;
-                 mc_triangle_table[c][n] != mc_triangle_table_end; n += 3)
-            {
-                ++num_faces_;
+            const int max_size = std::min(mc_triangle_table_counts[c], 5);
+            num_faces_ += max_size;
+
+            for (int n = 0; n < max_size * 3; n += 3) {
                 face_list.emplace_back(
                     edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
                     edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
