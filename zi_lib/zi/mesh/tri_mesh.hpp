@@ -111,11 +111,9 @@ private:
     std::size_t                                         size_;
     std::vector<vertex_type>                            vertices_;
     robin_hood::unordered_flat_map<uint64_t, edge_type> edges_;
-    unordered_map<uint32_t, face_type>                  faces_;
-    uint32_t                                            max_face_;
+    detail::trimesh_faces                                       faces_;
 
 public:
-    detail::tri_mesh_face_container faces;
     detail::tri_mesh_edge_container edges;
 
 private:
@@ -173,9 +171,9 @@ private:
     }
 
 public:
-    detail::tri_mesh_face_container& get_faces() { return faces; }
+    auto& get_faces() { return faces_; }
 
-    const detail::tri_mesh_face_container& get_faces() const { return faces; }
+    const auto& get_faces() const { return faces_; }
 
     std::vector<vertex_type>& vertices() { return vertices_; }
 
@@ -190,8 +188,6 @@ public:
         , vertices_(0)
         , edges_()
         , faces_()
-        , max_face_(0)
-        , faces(faces_)
         , edges(edges_)
     {
     }
@@ -201,10 +197,9 @@ public:
         , vertices_(size)
         , edges_()
         , faces_()
-        , max_face_(0)
-        , faces(faces_)
         , edges(edges_)
     {
+        faces_.reserve(size);
     }
 
     tri_mesh(const tri_mesh& o)
@@ -212,8 +207,6 @@ public:
         , vertices_(o.vertices_)
         , edges_(o.edges_)
         , faces_(o.faces_)
-        , max_face_(o.max_face_)
-        , faces(faces_)
         , edges(edges_) {};
 
     tri_mesh& operator=(const tri_mesh& o)
@@ -222,26 +215,18 @@ public:
         vertices_ = o.vertices_;
         edges_    = o.edges_;
         faces_    = o.faces_;
-        max_face_ = o.max_face_;
 
-        faces = detail::tri_mesh_face_container(faces_);
         edges = detail::tri_mesh_edge_container(edges_);
 
         return *this;
     };
 
-    void clear(std::size_t s = 0)
+    void clear()
     {
-        if (s && (s != size_))
-        {
-            size_ = s;
-            vertices_.resize(s);
-        }
-
+        size_ = 0;
         vertices_.clear();
         edges_.clear();
         faces_.clear();
-        max_face_ = 0;
     }
 
     void resize(std::size_t s)
@@ -250,7 +235,6 @@ public:
         vertices_.resize(s);
         edges_.clear();
         faces_.clear();
-        max_face_ = 0;
     }
 
     uint32_t add_face(const uint32_t x, const uint32_t y, const uint32_t z)
@@ -258,21 +242,20 @@ public:
 
         ZI_ASSERT(x < size_ && y < size_ && z < size_);
 
-        ++max_face_;
-        faces_.emplace(max_face_, face_type(x, y, z));
+        const uint32_t max_face = faces_.push_back(face_type(x, y, z));
 
-        add_edge(x, y, z, max_face_);
-        add_edge(y, z, x, max_face_);
-        add_edge(z, x, y, max_face_);
+        add_edge(x, y, z, max_face);
+        add_edge(y, z, x, max_face);
+        add_edge(z, x, y, max_face);
 
-        return max_face_;
+        return max_face;
     }
 
     void remove_face(const uint32_t id)
     {
-        ZI_ASSERT(faces_.count(id));
+        ZI_ASSERT(faces_.alive(id));
 
-        const face_type& f = faces_[id];
+        const face_type f = faces_.get(id);
 
         remove_edge(f.v0(), f.v1(), id);
         remove_edge(f.v1(), f.v2(), id);
@@ -308,14 +291,14 @@ public:
             return 0;
         }
 
-        auto it = faces_.find(vertices_[id].face_);
+        const uint32_t face_id = vertices_[id].face_;
 
-        if (it == faces_.end())
+        if (!faces_.alive(face_id))
         {
             return 0;
         }
 
-        return it->second.edge_from(id);
+        return faces_.get(face_id).edge_from(id);
     }
 
     uint32_t across_edge(const uint64_t eid) const
@@ -433,7 +416,9 @@ public:
             const uint32_t  nv  = edg.vertex_;
 
             remove_face(edg.face_);
-            add_face(v2, v, nv);
+            if (v2 != v && nv != v) {
+                add_face(v2, v, nv);
+            }
             v = nv;
         }
 
@@ -453,40 +438,40 @@ public:
 
     std::size_t size() const { return size_; }
 
-    bool check_rep() const
-    {
+    // bool check_rep() const
+    // {
 
-        if (edges_.size() != faces_.size() * 3)
-        {
-            ZI_THROW("check_rep: extra edges present");
-        }
+    //     if (edges_.size() != faces_.size() * 3)
+    //     {
+    //         ZI_THROW("check_rep: extra edges present");
+    //     }
 
-        FOR_EACH(it, faces_)
-        {
-            if (!(vertices_[it->second.v0()].valid() &&
-                  vertices_[it->second.v1()].valid() &&
-                  vertices_[it->second.v2()].valid()))
-            {
-                ZI_THROW("check_rep: invalid vertex found");
-            }
+    //     for (const auto& [face_id, face_ref] : faces_.enumerate())
+    //     {
+    //         const auto& face = face_ref.get();
 
-            if ((edges_.find(it->second.e0())->second).face() != it->first ||
-                (edges_.find(it->second.e1())->second).face() != it->first ||
-                (edges_.find(it->second.e2())->second).face() != it->first)
-            {
-                ZI_THROW("check_rep: edge doesn't link to the correct face");
-            }
+    //         if (!(vertices_[face.v0()].valid() &&
+    //               vertices_[face.v1()].valid() && vertices_[face.v2()].valid()))
+    //         {
+    //             ZI_THROW("check_rep: invalid vertex found");
+    //         }
 
-            if (!(edges_.count(it->second.e0()) &&
-                  edges_.count(it->second.e1()) &&
-                  edges_.count(it->second.e2())))
-            {
-                ZI_THROW("check_rep: face missing an edge");
-            }
-        }
+    //         if ((edges_.find(face.e0())->second).face() != face_id ||
+    //             (edges_.find(face.e1())->second).face() != face_id ||
+    //             (edges_.find(face.e2())->second).face() != face_id)
+    //         {
+    //             ZI_THROW("check_rep: edge doesn't link to the correct face");
+    //         }
 
-        return true;
-    }
+    //         if (!(edges_.count(face.e0()) && edges_.count(face.e1()) &&
+    //               edges_.count(face.e2())))
+    //         {
+    //             ZI_THROW("check_rep: face missing an edge");
+    //         }
+    //     }
+
+    //     return true;
+    // }
 
     bool is_closed_surface() const
     {
@@ -521,18 +506,16 @@ public:
             }
         }
 
-        FOR_EACH(it, faces_)
+        for (auto face : faces_)
         {
-            if (!(vertices_[it->second.v0()].valid() &&
-                  vertices_[it->second.v1()].valid() &&
-                  vertices_[it->second.v2()].valid()))
+            if (!(vertices_[face.v0()].valid() &&
+                  vertices_[face.v1()].valid() && vertices_[face.v2()].valid()))
             {
                 return false;
             }
 
-            if (!(edges_.count(it->second.e0()) &&
-                  edges_.count(it->second.e1()) &&
-                  edges_.count(it->second.e2())))
+            if (!(edges_.count(face.e0()) && edges_.count(face.e1()) &&
+                  edges_.count(face.e2())))
             {
                 return false;
             }
@@ -543,10 +526,10 @@ public:
 
     void print_faces() const
     {
-        FOR_EACH(it, faces_)
+        for (auto face : faces_)
         {
-            std::cout << "f: " << it->second.v0() << ',' << it->second.v1()
-                      << ',' << it->second.v2() << '\n';
+            std::cout << "f: " << face.v0() << ',' << face.v1() << ','
+                      << face.v2() << '\n';
         }
     }
 
@@ -560,9 +543,9 @@ public:
     {
         r.resize(faces_.size());
         std::size_t i = 0;
-        FOR_EACH(it, faces_)
+        for (auto face : faces_)
         {
-            r[i++] = T(it->second.v0(), it->second.v1(), it->second.v2());
+            r[i++] = T(face.v0(), face.v1(), face.v2());
         }
         return r.size();
     }

@@ -19,8 +19,7 @@ if sys.platform == 'win32':
   ]
 else:
   extra_compile_args += [
-    '-std=c++20', '-O3', '-Wno-unused-local-typedefs', 
-    '-DNDEBUG',
+    '-std=c++20', '-O3', '-Wno-unused-local-typedefs',
   ]
 
 if sys.platform == 'darwin':
@@ -28,15 +27,24 @@ if sys.platform == 'darwin':
 
 include_dirs = [ str(NumpyImport()), 'zi_lib/', './' ]
 
+define_macros = [
+    ("NPY_NO_DEPRECATED_API", 1),
+    ("NPY_1_7_API_VERSION", 1),
+]
+
+
+def is_truthy(v):
+    return v is not None and str(v).lower() in ("1", "true", "yes", "on")
+
+check_asserts = os.environ.get("ZMESH_CHECK_ASSERTS", False)
+if not is_truthy(check_asserts):
+  define_macros.insert(0, ("NDEBUG", 1))
+
 setuptools.setup(
   setup_requires=['pbr', 'numpy', 'cython'],
   python_requires=">=3.8",
   pbr=True,
-  define_macros=[ 
-    ("NDEBUG", 1),
-    ("NPY_NO_DEPRECATED_API", 1),
-    ("NPY_1_7_API_VERSION", 1),
-  ],
+  define_macros=define_macros,
   extras_require={
     "viewer": [ "vtk" ],
   },

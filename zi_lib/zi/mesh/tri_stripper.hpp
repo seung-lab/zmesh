@@ -309,11 +309,11 @@ public:
         unordered_map<uint64_t, uint32_t>::const_iterator eit;
 
         uint32_t idx = 0;
-        FOR_EACH(it, mesh.faces)
+        for (auto face : mesh.get_faces())
         {
-            const uint32_t& v1 = it->v0();
-            const uint32_t& v2 = it->v1();
-            const uint32_t& v3 = it->v2();
+            const uint32_t& v1 = face.v0();
+            const uint32_t& v2 = face.v1();
+            const uint32_t& v3 = face.v2();
 
             const uint32_t ioff = idx << 2;
 

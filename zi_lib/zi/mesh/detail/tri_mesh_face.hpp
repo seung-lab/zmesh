@@ -45,7 +45,7 @@ namespace detail
 struct tri_mesh_face_impl
 {
 private:
-    uint32_t v_[3];
+    uint32_t v_[3] = {};
 
     static inline uint64_t make_edge(uint32_t x, uint32_t y)
     {
@@ -53,6 +53,8 @@ private:
     }
 
 public:
+    void print() const { printf("%d %d %d\n", v_[0], v_[1], v_[2]); }
+
     inline bool operator==(const tri_mesh_face_impl& o) const
     {
         return std::equal(v_, v_ + 3, o.v_);
@@ -156,137 +158,110 @@ private:
     }
 };
 
-struct tri_mesh_face_container
+struct face_slot
 {
-protected:
-    reference_wrapper<unordered_map<uint32_t, tri_mesh_face_impl>> faces_;
+    tri_mesh_face_impl face;
+    bool      alive;
 
-    tri_mesh_face_container(unordered_map<uint32_t, tri_mesh_face_impl>& faces)
-        : faces_(faces)
+    face_slot()
+        : face(), alive(false)
     {
     }
+    face_slot(const tri_mesh_face_impl& face_)
+        : face(face_)
+        , alive(true)
+    {
+    }
+};
 
-    friend class ::zi::mesh::tri_mesh;
+struct trimesh_faces_iterator {
+    const std::vector<face_slot>* faces;
+    std::size_t idx;
+
+    tri_mesh_face_impl operator*() const { return (*faces)[idx].face; }
+    trimesh_faces_iterator& operator++() {
+        do { 
+            ++idx; 
+        } while (idx < faces->size() && !(*faces)[idx].alive);
+        return *this;
+    }
+        
+    bool operator!=(const trimesh_faces_iterator& o) const { return idx != o.idx; }
+};
+
+struct trimesh_faces
+{
+private:
+    std::vector<face_slot> faces_;
+    std::vector<uint32_t>  free_list_;
+    std::size_t            alive_count_;
 
 public:
-    template <bool IsConst>
-    struct iterator_base
+    trimesh_faces() { alive_count_ = 0; }
+
+    void reserve(const std::size_t N) { faces_.reserve(N); }
+
+    bool alive(const uint32_t id) const
     {
-        typedef iterator_base<IsConst>                  iterator_type;
-        typedef std::ptrdiff_t                          difference_type;
-        typedef std::forward_iterator_tag               iterator_category;
-        typedef tri_mesh_face_impl                      value_type;
-        typedef typename if_<IsConst, const tri_mesh_face_impl*,
-                             tri_mesh_face_impl*>::type pointer;
-        typedef typename if_<IsConst, const tri_mesh_face_impl&,
-                             tri_mesh_face_impl&>::type reference;
-
-        inline iterator_base()
-            : i_()
+        if (id >= faces_.size())
         {
+            return false;
         }
-
-        inline reference operator*() const { return i_->second; }
-        inline pointer   operator->() const { return &i_->second; }
-
-        inline iterator_type& operator++()
-        {
-            ++i_;
-            return *this;
-        }
-
-        inline iterator_type operator++(int)
-        {
-            iterator_type tmp = *this;
-            ++i_;
-            return tmp;
-        }
-
-        template <bool B>
-        inline bool operator==(const iterator_base<B>& o) const
-        {
-            return i_ == o.i_;
-        }
-
-        template <bool B>
-        inline bool operator!=(const iterator_base<B>& o) const
-        {
-            return i_ != o.i_;
-        }
-
-        inline uint32_t id() const { return i_->first; }
-        inline          operator uint32_t() const { return i_->first; }
-
-        template <std::size_t Index>
-        inline uint32_t vertex(
-            typename enable_if<(Index < 3), ::zi::detail::dummy<Index>>::type =
-                0) const
-        {
-            return i_->second.template vertex<Index>();
-        }
-
-        inline uint32_t v0() const { return i_->second.v0(); }
-        inline uint32_t v1() const { return i_->second.v1(); }
-        inline uint32_t v2() const { return i_->second.v2(); }
-
-        inline uint64_t e0() const { return i_->second.e0(); }
-        inline uint64_t e1() const { return i_->second.e1(); }
-        inline uint64_t e2() const { return i_->second.e2(); }
-
-        inline uint64_t edge(std::size_t i) { return i_->second.edge(i); }
-
-        template <std::size_t Index>
-        inline uint64_t edge(
-            typename enable_if<(Index < 3), ::zi::detail::dummy<Index>>::type =
-                0) const
-        {
-            return i_->second.template edge<Index>();
-        }
-
-        inline uint64_t edge_from(uint32_t v) const
-        {
-            return i_->second.edge_from(v);
-        }
-
-        friend struct tri_mesh_face_container;
-
-    private:
-        typedef typename if_<
-            IsConst,
-            unordered_map<uint32_t, tri_mesh_face_impl>::const_iterator,
-            unordered_map<uint32_t, tri_mesh_face_impl>::iterator>::type
-            base_type;
-
-        base_type i_;
-
-        explicit iterator_base(const base_type& i)
-            : i_(i)
-        {
-        }
-    };
-
-    typedef iterator_base<false>::iterator_type iterator;
-    typedef iterator_base<true>::iterator_type  const_iterator;
-
-    inline iterator find(uint32_t id)
-    {
-        return iterator(faces_.get().find(id));
+        return faces_[id].alive;
     }
 
-    inline const_iterator find(uint32_t id) const
-    {
-        return const_iterator(faces_.get().find(id));
+    tri_mesh_face_impl get(const uint32_t id) const { 
+        ZI_ASSERT(id < faces_.size());
+        ZI_ASSERT(faces_[id].alive);
+        return faces_[id].face;
     }
 
-    inline iterator       begin() { return iterator(faces_.get().begin()); }
-    inline iterator       end() { return iterator(faces_.get().end()); }
-    inline const_iterator begin() const
+    std::size_t size() const { return alive_count_; }
+
+    std::size_t push_back(const tri_mesh_face_impl& face)
     {
-        return const_iterator(faces_.get().begin());
+        alive_count_++;
+        if (free_list_.empty())
+        {
+            faces_.push_back(face);
+            return faces_.size() - 1;
+        }
+        else
+        {
+            uint32_t id      = free_list_.back();
+            free_list_.pop_back();
+            faces_[id].face  = face;
+            faces_[id].alive = true;
+            return id;
+        }
     }
-    inline const_iterator end() const
+
+    void clear()
     {
-        return const_iterator(faces_.get().end());
+        faces_.clear();
+        free_list_.clear();
+        alive_count_ = 0;
+    }
+
+    void erase(const uint32_t id)
+    {
+        alive_count_ -= static_cast<std::size_t>(faces_[id].alive);
+        faces_[id].alive = false;
+        free_list_.push_back(id);
+    }
+
+    trimesh_faces_iterator begin() const
+    {
+        auto it = trimesh_faces_iterator{&faces_, 0};
+        if (!faces_.empty() && !faces_[0].alive) {
+            ++it;
+        }
+        return it;
+    }
+    
+    trimesh_faces_iterator end() const
+    {
+        return {&faces_, faces_.size()};
     }
 };
 
