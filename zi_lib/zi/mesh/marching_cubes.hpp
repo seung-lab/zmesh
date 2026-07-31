@@ -677,7 +677,7 @@ public:
 
                     std::array<uint64_t, 8> const labels = {
                         bottom_labels[bottom_ccl[loc]],           
-                        bottom_labels[top_ccl[loc + 1]],          // +x              
+                        bottom_labels[bottom_ccl[loc + 1]],          // +x              
                         top_labels[top_ccl[loc + 1]],             // +x +z 
                         top_labels[top_ccl[loc]],                 // +z
                         bottom_labels[bottom_ccl[loc + sx]],      // +y                
