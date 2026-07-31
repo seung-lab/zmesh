@@ -26,6 +26,8 @@
 #include "detail/all_equal.hpp"
 #include "detail/mc_tables.hpp"
 
+#include <crackle.hpp>
+
 #include <zi/mesh/network_sort.hpp>
 #include <zi/utility/builtins.hpp>
 #include <zi/vl/vec.hpp>
@@ -39,6 +41,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
+#include <span>
 
 #if defined(__GNUC__) || defined(__clang__)
   #define ZMESH_FLATTEN [[gnu::flatten]]
@@ -530,6 +533,202 @@ private:
     }
 
 public:
+    void marche_crackle(
+        const unsigned char* buffer, 
+        const size_t num_bytes
+    ) {
+        if (num_bytes < crackle::CrackleHeader::header_size) {
+            std::string err = "crackle: Input too small to be a valid stream. Bytes: ";
+            err += std::to_string(num_bytes);
+            throw std::runtime_error(err);
+        }
+
+        const crackle::CrackleHeader header(buffer);
+
+        const uint64_t sx = header.sx;
+        const uint64_t sy = header.sy;
+        const uint64_t sz = header.sz;
+        const uint64_t sxy = header.sx * header.sy;
+
+        if (header.format_version > crackle::CrackleHeader::current_version) {
+            std::string err = "crackle: Invalid format version.";
+            err += std::to_string(header.format_version);
+            throw std::runtime_error(err);
+        }
+
+        const uint64_t voxels = (
+            static_cast<uint64_t>(sx) 
+            * static_cast<uint64_t>(sy) 
+            * static_cast<uint64_t>(sz)
+        );
+
+        if (voxels == 0 || sx == 1 || sy == 1 || sz == 1) {
+            return;
+        }
+
+        std::span<const unsigned char> binary(buffer, num_bytes);
+
+        // only used for markov compressed streams
+        std::vector<std::vector<uint8_t>> markov_model = crackle::decode_markov_model(header, binary);
+        
+        auto crack_codes = crackle::get_crack_codes(header, binary, 0, sz);
+
+        std::vector<uint8_t> vcg(sxy);
+        std::vector<std::vector<uint32_t>> ccls(2);
+        std::vector<std::vector<uint64_t>> label_maps(2);
+        for (size_t t = 0; t < ccls.size(); t++) {
+            ccls[t].resize(sxy);
+        }
+
+        crackle::crack_code_to_vcg(
+            /*code=*/crack_codes[0],
+            /*sx=*/sx, /*sy=*/sy,
+            /*permissible=*/(header.crack_format == crackle::CrackFormat::PERMISSIBLE),
+            /*markov_model=*/markov_model,
+            /*slice_edges=*/vcg.data()
+        );
+
+        uint64_t N = 0;
+        crackle::cc3d::color_connectivity_graph<uint32_t>(
+            vcg, sx, sy, 1, ccls[0].data(), N
+        );
+
+        label_maps[0] = crackle::decode_label_map<uint64_t>(
+            header, binary, ccls[0].data(), N, 0, sz
+        );
+
+        meshes_.reserve(sx * sy);
+
+        constexpr static std::array<PositionType, 8> cube_corners = {
+            pack_coords(0, 0, 0), pack_coords(2, 0, 0), pack_coords(2, 0, 2),
+            pack_coords(0, 0, 2), pack_coords(0, 2, 0), pack_coords(2, 2, 0),
+            pack_coords(2, 2, 2), pack_coords(0, 2, 2)};
+
+        constexpr static std::array<PositionType, 12> edge_midpoints = {
+            midpoint(cube_corners[0], cube_corners[1]),
+            midpoint(cube_corners[1], cube_corners[2]),
+            midpoint(cube_corners[2], cube_corners[3]),
+            midpoint(cube_corners[3], cube_corners[0]),
+            midpoint(cube_corners[4], cube_corners[5]),
+            midpoint(cube_corners[5], cube_corners[6]),
+            midpoint(cube_corners[6], cube_corners[7]),
+            midpoint(cube_corners[7], cube_corners[4]),
+            midpoint(cube_corners[0], cube_corners[4]),
+            midpoint(cube_corners[1], cube_corners[5]),
+            midpoint(cube_corners[2], cube_corners[6]),
+            midpoint(cube_corners[3], cube_corners[7])};
+
+        auto add_face = [&](std::size_t x, std::size_t y, std::size_t z,
+                            const uint64_t label, const uint8_t c)
+        {
+            if (!mc_edge_table[c])
+            {
+                return;
+            }
+
+            PositionType cur =
+                ((x * mask_traits::unit_x) | (y * mask_traits::unit_y) |
+                 (z * mask_traits::unit_z))
+                << 1;
+
+            auto& face_list = meshes_[label];
+
+            const int max_size = std::min(mc_triangle_table_counts[c], 5);
+            num_faces_ += max_size;
+
+            for (int n = 0; n < max_size * 3; n += 3) {
+                face_list.emplace_back(
+                    edge_midpoints[mc_triangle_table[c][n + 2]] + cur,
+                    edge_midpoints[mc_triangle_table[c][n + 1]] + cur,
+                    edge_midpoints[mc_triangle_table[c][n]] + cur);
+            }
+        };
+
+        for (size_t z = 0; z < sz - 1; z++) {
+            size_t bottom_j = z & 0b1;
+            size_t top_j = (z+1) & 0b1;
+
+            crackle::crack_code_to_vcg(
+                /*code=*/crack_codes[z+1],
+                /*sx=*/sx, /*sy=*/sy,
+                /*permissible=*/(header.crack_format == crackle::CrackFormat::PERMISSIBLE),
+                /*markov_model=*/markov_model,
+                /*slice_edges=*/vcg.data()
+            );
+
+            std::vector<uint32_t>& top_ccl = ccls[top_j];
+            std::vector<uint32_t>& bottom_ccl = ccls[bottom_j];
+
+            uint64_t N = 0;
+            crackle::cc3d::color_connectivity_graph<uint32_t>(
+                vcg, sx, sy, 1, top_ccl.data(), N
+            );
+
+            label_maps[top_j] = decode_label_map<uint64_t>(
+                header, binary, top_ccl.data(), N, z+1, z+2
+            );
+
+            const std::vector<uint64_t>& top_labels = label_maps[top_j];
+            const std::vector<uint64_t>& bottom_labels = label_maps[bottom_j];
+
+            for (size_t y = 0; y < sy - 1; y++) {
+                for (size_t x = 0; x < sx - 1; x++) {
+                    const int64_t loc = x + sx * y;
+
+                    std::array<uint64_t, 8> const labels = {
+                        bottom_labels[bottom_ccl[loc]],           
+                        bottom_labels[top_ccl[loc + 1]],          // +x              
+                        top_labels[top_ccl[loc + 1]],             // +x +z 
+                        top_labels[top_ccl[loc]],                 // +z
+                        bottom_labels[bottom_ccl[loc + sx]],      // +y                
+                        bottom_labels[bottom_ccl[loc + 1 + sx]],  // +x +y   
+                        top_labels[top_ccl[loc + 1 + sx]],        // +x +y +z             
+                        top_labels[top_ccl[loc + sx]]};           // +y +z       
+
+                    // check for solid color 2x2x2 region taking advantage
+                    // of the sliding window to skip a check on the next
+                    // iteration if the front of the block is not-solid color
+                    if (all_equal_branchless(labels)) {
+                        continue;
+                    }
+
+                    uint8_t accumulate = 0;
+                    uint8_t c          = 0;
+
+                    for (int i = 0; i < 8 && accumulate != 0xff; i++)
+                    {
+                        int start = zmesh_ctz((uint8_t)~accumulate);
+                        int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
+
+                        const uint64_t label = labels[start];
+
+                        c = 0;
+                        if (end == 8)
+                        {
+                            for (int n = start; n < 8; n++)
+                            {
+                                c |= (uint8_t)(labels[n] == label) << n;
+                            }
+                        }
+                        else
+                        {
+                            for (int n = start; n < end; n++)
+                            {
+                                c |= (uint8_t)(labels[n] == label) << n;
+                            }
+                        }
+                        accumulate |= (uint8_t)c;
+
+                        if (label != 0)
+                        {
+                            add_face(x, y, z, label, (uint8_t)~c);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     void marche(const LabelType* data, std::size_t const sx,
                 std::size_t const sy, std::size_t const sz,
                 const bool preserve_order = true, const bool c_order = true)

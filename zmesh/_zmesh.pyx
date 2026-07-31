@@ -19,6 +19,7 @@ import sys
 cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
+import crackle
 
 cdef extern from "fqmr.hpp" namespace "zmesh::fqmr":
   cdef struct FqmrMesh:
@@ -56,7 +57,7 @@ cdef extern from "chunk_mesh.hpp" namespace "zmesh::chunk_mesh":
     unsigned int* faces, uint64_t num_faces,
     float cx, float cy, float cz,
     float ox, float oy, float oz
-  ) nogil except +
+  ) except + nogil 
 
   cdef vector[float] compute_vertex_normals_from_faces(
     float* vertices, uint64_t Nv,
@@ -85,6 +86,10 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
       # but possibly a different mesh binary
       bool preserve_order, 
       bool c_order # this is the input array order, C or F
+    ) nogil
+    void mesh_crackle(
+      unsigned char* data, 
+      size_t num_bytes
     ) nogil
     vector[L] ids() nogil
     MeshObject get_mesh(
@@ -469,15 +474,6 @@ class Mesher:
     """
     del self._mesher
 
-    if not data.flags.c_contiguous and not data.flags.f_contiguous:
-      data = np.ascontiguousarray(data)
-
-    if close:
-      tmp = np.zeros(np.array(data.shape) + 2, dtype=data.dtype, order="C")
-      tmp[1:-1,1:-1,1:-1] = data
-      data = tmp
-      del tmp
-
     shape = np.array(data.shape)
     nbytes = np.dtype(data.dtype).itemsize
 
@@ -503,7 +499,19 @@ class Mesher:
 
     self._mesher = MesherClass(self.voxel_res)
 
-    return self._mesher.mesh(data, preserve_order=preserve_order)
+    if isinstance(data, crackle.CrackleArray):
+      return self._mesher.mesh_crackle(data.binary)
+    else:
+      if not data.flags.c_contiguous and not data.flags.f_contiguous:
+        data = np.ascontiguousarray(data)
+
+      if close:
+        tmp = np.zeros(np.array(data.shape) + 2, dtype=data.dtype, order="C")
+        tmp[1:-1,1:-1,1:-1] = data
+        data = tmp
+        del tmp
+
+      return self._mesher.mesh(data, preserve_order=preserve_order)
 
   @cython.binding(True)
   def ids(self):
@@ -752,6 +760,13 @@ cdef class Mesher3208:
       data.flags.c_contiguous
     )
 
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
+
   def ids(self):
     return self.ptr.ids()
   
@@ -782,6 +797,13 @@ cdef class Mesher3216:
       preserve_order,
       data.flags.c_contiguous
     )
+
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
 
   def ids(self):
     return self.ptr.ids()
@@ -814,6 +836,13 @@ cdef class Mesher3232:
       data.flags.c_contiguous
     )
 
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
+
   def ids(self):
     return self.ptr.ids()
   
@@ -844,6 +873,13 @@ cdef class Mesher3264:
       preserve_order,
       data.flags.c_contiguous
     )
+
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
 
   def ids(self):
     return self.ptr.ids()
@@ -876,6 +912,13 @@ cdef class Mesher6408:
       data.flags.c_contiguous
     )
 
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
+
   def ids(self):
     return self.ptr.ids()
   
@@ -906,6 +949,13 @@ cdef class Mesher6416:
       preserve_order,
       data.flags.c_contiguous
     )
+
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
 
   def ids(self):
     return self.ptr.ids()
@@ -938,6 +988,13 @@ cdef class Mesher6432:
       data.flags.c_contiguous
     )
 
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
+
   def ids(self):
     return self.ptr.ids()
   
@@ -969,6 +1026,13 @@ cdef class Mesher6464:
       data.flags.c_contiguous
     )
 
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
+
   def ids(self):
     return self.ptr.ids()
   
@@ -981,4 +1045,3 @@ cdef class Mesher6464:
 
   def erase(self, mesh_id):
     return self.ptr.erase(mesh_id)
-

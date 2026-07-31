@@ -3,6 +3,7 @@ exclude connectomics.npy.gz
 exclude zmesh/_zmesh.cpp
 include LICENSE
 include FQMR_LICENSE
+include-recursive libcrackle/
 include zmesh/builtins.hpp
 include zmesh/ccl.hpp
 include zmesh/chunk_mesh.hpp

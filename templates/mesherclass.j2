@@ -16,6 +16,13 @@ cdef class Mesher{{ position_type }}{{ '%02d' % label_type }}:
       data.flags.c_contiguous
     )
 
+  def mesh_crackle(self, binary:bytes):
+    n = len(binary)
+    if n == 0:
+      raise ValueError("crackle binary was zero-length.")
+    cdef const unsigned char* data_ptr = binary
+    self.ptr.mesh_crackle(data_ptr, n)
+
   def ids(self):
     return self.ptr.ids()
   
