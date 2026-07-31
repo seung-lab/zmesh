@@ -52,6 +52,18 @@ ZI_MESH_MARCHING_CUBES_TYPE(edge_table, [256]) = {
 
 #define _0_ tri_table_end
 
+// This table is derived from the public domain code
+// by Cory Bloyd (corysama@yahoo.com)
+// 
+// https://paulbourke.net/geometry/polygonise/marchingsource.cpp
+// 
+// Which in turn references this May 1997 article by Paul Bourke:
+// http://astronomy.swin.edu.au/pbourke/modelling/polygonise/
+//
+// That website is offline and blocks ia_archiver in later years.
+// Use this internet archive link to read it.
+// https://web.archive.org/web/20010617145639/http://astronomy.swin.edu.au/pbourke/modelling/polygonise/
+
 ZI_MESH_MARCHING_CUBES_TYPE(tri_table, [256][16]) = {
     {_0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_, _0_,
      _0_},
