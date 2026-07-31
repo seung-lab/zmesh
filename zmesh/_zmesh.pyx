@@ -19,7 +19,6 @@ import sys
 cimport numpy as cnp
 import numpy as np
 from zmesh.mesh import Mesh
-import crackle
 
 cdef extern from "fqmr.hpp" namespace "zmesh::fqmr":
   cdef struct FqmrMesh:
@@ -499,7 +498,7 @@ class Mesher:
 
     self._mesher = MesherClass(self.voxel_res)
 
-    if isinstance(data, crackle.CrackleArray):
+    if hasattr(data, 'binary') and hasattr(data, '__class__') and data.__class__.__name__ == 'CrackleArray':
       return self._mesher.mesh_crackle(data.binary)
     else:
       if not data.flags.c_contiguous and not data.flags.f_contiguous:
