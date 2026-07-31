@@ -292,7 +292,7 @@ private:
     ZMESH_FLATTEN // e.g. [[gnu::flatten]] gets add_face lambda to inline properly, defined in builtins.hpp
     void marche(const LabelType* data, std::size_t const sx,
                 std::size_t const sy, std::size_t const sz,
-                const bool preserve_order, Tag const& order_tag)
+                Tag const& order_tag)
     {
         meshes_.reserve(sx * sy);
 
@@ -343,193 +343,105 @@ private:
             }
         };
 
-        if (preserve_order)
-        {
-            mc_nested_loops(
-                sx, sy, sz,
-                [&](std::size_t x, std::size_t y, std::size_t z,
-                    std::size_t ind)
-                {
-                    std::array<LabelType, 8> const labels = {
-                        data[ind],
-                        data[ind + strides[0]],
-                        data[ind + strides[1]],
-                        data[ind + strides[2]],
-                        data[ind + strides[3]],
-                        data[ind + strides[4]],
-                        data[ind + strides[5]],
-                        data[ind + strides[6]]};
+        bool skip_check = false;
 
-                    if (all_equal_branchless(labels))
-                    {
-                        return;
-                    }
+        mc_nested_loops(
+            sx, sy, sz,
+            [&](std::size_t x, std::size_t y, std::size_t z,
+                std::size_t ind)
+            {
+                std::array<LabelType, 8> const labels = {
+                    data[ind],                  
+                    data[ind + strides[0]],                     
+                    data[ind + strides[1]],                     
+                    data[ind + strides[2]],                     
+                    data[ind + strides[3]],                     
+                    data[ind + strides[4]],                     
+                    data[ind + strides[5]],                     
+                    data[ind + strides[6]]};                    
 
-                    // Instead of using std::unordered_set or similar
-                    // to get unique labels, use a high efficiency sort,
-                    // a "network sort", for a fixed size labels and then
-                    // iterate from high to low values and skip repeats.
-                    // This Saves almost 40% of the march time. We make an
-                    // array copy before sorting to preserve the structure
-                    // in labels. std::unordered_set uses a hash with closed
-                    // addressing + chaining which is inefficient for our
-                    // case.
-                    std::array<LabelType, 8> ulabels = labels;
-                    zi::mesh::sort_8(ulabels);
-
-                    // i=7
-                    uint8_t accumulate = 0;
-                    uint8_t c;
-
-                    LabelType label = ulabels[7];
-                    if (label == 0)
-                    {
-                        return;
-                    }
-
-                    c = 0;
-                    for (int n = 0; n < 8; n++)
-                    {
-                        c |= (uint8_t)(labels[n] != label) << n;
-                    }
-                    accumulate |= (uint8_t)~c;
-                    add_face(x, y, z, label, c);
-
-                    for (int i = 6; i >= 0 && accumulate != 0xff; i--)
-                    {
-                        label = ulabels[i];
-                        if (label == 0)
+                // check for solid color 2x2x2 region taking advantage
+                // of the sliding window to skip a check on the next
+                // iteration if the front of the block is not-solid color
+                if constexpr (std::is_same_v<Tag, fortran_order_tag>) {
+                    if (!skip_check) {
+                        bool front_equal = (
+                            (labels[1] == labels[2])
+                            && (labels[1] == labels[5])
+                            && (labels[1] == labels[6])
+                        );
+                        bool front_and_back_equal = front_equal && (
+                            (labels[0] == labels[3])
+                            && (labels[0] == labels[4])
+                            && (labels[0] == labels[7])
+                        );
+                        skip_check = !front_equal;
+                        if (front_and_back_equal && labels[0] == labels[1])
                         {
-                            break;
-                        }
-                        else if (ulabels[i + 1] == label)
-                        {
-                            continue;
-                        }
-
-                        if (label == ulabels[0])
-                        {
-                            c = accumulate;
-                            add_face(x, y, z, label, c);
-                            break;
-                        }
-                        else
-                        {
-                            c = 0;
-                            for (int n = 0; n < 8; n++)
-                            {
-                                c |= (uint8_t)(labels[n] != label) << n;
-                            }
-                            accumulate |= (uint8_t)~c;
-                            add_face(x, y, z, label, c);
-                        }
-                    }
-                },
-                order_tag);
-        }
-        else
-        {
-
-            bool skip_check = false;
-
-            mc_nested_loops(
-                sx, sy, sz,
-                [&](std::size_t x, std::size_t y, std::size_t z,
-                    std::size_t ind)
-                {
-                    std::array<LabelType, 8> const labels = {
-                        data[ind],                  
-                        data[ind + strides[0]],                     
-                        data[ind + strides[1]],                     
-                        data[ind + strides[2]],                     
-                        data[ind + strides[3]],                     
-                        data[ind + strides[4]],                     
-                        data[ind + strides[5]],                     
-                        data[ind + strides[6]]};                    
-
-                    // check for solid color 2x2x2 region taking advantage
-                    // of the sliding window to skip a check on the next
-                    // iteration if the front of the block is not-solid color
-                    if constexpr (std::is_same_v<Tag, fortran_order_tag>) {
-                        if (!skip_check) {
-                            bool front_equal = (
-                                (labels[1] == labels[2])
-                                && (labels[1] == labels[5])
-                                && (labels[1] == labels[6])
-                            );
-                            bool front_and_back_equal = front_equal && (
-                                (labels[0] == labels[3])
-                                && (labels[0] == labels[4])
-                                && (labels[0] == labels[7])
-                            );
-                            skip_check = !front_equal;
-                            if (front_and_back_equal && labels[0] == labels[1])
-                            {
-                                return;
-                            }
-                        }
-                        else {
-                            skip_check = false;
+                            return;
                         }
                     }
                     else {
-                        if (!skip_check) {
-                            bool front_equal = (
-                                (labels[2] == labels[3])
-                                && (labels[2] == labels[6])
-                                && (labels[2] == labels[7])
-                            );
-                            bool front_and_back_equal = front_equal && (
-                                (labels[0] == labels[1])
-                                && (labels[0] == labels[4])
-                                && (labels[0] == labels[5])
-                            );
-                            skip_check = !front_equal;
-                            if (front_and_back_equal && labels[0] == labels[2])
-                            {
-                                return;
-                            }
-                        }
-                        else {
-                            skip_check = false;
+                        skip_check = false;
+                    }
+                }
+                else {
+                    if (!skip_check) {
+                        bool front_equal = (
+                            (labels[2] == labels[3])
+                            && (labels[2] == labels[6])
+                            && (labels[2] == labels[7])
+                        );
+                        bool front_and_back_equal = front_equal && (
+                            (labels[0] == labels[1])
+                            && (labels[0] == labels[4])
+                            && (labels[0] == labels[5])
+                        );
+                        skip_check = !front_equal;
+                        if (front_and_back_equal && labels[0] == labels[2])
+                        {
+                            return;
                         }
                     }
+                    else {
+                        skip_check = false;
+                    }
+                }
 
-                    uint8_t accumulate = 0;
-                    uint8_t c          = 0;
+                uint8_t accumulate = 0;
+                uint8_t c          = 0;
 
-                    for (int i = 0; i < 8 && accumulate != 0xff; i++)
+                for (int i = 0; i < 8 && accumulate != 0xff; i++)
+                {
+                    int start = zmesh_ctz((uint8_t)~accumulate);
+                    int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
+
+                    const LabelType label = labels[start];
+
+                    c = 0;
+                    if (end == 8)
                     {
-                        int start = zmesh_ctz((uint8_t)~accumulate);
-                        int end = 8 - ((zmesh_clz((uint8_t)~accumulate)) - 24);
-
-                        const LabelType label = labels[start];
-
-                        c = 0;
-                        if (end == 8)
+                        for (int n = start; n < 8; n++)
                         {
-                            for (int n = start; n < 8; n++)
-                            {
-                                c |= (uint8_t)(labels[n] == label) << n;
-                            }
-                        }
-                        else
-                        {
-                            for (int n = start; n < end; n++)
-                            {
-                                c |= (uint8_t)(labels[n] == label) << n;
-                            }
-                        }
-                        accumulate |= (uint8_t)c;
-
-                        if (label != 0)
-                        {
-                            add_face(x, y, z, label, (uint8_t)~c);
+                            c |= (uint8_t)(labels[n] == label) << n;
                         }
                     }
-                },
-                order_tag);
-        }
+                    else
+                    {
+                        for (int n = start; n < end; n++)
+                        {
+                            c |= (uint8_t)(labels[n] == label) << n;
+                        }
+                    }
+                    accumulate |= (uint8_t)c;
+
+                    if (label != 0)
+                    {
+                        add_face(x, y, z, label, (uint8_t)~c);
+                    }
+                }
+            },
+            order_tag);
     }
 
 public:
@@ -731,15 +643,15 @@ public:
 
     void marche(const LabelType* data, std::size_t const sx,
                 std::size_t const sy, std::size_t const sz,
-                const bool preserve_order = true, const bool c_order = true)
+                const bool c_order = true)
     {
         if (c_order)
         {
-            marche(data, sx, sy, sz, preserve_order, c_order_tag());
+            marche(data, sx, sy, sz, c_order_tag());
         }
         else
         {
-            marche(data, sx, sy, sz, preserve_order, fortran_order_tag());
+            marche(data, sx, sy, sz, fortran_order_tag());
         }
     }
 
