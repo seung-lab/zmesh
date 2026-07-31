@@ -79,11 +79,6 @@ cdef extern from "cMesher.hpp" namespace "zmesh":
       unsigned int sx, 
       unsigned int sy, 
       unsigned int sz, 
-      # for backwards compatibility 
-      # preserve final vertex/face order
-      # set false for additional performance
-      # but possibly a different mesh binary
-      bool preserve_order, 
       bool c_order # this is the input array order, C or F
     ) nogil
     void mesh_crackle(
@@ -510,7 +505,7 @@ class Mesher:
         data = tmp
         del tmp
 
-      return self._mesher.mesh(data, preserve_order=preserve_order)
+      return self._mesher.mesh(data)
 
   @cython.binding(True)
   def ids(self):
@@ -750,12 +745,11 @@ cdef class Mesher3208:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -788,12 +782,11 @@ cdef class Mesher3216:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -826,12 +819,11 @@ cdef class Mesher3232:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -864,12 +856,11 @@ cdef class Mesher3264:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -902,12 +893,11 @@ cdef class Mesher6408:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint8_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint8)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -940,12 +930,11 @@ cdef class Mesher6416:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint16_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint16)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -978,12 +967,11 @@ cdef class Mesher6432:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint32_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint32)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 
@@ -1016,12 +1004,11 @@ cdef class Mesher6464:
   def __dealloc__(self):
     del self.ptr
 
-  def mesh(self, data, preserve_order:bool):
+  def mesh(self, data):
     cdef cnp.ndarray[uint64_t, ndim=1] flat_data = reshape(data, (data.size,)).view(np.uint64)
     self.ptr.mesh(
       &flat_data[0],
       data.shape[0], data.shape[1], data.shape[2],
-      preserve_order,
       data.flags.c_contiguous
     )
 

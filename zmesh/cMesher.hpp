@@ -29,11 +29,10 @@ class CMesher {
   void mesh(
     const LabelType* data, 
     const size_t sx, const size_t sy, const size_t sz,
-    const bool preserve_order = true,
     const bool c_order = true
   ) {
     // Run global marching cubes, a mesh is generated for each segment ID group
-    marchingcubes_.marche(data, sx, sy, sz, preserve_order, c_order);
+    marchingcubes_.marche(data, sx, sy, sz, c_order);
   }
 
   void mesh_crackle(
