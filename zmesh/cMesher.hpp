@@ -27,13 +27,21 @@ class CMesher {
   ~CMesher() {};
 
   void mesh(
-      const LabelType* data, 
-      const size_t sx, const size_t sy, const size_t sz,
-      const bool preserve_order = true,
-      const bool c_order = true
-    ) {
+    const LabelType* data, 
+    const size_t sx, const size_t sy, const size_t sz,
+    const bool preserve_order = true,
+    const bool c_order = true
+  ) {
     // Run global marching cubes, a mesh is generated for each segment ID group
     marchingcubes_.marche(data, sx, sy, sz, preserve_order, c_order);
+  }
+
+  void mesh_crackle(
+    const unsigned char* binary, 
+    const size_t num_bytes
+  ) {
+    // Run global marching cubes, a mesh is generated for each segment ID group
+    marchingcubes_.marche_crackle(binary, num_bytes);
   }
 
   std::vector<LabelType> ids() {

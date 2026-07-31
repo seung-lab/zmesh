@@ -1,3 +1,4 @@
+crackle-codec
 cython
 fastremap
 pytest

@@ -26,7 +26,7 @@ else:
 if sys.platform == 'darwin':
   extra_compile_args += [ '-stdlib=libc++', '-mmacosx-version-min=10.9' ]
 
-include_dirs = [ str(NumpyImport()), 'zi_lib/', './' ]
+include_dirs = [ str(NumpyImport()), 'zi_lib/', 'libcrackle/', './' ]
 
 setuptools.setup(
   setup_requires=['pbr', 'numpy', 'cython'],

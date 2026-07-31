@@ -3,6 +3,7 @@ import numpy as np
 import gzip
 import os
 import sys
+import crackle
 
 import zmesh
 
@@ -715,6 +716,31 @@ def test_fqmr_simplification(target_count):
     assert simplified_mesh.vertices.shape[0] <= target_count
     assert simplified_mesh.vertices.shape[0] > 10
     assert 0 <= niter <= 999
+
+
+def test_crackle_marching_cubes(connectomics_labels):
+  mesher = zmesh.Mesher([1,1,1])
+
+  mesher.mesh(connectomics_labels)
+
+  results = {}
+  for label in mesher.ids():
+    results[label] = mesher.get(label)
+
+  arr = crackle.compressa(connectomics_labels)
+  mesher.mesh(arr)
+
+  results2 = {}
+  for label in mesher.ids():
+    results2[label] = mesher.get(label)
+
+  for label, mesh in results.items():
+    crackle_mesh = results2[label]
+    assert mesh == crackle_mesh
+
+
+
+
 
 
 
