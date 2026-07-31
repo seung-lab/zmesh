@@ -664,7 +664,7 @@ public:
                 vcg, sx, sy, 1, top_ccl.data(), N
             );
 
-            label_maps[top_j] = decode_label_map<uint64_t>(
+            label_maps[top_j] = crackle::decode_label_map<uint64_t>(
                 header, binary, top_ccl.data(), N, z+1, z+2
             );
 
