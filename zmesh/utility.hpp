@@ -354,13 +354,13 @@ struct MeshObject {
           --f;
           add_triangle(f);
         }
-        else if (sscanf(line,"f %lld// %lld// %lld//", &f.x, &f.y, &f.z) == 3) {
+        else if (sscanf(line,"f %ld// %ld// %ld//", &f.x, &f.y, &f.z) == 3) {
           check_f(f);
           --f;
           add_triangle(f);
         }
         else if (
-          sscanf(line,"f %lld//%d %lld//%d %lld//%d",
+          sscanf(line,"f %ld//%d %ld//%d %ld//%d",
             &f.x, &discard,
             &f.y, &discard,
             &f.z, &discard) == 6
@@ -369,7 +369,7 @@ struct MeshObject {
           --f;
           add_triangle(f);
         }
-        else if (sscanf(line,"f %lld/%d/%d %lld/%d/%d %lld/%d/%d",
+        else if (sscanf(line,"f %ld/%d/%d %ld/%d/%d %ld/%d/%d",
           &f.x, &discard, &discard,
           &f.y, &discard, &discard,
           &f.z, &discard, &discard) == 9) {
