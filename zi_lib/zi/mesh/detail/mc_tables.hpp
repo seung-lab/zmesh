@@ -55,6 +55,10 @@ static inline int mc_edge_table[256] = {
 
 static inline std::int8_t mc_triangle_table_end = -1;
 
+// Derived from c. 1994 public domain code 
+// based on tables by Cory Gene Bloyd (corysama@yahoo.com)
+// http://paulbourke.net/geometry/polygonise/
+
 static inline std::int8_t mc_triangle_table[256][16] = {
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
