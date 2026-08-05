@@ -144,7 +144,8 @@ The meshes can then be extracted (`mesher.get`):
 
 ## Credits
 
-Thanks to Aleks Zlateski for creating and sharing this beautiful mesher.  
+Thanks to Aleks Zlateski for creating and sharing this beautiful mesher. 
+Thanks to Paul Bourke and Cory Gene Bloyd for providing a [marching cubes table](https://paulbourke.net/geometry/polygonise/).
 
 Later changes by Will Silversmith, Nico Kemnitz, and Jingpeng Wu. 
 
