@@ -23,22 +23,22 @@ def result(label, dt, data, N):
     mvx = voxels // (10 ** 6)
     print(f"{label}: {dt:02.3f}s, {N * mvx / dt:.2f} MVx/sec, N={N}")
 
-def test_zmesh_marching_cubes(preserve_order=False):
+def test_zmesh_marching_cubes():
     labels = np.zeros((512,512,512), dtype=np.uint8, order="C")
     mesher = zmesh.Mesher((1,1,1))
-    N = 1
+    N = 3
     start = time.time()
     for _ in range(N):
-        mesher.mesh(labels, preserve_order=preserve_order)
+        mesher.mesh(labels)
     end = time.time()
     result("marching cubes (blank)", end - start, labels, N=N)
 
     labels = np.ones((512,512,512), dtype=np.uint8, order="C")
     mesher = zmesh.Mesher((1,1,1))
-    N = 1
+    N = 3
     start = time.time()
     for _ in range(N):
-        mesher.mesh(labels, close=True, preserve_order=preserve_order)
+        mesher.mesh(labels, close=True)
     end = time.time()
     result("marching cubes (filled)", end - start, labels, N=N)
 
@@ -49,7 +49,7 @@ def test_zmesh_marching_cubes(preserve_order=False):
     N = 3
     start = time.time()
     for _ in range(N):
-        mesher.mesh(labels, preserve_order=preserve_order)
+        mesher.mesh(labels)
     end = time.time()
     result("marching cubes (connectomics.npy)", end - start, labels, N=N)
 
@@ -60,7 +60,7 @@ def test_zmesh_marching_cubes(preserve_order=False):
     N = 1
     start = time.time()
     for _ in range(N):
-        mesher.mesh(labels, preserve_order=preserve_order)
+        mesher.mesh(labels)
     end = time.time()
     result("marching cubes (random)", end - start, labels, N=N)
 
@@ -74,7 +74,7 @@ def test_scikit_marching_cubes():
     labels = crackle.load("connectomics.npy.ckl.gz")
     labels = np.ascontiguousarray(labels)
 
-    N = 1
+    N = 3
     start = time.time()
     for _ in range(N):
         skimage.measure.marching_cubes(labels)
@@ -102,14 +102,15 @@ def test_zmesh_simplification():
     mesher = zmesh.Mesher((1,1,1))
     mesher.mesh(labels)
 
-    N = 1
+    N = 3
     start = time.time()
-    for label in tqdm(mesher.ids()):
-        mesher.get(label, 
-            reduction_factor=100, 
-            # Max tolerable error in physical distance
-            max_error=1,
-        )
+    for i in range(N):
+        for label in tqdm(mesher.ids()):
+            mesher.get(label, 
+                reduction_factor=100, 
+                # Max tolerable error in physical distance
+                max_error=40,
+            )
     end = time.time()
     result("simplification (connectomics.npy)", end - start, labels, N=N)
 

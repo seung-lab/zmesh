@@ -121,7 +121,7 @@ of the 32-bit format.
 
 ## Example Performance 
 
- This was a limited experiment conducted on a Macbook Pro M3 comparing Zmesh 1.12.0 
+ This was a limited experiment conducted on a Macbook Pro M3 comparing Zmesh 1.15.0 
  and scikit-image==0.26.0. The volume is a 512^3 uint32 segmentation of a mouse visual cortex containing 2523 shapes of various sizes including parts of dendrites, a nucleus, and a glia.  
 
  Note that this is not really an apples-to-apples comparison because scikit-image is specialized for continuous value images like CT scans not segmentation, and so the resulting meshes are very different.
@@ -130,17 +130,17 @@ of the 32-bit format.
 
 | Marching Cubes Data     | ZMESH Time (s) | ZMESH MVx/sec | SKIMAGE Time (s) | SKIMAGE MVx/sec |  N  |
 |-------------------------|----------------|---------------|------------------|-----------------|-----|
-| Black                   | 0.891          | 451.35        | NOT HANDLED      | —               | 3   |
-| Filled                  | 0.961          | 418.12        | NOT HANDLED      | —               | 3   |
-| connectomics.npy        | 4.107          | 97.89         | 9.861            | 40.77           | 3   |
-| random                  | 6.950          | 12.81         | 40.509           | 2.20            | 1   |
+| Black                   | 0.584          | 688.59        | NOT HANDLED      | —               | 3   |
+| Filled                  | 0.712          | 564.61        | NOT HANDLED      | —               | 3   |
+| connectomics.npy        | 3.178          | 126.49        | 9.866            | 40.75           | 3   |
+| random                  | 6.653          | 13.38         | 39.660           | 2.24            | 1   |
 
 The meshes can then be extracted (`mesher.get`):
 
 | Simplification Factor | Max Error | Labels per Second | N  |
 |-----------------------|-----------|-------------------|----|
-| 0                     | N/A       | 478.2             | 3  |
-| 100                   | 40        |  14.7             | 3  |
+| 0                     | N/A       | 433.5             | 3  |
+| 100                   | 40        |  14.4             | 3  |
 
 ## Credits
 
