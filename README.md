@@ -130,9 +130,10 @@ of the 32-bit format.
 
 | Marching Cubes Data     | ZMESH Time (s) | ZMESH MVx/sec | SKIMAGE Time (s) | SKIMAGE MVx/sec |  N  |
 |-------------------------|----------------|---------------|------------------|-----------------|-----|
-| Black                   | 0.584          | 688.59        | NOT HANDLED      | —               | 3   |
-| Filled                  | 0.712          | 564.61        | NOT HANDLED      | —               | 3   |
+| Black                   | 0.584          | 688.59        | N/A              | —               | 3   |
+| Filled                  | 0.712          | 564.61        | N/A              | —               | 3   |
 | connectomics.npy        | 3.178          | 126.49        | 9.866            | 40.75           | 3   |
+| connectomics.ckl        | 4.339          | 92.66         | N/A              | -               | 3   |
 | random                  | 6.653          | 13.38         | 39.660           | 2.24            | 1   |
 
 The meshes can then be extracted (`mesher.get`):

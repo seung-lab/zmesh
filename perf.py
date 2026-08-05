@@ -3,6 +3,7 @@
 # marching cubes (blank): 0.587s, 684.86 MVx/sec, N=3
 # marching cubes (filled): 0.717s, 560.39 MVx/sec, N=3
 # marching cubes (connectomics.npy): 3.278s, 122.64 MVx/sec, N=3
+# marching cubes (connectomics.npy, compressed): 4.339s, 92.66 MVx/sec, N=3
 # marching cubes (random): 7.033s, 12.65 MVx/sec, N=1
 # SKIMAGE
 # marching cubes (blank) NOT HANDLED
@@ -53,6 +54,16 @@ def test_zmesh_marching_cubes():
         mesher.mesh(labels)
     end = time.time()
     result("marching cubes (connectomics.npy)", end - start, labels, N=N)
+
+    labels = crackle.compressa(labels)
+    mesher = zmesh.Mesher((1,1,1))
+
+    N = 3
+    start = time.time()
+    for _ in range(N):
+        mesher.mesh(labels)
+    end = time.time()
+    result("marching cubes (connectomics.npy, compressed)", end - start, labels, N=N)
 
     labels = np.random.randint(0,1000, size=(448,448,448), dtype=np.uint32)
     # labels = np.ascontiguousarray(labels)
