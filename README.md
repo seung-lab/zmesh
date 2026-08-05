@@ -12,10 +12,12 @@ mesher = Mesher( (4,4,40) ) # anisotropy of image
 # the image boundary are left open or closed
 mesher.mesh(labels, close=False)
 
-# If you don't mind shuffling the vertices and faces
-# from older versions of zmesh, this option unlocks
-# some performance optimizations.
-mesher.mesh(labels, preserve_order=False) 
+# You can mesh from a crackle compressed volume
+# avoiding the memory cost of the input image.
+# It incurs a small time cost in online image decompression.
+import crackle
+labels = crackle.compressa(labels)
+mesher.mesh(labels)
 
 meshes = []
 for obj_id in mesher.ids():
@@ -113,6 +115,7 @@ object exceeds <1023, 1023, 511> on the x, y, or z axes. This is due to a limita
 of the 32-bit format. 
 - The mesher is ambidextrous, it can handle C or Fortran order arrays.
 - The maximum vertex range supported `.simplify` after converting to voxel space is 2<sup>20</sup> (appx. 1M) due to the packed 64-bit vertex format.
+- You can avoid the size of the input image by compressing to a [CrackleArray](https://github.com/seung-lab/crackle) and passing that to the mesher. Often the crackle binary is <1% of the size of the original image.
 
 ## Related Projects 
 
