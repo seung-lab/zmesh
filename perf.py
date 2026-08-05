@@ -1,13 +1,14 @@
+# On a Macbook Pro M3 2026-08-05
 # ZMESH
-# marching cubes (blank): 0.897s, 149.42 MVx/sec, N=1
-# marching cubes (filled): 0.966s, 138.78 MVx/sec, N=1
-# marching cubes (connectomics.npy 512^3, uint32): 3.132s, 42.78 MVx/sec, N=1
-# marching cubes (random 448^3 uint64): 25.092s, 3.55 MVx/sec, N=1
+# marching cubes (blank): 0.587s, 684.86 MVx/sec, N=3
+# marching cubes (filled): 0.717s, 560.39 MVx/sec, N=3
+# marching cubes (connectomics.npy): 3.278s, 122.64 MVx/sec, N=3
+# marching cubes (random): 7.033s, 12.65 MVx/sec, N=1
 # SKIMAGE
 # marching cubes (blank) NOT HANDLED
 # marching cubes (filled) NOT HANDLED
-# marching cubes (connectomics.npy 512^3, uint32): 5.359s, 25.00 MVx/sec, N=1
-# marching cubes (random 448^3 uint64): 69.927s, 1.27 MVx/sec, N=1
+# marching cubes (connectomics.npy): 9.861s, 40.77 MVx/sec, N=3
+# marching cubes (random): 39.807s, 2.24 MVx/sec, N=1
 
 # simplification (connectomics.npy): 434.549s, 0.31 MVx/sec, N=1
 
